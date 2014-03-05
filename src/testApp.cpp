@@ -10,17 +10,13 @@
 
 void testApp::setup()
 {
-    background.loadImage("background_neu.jpg");
 //---------------------------VÖGEL------------------------------------------
 
     nVerfolger = 1;
 //    nChef = 1;
 
-    warper.setup();
-    warper.activate();
 
-    ofBackground(255,255,255);
-    ofSetVerticalSync(true);
+    ofBackground(0,0,0);
     ofSetWindowTitle("Wand der Freiheit");
 
     theChef = new Chef*[nChef];
@@ -63,21 +59,19 @@ void testApp::setup()
     kinect.setRegistration(false);
 
     kinect.init();
-    //kinect.init(true); // shows infrared instead of RGB video image
     //kinect.init(false, false); // disable video image (faster fps)
 
     kinect.open();		// opens first available kinect
     //kinect.open(1);	// open a kinect by id, starting with 0 (sorted by serial # lexicographically))
-    //kinect.open("A00362A08602047A");	// open a kinect using it's unique serial #
 
     // print the intrinsic IR sensor values
-    if(kinect.isConnected())
+    /*if(kinect.isConnected())
     {
         ofLogNotice() << "sensor-emitter dist: " << kinect.getSensorEmitterDistance() << "cm";
         ofLogNotice() << "sensor-camera dist:  " << kinect.getSensorCameraDistance() << "cm";
         ofLogNotice() << "zero plane pixel size: " << kinect.getZeroPlanePixelSize() << "mm";
         ofLogNotice() << "zero plane dist: " << kinect.getZeroPlaneDistance() << "mm";
-    }
+    }*/
 
 /*#ifdef USE_TWO_KINECTS
     kinect2.init();
@@ -94,8 +88,8 @@ void testApp::setup()
 
     ofSetFrameRate(60);
 
-    // zero the tilt on startup
-    angle = 30;
+    // set the tilt to 15 on startup
+    angle = 15;
     kinect.setCameraTiltAngle(angle);
 }
 
@@ -103,27 +97,19 @@ void testApp::setup()
 
 void testApp::update()
 {
-    ofBackground(255);
+    ofBackground(0);
 
 //-----------------------------------VÖGEL-----------------------------------------------------------
 
     timeCur = ofGetElapsedTimeMillis();
-    //ofPoint mouse_pos(((float)ofGetMouseX()/ofGetWidth()), ((float)ofGetMouseY()/ofGetHeight())); //koordinaten von mouse
     ofPoint position = ofPoint(0,0);
 
     for (int i=0; i<nChef; i++)
     {
-        // Wenn Maus nicht im Fenster, dann zufällige Attraktor-Position übermitteln; ansonnsten Mausposition
-        /*if((mouseX > 15 && mouseX < ofGetWidth()-15) && (mouseY > 15 && mouseY < ofGetHeight()-15) )  // Funktioniert NICHT gut, wird aber wenn die Interaktion integriert wird, sowieso ersetzt.
-        {
-            // Maus folgen.
-            position = mouse_pos;
-        }*/
         // Wenn ein Körper von der Kinect erkannt wird
         if(contourFinder.blobs.size() > 0)
         {
             position.x = rightEnd.x/kinect.width;
-            //cout << "position.x " << ofToString(position.x) << "\n";
             position.y = rightEnd.y/kinect.height;
 
         }
@@ -192,10 +178,10 @@ void testApp::update()
         // update the cv images
         grayImage.flagImageChanged();
 
-        // find contours which are between the size of 20 pixels and 1/3 the w*h pixels.
+        // find contours which are between the size of 10 pixels and 1/2 the w*h pixels.
         // also, find holes is set to true so we will get interior contours as well....
         if (tracking) {
-           contourFinder.findContours(grayImage, 10, (kinect.width*kinect.height)/2, 1, false);
+           contourFinder.findContours(grayImage, 10, (kinect.width*kinect.height)/2, 2, false);
         }
     }
 
@@ -226,26 +212,12 @@ void testApp::update()
 
 void testApp::draw()
 {
-    ofSetColor(180, 180, 180);
-    background.draw(0, 0, ofGetWidth(), ofGetHeight());
-
     ofSetColor(255, 255, 255);
-
-    // Invertiert die X-Achse
-    //ofScale(-1, 1, 1);
-    //ofTranslate( -ofGetWidth(), 0, 0 );
 
 //----------------------------------TRACKING----------------------------------------------
 
-    //ofSetColor(255, 255, 255);
-
-    //grayImage.draw(0, 0, 1025, 600);
-    //contourFinder.draw(0, 0, 1025, 600);
-    //grayImage.draw(0, 0, ofGetWidth(), ofGetHeight());
-
     if (tracking) {
        contourFinder.draw(0, 0, ofGetWidth(), ofGetHeight());
-    //contourFinder.draw(0, 0, 1920, 1200);
 
        if(enddraw){
           if(contourFinder.blobs.size() > 0)    //wenn ein Körper erkannt wird
@@ -263,8 +235,6 @@ void testApp::draw()
     for (int i=0; i<nChef; i++)
     {
         theChef[i]->draw();
-        //cout << "chefX " << ofToString(theChef[i]->getPos().x*ofGetWidth()) << "\n";
-;
     }
 
     for (int i=0; i<nVerfolger; i++)
@@ -309,10 +279,6 @@ void testApp::draw()
     }*/
 
     //ofDrawBitmapString(reportStream.str(), 20, 652);
-    /*ofDrawBitmapString(ofToString(kinect.getWidth()),10,10);
-    ofDrawBitmapString(ofToString(kinect.getHeight()),10,20);
-    ofDrawBitmapString(ofToString(ofGetWidth()),10,40);
-    ofDrawBitmapString(ofToString(ofGetHeight()),10,50);*/
 
 }
 
@@ -323,9 +289,9 @@ void testApp::exit()
     kinect.setCameraTiltAngle(0); // zero the tilt on exit
     kinect.close();
 
-#ifdef USE_TWO_KINECTS
+/*#ifdef USE_TWO_KINECTS
     kinect2.close();
-#endif
+#endif*/
 }
 
 
@@ -356,21 +322,9 @@ void testApp::keyPressed(int key)
 
 //----------------------------------VÖGEL------------------------------------------------
 
-    case 'e' :
-        if (warper.isActive())
-        {
-            warper.deactivate();
-        }
-        else
-        {
-            warper.activate();
-        }
-
-        break;
-
     case 'v':
 
-        theVerfolger[nVerfolger] = new Verfolger(ofPoint(ofRandom(1), ofRandom(1)), 5);
+        theVerfolger[nVerfolger] = new Verfolger(ofPoint(ofRandom(1), ofRandom(1)), 10);
         nVerfolger++;
         break;
 //

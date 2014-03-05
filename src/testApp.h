@@ -23,8 +23,6 @@ class testApp : public ofBaseApp{
         void keyPressed(int);
         void mouseReleased(int x, int y, int button);
 
-        ofImage background;
-
 
 //-------------------------------VÖGEL------------------------------------
 
@@ -62,7 +60,6 @@ class testApp : public ofBaseApp{
 
     private:
 
-        ofxGLWarper warper;
         float timeCur;
         float timeOld;
         int nVerfolger;
