@@ -50,7 +50,5 @@ void Chef::draw(){
     }
 
     ofSetColor(ofColor(238,18,137));
-    //cout << "drawPos " << ofToString(drawPosX) << "\n";
-    //ofCircle( pos.x*ofGetWidth(), pos.y*ofGetHeight(), dim);
     ofCircle( drawPosX, drawPosY, dim);
     }

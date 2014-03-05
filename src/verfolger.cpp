@@ -14,11 +14,6 @@ void Verfolger::update(float dt, ofPoint move_to){
     par1=0.4;
     par2=0.6;
 
-    /*dir = (move_to- pos) * par1 + dir * par2;
-    dir.normalize();
-
-    pos += dir * speed * dt; //steuert die bewegung vom Chef zur Maus - position= (aktuelle)position+richtung*geschwindigkeit*zeit*/
-
     // Wenn kein move_to mitgegeben wurde oder -1, dann dem letzten Punkt folgen, also kein Update durchführen.
         if(move_to.x >= 0){
             saved_move_to = move_to;
@@ -28,7 +23,6 @@ void Verfolger::update(float dt, ofPoint move_to){
         dir = (saved_move_to - pos) * par1 + dir * par2;
         dir.normalize();
         pos += dir * speed * dt;
-        //cout << "dt Wert" << ofToString(dt);
 }
 
 void Verfolger::draw(){
@@ -57,6 +51,5 @@ void Verfolger::draw(){
 
     ofSetColor(ofColor(112,112,112));
 
-    //ofCircle( pos.x*ofGetWidth(), pos.y*ofGetHeight(), dim);
     ofCircle( drawPosX, drawPosY, dim);
 }
