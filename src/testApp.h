@@ -7,9 +7,10 @@
 #include "ball.h"
 #include "chef.h"
 #include "verfolger.h"
-#include "ofxGLWarper.h"
 #include "ofxOpenCv.h"
 #include "ofxKinect.h"
+
+#define USE_TWO_KINECTS
 
 class testApp : public ofBaseApp{
 
@@ -37,9 +38,16 @@ class testApp : public ofBaseApp{
 
 	    ofxKinect kinect;
 
-        #ifdef USE_TWO_KINECTS
-            ofxKinect kinect2;
-        #endif
+#ifdef USE_TWO_KINECTS
+        ofxKinect kinect2;
+
+        ofxCvGrayscaleImage grayImage2; // grayscale depth image
+	    //ofxCvGrayscaleImage grayThreshNear2; // the near thresholded image
+	    //ofxCvGrayscaleImage grayThreshFar2; // the far thresholded image
+
+	    ofxCvContourFinder contourFinder2;
+
+#endif
 
 	    ofxCvGrayscaleImage grayImage; // grayscale depth image
 	    ofxCvGrayscaleImage grayThreshNear; // the near thresholded image
@@ -56,6 +64,9 @@ class testApp : public ofBaseApp{
 
 	    ofPoint leftEnd;
 	    ofPoint rightEnd;
+
+	    ofPoint leftEnd2;
+	    ofPoint rightEnd2;
 
 
     private:

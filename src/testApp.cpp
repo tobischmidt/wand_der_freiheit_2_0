@@ -73,17 +73,13 @@ void testApp::setup()
         ofLogNotice() << "zero plane dist: " << kinect.getZeroPlaneDistance() << "mm";
     }*/
 
-/*#ifdef USE_TWO_KINECTS
-    kinect2.init();
-    kinect2.open();
-#endif*/
 
     grayImage.allocate(kinect.width, kinect.height);
     grayThreshNear.allocate(kinect.width, kinect.height);
     grayThreshFar.allocate(kinect.width, kinect.height);
 
     nearThreshold = 255;
-    farThreshold = 70;
+    farThreshold = 0;
     bThreshWithOpenCV = true;
 
     ofSetFrameRate(60);
@@ -91,6 +87,16 @@ void testApp::setup()
     // set the tilt to 15 on startup
     angle = 15;
     kinect.setCameraTiltAngle(angle);
+
+#ifdef USE_TWO_KINECTS
+    kinect2.init();
+    kinect2.open();
+
+    grayImage2.allocate(kinect2.width, kinect2.height);
+
+    kinect2.setCameraTiltAngle(angle);
+#endif
+
 }
 
 //--------------------------------------------------------------
@@ -186,25 +192,94 @@ void testApp::update()
     }
 
 
-
-    leftEnd.set(1000, 500);
-    rightEnd.set(100, 500);
+    leftEnd.set(2000, 500);
+    rightEnd.set(0, 500);
 
     if(contourFinder.blobs.size() > 0)
     {
-        for( int i=0; i<contourFinder.blobs[0].nPts; i+=2 )
+        for( int i=0; i<contourFinder.blobs[0].nPts; i+=3 )
         {
-            if(contourFinder.blobs[0].pts[i].x < leftEnd.x)
+            if(contourFinder.blobs[0].pts[i].x/2 < leftEnd.x)
             {
-                leftEnd.set(contourFinder.blobs[0].pts[i].x, contourFinder.blobs[0].pts[i].y);
+                leftEnd.set(contourFinder.blobs[0].pts[i].x/2, contourFinder.blobs[0].pts[i].y);
             }
 
-            if(contourFinder.blobs[0].pts[i].x > rightEnd.x)
+            if(contourFinder.blobs[0].pts[i].x/2 > rightEnd.x)
             {
-                rightEnd.set(contourFinder.blobs[0].pts[i].x, contourFinder.blobs[0].pts[i].y);
+                rightEnd.set(contourFinder.blobs[0].pts[i].x/2, contourFinder.blobs[0].pts[i].y);
             }
         }
     }
+
+
+#ifdef USE_TWO_KINECTS
+	kinect2.update();
+
+	// there is a new frame and we are connected
+    if(kinect2.isFrameNew())
+    {
+        // load grayscale depth image from the kinect source
+        grayImage2.setFromPixels(kinect2.getDepthPixels(), kinect2.width, kinect2.height);
+        grayImage2.mirror(false,true);
+        // we do two thresholds - one for the far plane and one for the near plane
+        // we then do a cvAnd to get the pixels which are a union of the two thresholds
+        if(bThreshWithOpenCV)
+        {
+            grayThreshNear = grayImage2;
+            grayThreshFar = grayImage2;
+            grayThreshNear.threshold(nearThreshold, true);
+            grayThreshFar.threshold(farThreshold);
+            cvAnd(grayThreshNear.getCvImage(), grayThreshFar.getCvImage(), grayImage2.getCvImage(), NULL);
+        }
+        else
+        {
+            // or we do it ourselves - show people how they can work with the pixels
+            unsigned char * pix = grayImage2.getPixels();
+
+            int numPixels = grayImage2.getWidth() * grayImage2.getHeight();
+            for(int i = 0; i < numPixels; i++)
+            {
+                if(pix[i] < nearThreshold && pix[i] > farThreshold)
+                {
+                    pix[i] = 255;
+                }
+                else
+                {
+                    pix[i] = 0;
+                }
+            }
+        }
+
+        // update the cv images
+        grayImage2.flagImageChanged();
+
+        // find contours which are between the size of 10 pixels and 1/2 the w*h pixels.
+        // also, find holes is set to true so we will get interior contours as well....
+        if (tracking) {
+           contourFinder2.findContours(grayImage2, 10, (kinect2.width*kinect2.height)/2, 2, false);
+        }
+    }
+
+    leftEnd2.set(2000, 500);
+    rightEnd2.set(0, 500);
+
+    if(contourFinder2.blobs.size() > 0)
+    {
+        for( int i=0; i<contourFinder2.blobs[0].nPts; i+=2 )
+        {
+            if(contourFinder2.blobs[0].pts[i].x < leftEnd2.x)
+            {
+                leftEnd2.set(contourFinder2.blobs[0].pts[i].x, contourFinder2.blobs[0].pts[i].y);
+            }
+
+            if(contourFinder2.blobs[0].pts[i].x > rightEnd2.x)
+            {
+                rightEnd2.set(contourFinder2.blobs[0].pts[i].x, contourFinder2.blobs[0].pts[i].y);
+            }
+        }
+    }
+
+#endif
 
 }
 
@@ -212,12 +287,16 @@ void testApp::update()
 
 void testApp::draw()
 {
-    ofSetColor(255, 255, 255);
 
 //----------------------------------TRACKING----------------------------------------------
 
+    ofSetColor(255, 255, 255);
+
+    grayImage.draw(0, 0, ofGetWidth()/2, ofGetHeight());
+    //kinect.draw(ofGetWidth()/2, 0, ofGetWidth()/2, ofGetWidth()/2*480/640);
+
     if (tracking) {
-       contourFinder.draw(0, 0, ofGetWidth(), ofGetHeight());
+       contourFinder.draw(0, 0, ofGetWidth()/2, ofGetHeight());
 
        if(enddraw){
           if(contourFinder.blobs.size() > 0)    //wenn ein Körper erkannt wird
@@ -228,6 +307,28 @@ void testApp::draw()
           }
         }
     }
+
+#ifdef USE_TWO_KINECTS
+
+    ofSetColor(255, 255, 255);
+
+    //kinect2.draw(0, 0, ofGetWidth()/2, ofGetWidth()/2*480/640);
+    grayImage2.draw(ofGetWidth()/2, 0, ofGetWidth()/2, ofGetHeight());
+
+    /*if (tracking) {
+       contourFinder2.draw(ofGetWidth()/2, 0, ofGetWidth()/2, ofGetHeight());
+
+       if(enddraw){
+          if(contourFinder2.blobs.size() > 0)    //wenn ein Körper erkannt wird
+          {
+              ofSetHexColor(0xFF0000);
+              ofCircle(leftEnd2.x*ofGetWidth()/640, leftEnd2.y*ofGetHeight()/480, 7);   //zeichnet 2 Punkte an äußersten Punkten des Körpers
+              ofCircle(rightEnd2.x*ofGetWidth()/640, rightEnd2.y*ofGetHeight()/480, 7);
+          }
+        }
+    }*/
+
+#endif
 
 
 //----------------------------VÖGEL--------------------------------------------------------
@@ -245,12 +346,8 @@ void testApp::draw()
     //ofDrawBitmapString(ofToString(ofGetFrameRate()),10,10);
 
 
-/*#ifdef USE_TWO_KINECTS
-    kinect2.draw(420, 320, 400, 300);
-#endif*/
-
     // draw instructions
-    //ofSetColor(0);
+    ofSetColor(255);
     /*stringstream reportStream;
 
     if(kinect.hasAccelControl())
@@ -276,9 +373,9 @@ void testApp::draw()
     {
         reportStream << "press UP and DOWN to change the tilt angle: " << angle << " degrees" << endl
                      << "press 1-5 & 0 to change the led mode" << endl;
-    }*/
+    }
 
-    //ofDrawBitmapString(reportStream.str(), 20, 652);
+    ofDrawBitmapString(reportStream.str(), 20, 652);*/
 
 }
 
@@ -289,9 +386,9 @@ void testApp::exit()
     kinect.setCameraTiltAngle(0); // zero the tilt on exit
     kinect.close();
 
-/*#ifdef USE_TWO_KINECTS
+#ifdef USE_TWO_KINECTS
     kinect2.close();
-#endif*/
+#endif
 }
 
 
@@ -406,12 +503,14 @@ void testApp::keyPressed(int key)
         angle++;
         if(angle>30) angle=30;
         kinect.setCameraTiltAngle(angle);
+        kinect2.setCameraTiltAngle(angle);
         break;
 
     case OF_KEY_DOWN:
         angle--;
         if(angle<-30) angle=-30;
         kinect.setCameraTiltAngle(angle);
+        kinect2.setCameraTiltAngle(angle);
         break;
 
 

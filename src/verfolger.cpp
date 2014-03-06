@@ -44,9 +44,9 @@ void Verfolger::draw(){
     {
         drawPosY = ofGetHeight() - dim;
     }
-    if (drawPosY < 200)
+    if (drawPosY < 0 + dim)
     {
-        drawPosY = 200;
+        drawPosY = 0 + dim;
     }
 
     ofSetColor(ofColor(112,112,112));
