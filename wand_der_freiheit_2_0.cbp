@@ -6,7 +6,7 @@
 		<Option makefile="makefile" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
-		<Option virtualFolders="addons\;src\;addons\ofxOpenCv\libs\opencv\include\opencv2\contrib\;addons\ofxOpenCv\libs\opencv\include\opencv2\objdetect\;addons\ofxOpenCv\libs\opencv\include\opencv2\flann\;addons\ofxKinect\libs\libfreenect\src\;addons\ofxOpenCv\libs\opencv\include\opencv2\;addons\ofxOpenCv\libs\opencv\include\opencv2\core\;addons\ofxOpenCv\libs\opencv\include\opencv2\ts\;addons\ofxKinect\libs\libusb-1.0\include\libusb-1.0\;addons\ofxOpenCv\libs\opencv\include\opencv2\video\;addons\ofxKinect\libs\libusb-win32\include\;addons\ofxOpenCv\src\;addons\ofxKinect\src\;addons\ofxXmlSettings\src\;addons\ofxOpenCv\libs\opencv\include\opencv2\features2d\;addons\ofxXmlSettings\libs\;addons\ofxKinect\libs\libfreenect\include\;addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\;addons\ofxKinect\libs\libfreenect\platform\windows\libusb10emu\libusb-1.0\;addons\ofxGLWarper\src\;addons\ofxOpenCv\libs\opencv\include\opencv\;addons\ofxOpenCv\libs\opencv\include\opencv2\highgui\;addons\ofxKinect\libs\libfreenect\platform\windows\;addons\ofxOpenCv\libs\opencv\include\opencv2\imgproc\;addons\ofxOpenCv\libs\opencv\include\opencv2\legacy\;addons\ofxOpenCv\libs\opencv\include\opencv2\calib3d\;addons\ofxOpenCv\libs\opencv\include\opencv2\ml\;" />
+		<Option virtualFolders="addons\;src\;addons\ofxOpenCv\libs\opencv\include\opencv2\contrib\;addons\ofxOpenCv\libs\opencv\include\opencv2\objdetect\;addons\ofxOpenCv\libs\opencv\include\opencv2\flann\;addons\ofxKinect\libs\libfreenect\src\;addons\ofxOpenCv\libs\opencv\include\opencv2\;addons\ofxOpenCv\libs\opencv\include\opencv2\core\;addons\ofxOpenCv\libs\opencv\include\opencv2\ts\;addons\ofxKinect\libs\libusb-1.0\include\libusb-1.0\;addons\ofxOpenCv\libs\opencv\include\opencv2\video\;addons\ofxKinect\libs\libusb-win32\include\;addons\ofxOpenCv\src\;addons\ofxKinect\src\;addons\ofxXmlSettings\src\;addons\ofxOpenCv\libs\opencv\include\opencv2\features2d\;addons\ofxXmlSettings\libs\;addons\ofxKinect\libs\libfreenect\include\;addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\;addons\ofxKinect\libs\libfreenect\platform\windows\libusb10emu\libusb-1.0\;addons\ofxOpenCv\libs\opencv\include\opencv\;addons\ofxOpenCv\libs\opencv\include\opencv2\highgui\;addons\ofxKinect\libs\libfreenect\platform\windows\;addons\ofxOpenCv\libs\opencv\include\opencv2\imgproc\;addons\ofxOpenCv\libs\opencv\include\opencv2\legacy\;addons\ofxOpenCv\libs\opencv\include\opencv2\calib3d\;addons\ofxOpenCv\libs\opencv\include\opencv2\ml\;" />
 		<Build>
 			<Target title="release">
 				<Option output="bin/$(PROJECT_NAME)" prefix_auto="1" extension_auto="1" />
@@ -193,12 +193,6 @@
 			<Add after='cmd /c if not exist &quot;$(PROJECT_DIR)bin/data&quot; mkdir &quot;$(PROJECT_DIR)bin/data&quot;' />
 			<Mode after="always" />
 		</ExtraCommands>
-		<Unit filename="../../../addons/ofxGLWarper/src/ofxGLWarper.cpp">
-			<Option virtualFolder="addons/ofxGLWarper/src" />
-		</Unit>
-		<Unit filename="../../../addons/ofxGLWarper/src/ofxGLWarper.h">
-			<Option virtualFolder="addons/ofxGLWarper/src" />
-		</Unit>
 		<Unit filename="../../../addons/ofxKinect/libs/libfreenect/include/libfreenect-registration.h">
 			<Option virtualFolder="addons/ofxKinect/libs/libfreenect/include" />
 		</Unit>

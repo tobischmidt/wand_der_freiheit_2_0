@@ -15,13 +15,12 @@ void testApp::setup()
     nVerfolger = 1;
 //    nChef = 1;
 
-
-    ofBackground(0,0,0);
     ofSetWindowTitle("Wand der Freiheit");
 
     theChef = new Chef*[nChef];
     theVerfolger = new Verfolger*[nVerfolger];
 
+    //nChef = 4 Chefs werden vordefiniert
     for (int i = 0; i < nChef; i++)
     {
 
@@ -33,6 +32,7 @@ void testApp::setup()
     }
 
 
+    //nVerfolger = 1 Verfolger wird vordefiniert
     for (int i = 0; i < nVerfolger; i++)
     {
 
@@ -50,6 +50,7 @@ void testApp::setup()
 //-------------------------TRACKING-----------------------------------------------
 
 
+    //Tracking & Zeichnen der Endpunkte zunächst ausgeschalten
     tracking = false;
     enddraw = false;
 
@@ -103,6 +104,7 @@ void testApp::setup()
 
 void testApp::update()
 {
+    //Hintergrundfarbe schwarz
     ofBackground(0);
 
 //-----------------------------------VÖGEL-----------------------------------------------------------
@@ -112,7 +114,7 @@ void testApp::update()
 
     for (int i=0; i<nChef; i++)
     {
-        // Wenn ein Körper von der Kinect erkannt wird
+        // Wenn ein Körper von der Kinect getrackt wird
         if(contourFinder.blobs.size() > 0)
         {
             position.x = rightEnd.x/kinect.width;
@@ -151,6 +153,7 @@ void testApp::update()
     {
         // load grayscale depth image from the kinect source
         grayImage.setFromPixels(kinect.getDepthPixels(), kinect.width, kinect.height);
+        // spiegelt das Bild
         grayImage.mirror(false,true);
         // we do two thresholds - one for the far plane and one for the near plane
         // we then do a cvAnd to get the pixels which are a union of the two thresholds
@@ -184,34 +187,38 @@ void testApp::update()
         // update the cv images
         grayImage.flagImageChanged();
 
+        // Wenn Trackign aktiviert wird
         // find contours which are between the size of 10 pixels and 1/2 the w*h pixels.
         // also, find holes is set to true so we will get interior contours as well....
         if (tracking) {
-           contourFinder.findContours(grayImage, 10, (kinect.width*kinect.height)/2, 2, false);
+           contourFinder.findContours(grayImage, 10, (kinect.width*kinect.height)/2, 1, false);
         }
     }
 
 
-    leftEnd.set(2000, 500);
+    leftEnd.set(2000, 500); //linkes/rechtes Ende der von der ersten Kinect erkannten Person
     rightEnd.set(0, 500);
 
-    if(contourFinder.blobs.size() > 0)
+    if(contourFinder.blobs.size() > 0)//Wenn mindestens ein Objekt erkannt wird
     {
-        for( int i=0; i<contourFinder.blobs[0].nPts; i+=3 )
+        for( int i=0; i<contourFinder.blobs[0].nPts; i+=3 )//Iteriert durch die Punkte der Kontur, nimmt nur jeden dritten wegen Laufzeit
         {
             if(contourFinder.blobs[0].pts[i].x/2 < leftEnd.x)
             {
+                //Wenn aktueller Punkt weiter links als gespeicherter Punkt wird dieser neu gespeichert
+                //x-Wert durch 2 geteilt, da nur auf linker Bidlschirmhälfte
                 leftEnd.set(contourFinder.blobs[0].pts[i].x/2, contourFinder.blobs[0].pts[i].y);
             }
 
             if(contourFinder.blobs[0].pts[i].x/2 > rightEnd.x)
             {
+                //Wenn aktueller Punkt weiter rechts als gespeicherter Punkt wird dieser neu gespeichert
                 rightEnd.set(contourFinder.blobs[0].pts[i].x/2, contourFinder.blobs[0].pts[i].y);
             }
         }
     }
 
-
+//selbe Funktionen wie für die erste Kinect, nur auf rechte Bildschirmhälfte bezogen
 #ifdef USE_TWO_KINECTS
 	kinect2.update();
 
@@ -256,7 +263,7 @@ void testApp::update()
         // find contours which are between the size of 10 pixels and 1/2 the w*h pixels.
         // also, find holes is set to true so we will get interior contours as well....
         if (tracking) {
-           contourFinder2.findContours(grayImage2, 10, (kinect2.width*kinect2.height)/2, 2, false);
+           contourFinder2.findContours(grayImage2, 10, (kinect2.width*kinect2.height)/2, 1, false);
         }
     }
 
@@ -267,14 +274,14 @@ void testApp::update()
     {
         for( int i=0; i<contourFinder2.blobs[0].nPts; i+=2 )
         {
-            if(contourFinder2.blobs[0].pts[i].x < leftEnd2.x)
+            if(contourFinder2.blobs[0].pts[i].x/2 + ofGetWidth()/2 < leftEnd2.x)
             {
-                leftEnd2.set(contourFinder2.blobs[0].pts[i].x, contourFinder2.blobs[0].pts[i].y);
+                leftEnd2.set(contourFinder2.blobs[0].pts[i].x/2 + ofGetWidth()/2, contourFinder2.blobs[0].pts[i].y);
             }
 
-            if(contourFinder2.blobs[0].pts[i].x > rightEnd2.x)
+            if(contourFinder2.blobs[0].pts[i].x/2 + ofGetWidth()/2 > rightEnd2.x)
             {
-                rightEnd2.set(contourFinder2.blobs[0].pts[i].x, contourFinder2.blobs[0].pts[i].y);
+                rightEnd2.set(contourFinder2.blobs[0].pts[i].x/2 + ofGetWidth()/2, contourFinder2.blobs[0].pts[i].y);
             }
         }
     }
@@ -295,11 +302,13 @@ void testApp::draw()
     grayImage.draw(0, 0, ofGetWidth()/2, ofGetHeight());
     //kinect.draw(ofGetWidth()/2, 0, ofGetWidth()/2, ofGetWidth()/2*480/640);
 
-    if (tracking) {
+    //Wenn Tracking aktiviert ist wird die Kontur gezeichnet
+    if(tracking) {
        contourFinder.draw(0, 0, ofGetWidth()/2, ofGetHeight());
 
+       //Wenn enddraw = true werden die Attraktoren als rote Punkte dargestellt
        if(enddraw){
-          if(contourFinder.blobs.size() > 0)    //wenn ein Körper erkannt wird
+          if(contourFinder.blobs.size() > 0)    //wenn mindestens ein Körper erkannt wird
           {
               ofSetHexColor(0xFF0000);
               ofCircle(leftEnd.x*ofGetWidth()/640, leftEnd.y*ofGetHeight()/480, 7);   //zeichnet 2 Punkte an äußersten Punkten des Körpers
@@ -333,22 +342,25 @@ void testApp::draw()
 
 //----------------------------VÖGEL--------------------------------------------------------
 
+    //Zeichnet alle Chefs
     for (int i=0; i<nChef; i++)
     {
         theChef[i]->draw();
     }
 
+    //Zeichnet alle Verfolger
     for (int i=0; i<nVerfolger; i++)
     {
         theVerfolger[i]->draw();
     }
 
-    //ofDrawBitmapString(ofToString(ofGetFrameRate()),10,10);
+    // Gibt Framerate in linker oberer Ecke aus
+    ofDrawBitmapString(ofToString(ofGetFrameRate()),10,10);
 
 
     // draw instructions
-    ofSetColor(255);
-    /*stringstream reportStream;
+    /*ofSetColor(255);
+    stringstream reportStream;
 
     if(kinect.hasAccelControl())
     {
@@ -395,11 +407,13 @@ void testApp::exit()
 //--------------------------------------------------------------
 void testApp::mouseReleased(int x, int y, int button)
 {
+    //Bei Linksklick wird Tracking de/aktiviert
     if(!button){
         tracking = !tracking;
         cout << "tracking" << ofToString(tracking);
     }
 
+    //Bei Rechtsklick wird zeichnen der Attraktorpunkte de/aktiviert
     if(button){
         enddraw = !enddraw;
         cout << "balldraw" << ofToString(enddraw);
@@ -414,6 +428,7 @@ void testApp::keyPressed(int key)
     {
 
     case 'f' :
+        //Fullcreen
         ofToggleFullscreen();
         break;
 
@@ -421,6 +436,7 @@ void testApp::keyPressed(int key)
 
     case 'v':
 
+        //neuer verfolger wird an zufälliger Position erstellt
         theVerfolger[nVerfolger] = new Verfolger(ofPoint(ofRandom(1), ofRandom(1)), 10);
         nVerfolger++;
         break;
@@ -440,23 +456,27 @@ void testApp::keyPressed(int key)
 
     case '>':
     case '.':
+        //Schwellwert für ferne Bereiche erhöhen
         farThreshold ++;
         if (farThreshold > 255) farThreshold = 255;
         break;
 
     case '<':
     case ',':
+        //Schwellwert für ferne Bereiche verringern
         farThreshold --;
         if (farThreshold < 0) farThreshold = 0;
         break;
 
     case '+':
     case '=':
+        //Schwellwert für nahe Bereiche erhöhen
         nearThreshold ++;
         if (nearThreshold > 255) nearThreshold = 255;
         break;
 
     case '-':
+        //Schwellwert für nahe Bereiche verringern
         nearThreshold --;
         if (nearThreshold < 0) nearThreshold = 0;
         break;
@@ -466,11 +486,13 @@ void testApp::keyPressed(int key)
         break;
 
     case 'o':
+        //Kinect wieder einschalten
         kinect.setCameraTiltAngle(angle); // go back to prev tilt
         kinect.open();
         break;
 
     case 'c':
+        //Kinect ausschalten
         kinect.setCameraTiltAngle(0); // zero the tilt
         kinect.close();
         break;
@@ -500,6 +522,7 @@ void testApp::keyPressed(int key)
         break;
 
     case OF_KEY_UP:
+        //Kinect nach oben ausrichten, bis max. 30 Grad
         angle++;
         if(angle>30) angle=30;
         kinect.setCameraTiltAngle(angle);
@@ -507,6 +530,7 @@ void testApp::keyPressed(int key)
         break;
 
     case OF_KEY_DOWN:
+        //Kinect nach unten asurichten, bis max. 30 Grad
         angle--;
         if(angle<-30) angle=-30;
         kinect.setCameraTiltAngle(angle);

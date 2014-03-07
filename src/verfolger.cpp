@@ -49,7 +49,7 @@ void Verfolger::draw(){
         drawPosY = 0 + dim;
     }
 
+    //Kreis in Farbe Grau wird gezeichnet
     ofSetColor(ofColor(112,112,112));
-
     ofCircle( drawPosX, drawPosY, dim);
 }
