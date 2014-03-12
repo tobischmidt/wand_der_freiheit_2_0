@@ -46,6 +46,11 @@ void testApp::setup()
     timeOld = ofGetElapsedTimeMillis();
     timeCur = timeOld;
 
+    /*attraktoren.push_back(ofPoint(200, 200));
+    attraktoren.push_back(ofPoint(200, 600));
+    attraktoren.push_back(ofPoint(1000 , 200));
+    attraktoren.push_back(ofPoint(1000 , 600));*/
+
 
 //-------------------------TRACKING-----------------------------------------------
 
@@ -59,8 +64,8 @@ void testApp::setup()
     // enable depth->video image calibration
     kinect.setRegistration(false);
 
-    kinect.init();
-    //kinect.init(false, false); // disable video image (faster fps)
+    //kinect.init();
+    kinect.init(false, false); // disable video image (faster fps)
 
     kinect.open();		// opens first available kinect
     //kinect.open(1);	// open a kinect by id, starting with 0 (sorted by serial # lexicographically))
@@ -90,7 +95,8 @@ void testApp::setup()
     kinect.setCameraTiltAngle(angle);
 
 #ifdef USE_TWO_KINECTS
-    kinect2.init();
+    //kinect2.init();
+    kinect2.init(false, false);
     kinect2.open();
 
     grayImage2.allocate(kinect2.width, kinect2.height);
@@ -117,8 +123,13 @@ void testApp::update()
         // Wenn ein Körper von der Kinect getrackt wird
         if(contourFinder.blobs.size() > 0)
         {
-            position.x = rightEnd.x/kinect.width;
-            position.y = rightEnd.y/kinect.height;
+            //position.x = rightEnd.x/kinect.width;
+            //position.y = rightEnd.y/kinect.height;
+
+            attraktoren.push_back(rightEnd);
+            attraktoren.push_back(leftEnd);
+
+            //theChef[i]->update(timeCur-timeOld, attraktoren[i%2]/1000);
 
         }
         else
@@ -133,8 +144,12 @@ void testApp::update()
                 // Dem letzten Punkt folgen.
                 position = ofPoint(-1, -1);
             }
+            theChef[i]->update(timeCur-timeOld, position);
         }
-        theChef[i]->update(timeCur-timeOld, position);
+        //theChef[i]->update(timeCur-timeOld, attraktoren[i]/1000);
+        //cout << "attraktor X:" << ofToString(attraktoren[i].x) << "  Y: " << ofToString(attraktoren[i].y) ;
+        //cout << "attraktor X:" << ofToString(position.x) << "  Y: " << ofToString(position.y) ;
+
     }
     for (int i=0; i<nVerfolger; i++)
     {
@@ -191,7 +206,7 @@ void testApp::update()
         // find contours which are between the size of 10 pixels and 1/2 the w*h pixels.
         // also, find holes is set to true so we will get interior contours as well....
         if (tracking) {
-           contourFinder.findContours(grayImage, 10, (kinect.width*kinect.height)/2, 1, false);
+           contourFinder.findContours(grayImage, 10, (kinect.width*kinect.height)/2, 2, false);
         }
     }
 
@@ -263,16 +278,16 @@ void testApp::update()
         // find contours which are between the size of 10 pixels and 1/2 the w*h pixels.
         // also, find holes is set to true so we will get interior contours as well....
         if (tracking) {
-           contourFinder2.findContours(grayImage2, 10, (kinect2.width*kinect2.height)/2, 1, false);
+           contourFinder2.findContours(grayImage2, 10, (kinect2.width*kinect2.height)/2, 2, false);
         }
     }
 
-    leftEnd2.set(2000, 500);
+    leftEnd2.set(5000, 500);
     rightEnd2.set(0, 500);
 
     if(contourFinder2.blobs.size() > 0)
     {
-        for( int i=0; i<contourFinder2.blobs[0].nPts; i+=2 )
+        for( int i=0; i<contourFinder2.blobs[0].nPts; i+=3 )
         {
             if(contourFinder2.blobs[0].pts[i].x/2 + ofGetWidth()/2 < leftEnd2.x)
             {
@@ -297,9 +312,11 @@ void testApp::draw()
 
 //----------------------------------TRACKING----------------------------------------------
 
+
+
     ofSetColor(255, 255, 255);
 
-    grayImage.draw(0, 0, ofGetWidth()/2, ofGetHeight());
+    //grayImage.draw(0, 0, ofGetWidth()/2, ofGetHeight());
     //kinect.draw(ofGetWidth()/2, 0, ofGetWidth()/2, ofGetWidth()/2*480/640);
 
     //Wenn Tracking aktiviert ist wird die Kontur gezeichnet
@@ -324,7 +341,7 @@ void testApp::draw()
     //kinect2.draw(0, 0, ofGetWidth()/2, ofGetWidth()/2*480/640);
     grayImage2.draw(ofGetWidth()/2, 0, ofGetWidth()/2, ofGetHeight());
 
-    /*if (tracking) {
+    if (tracking) {
        contourFinder2.draw(ofGetWidth()/2, 0, ofGetWidth()/2, ofGetHeight());
 
        if(enddraw){
@@ -335,7 +352,7 @@ void testApp::draw()
               ofCircle(rightEnd2.x*ofGetWidth()/640, rightEnd2.y*ofGetHeight()/480, 7);
           }
         }
-    }*/
+    }
 
 #endif
 
@@ -388,6 +405,12 @@ void testApp::draw()
     }
 
     ofDrawBitmapString(reportStream.str(), 20, 652);*/
+
+    for(int i = 0; i<4; i++)
+    {
+        ofSetColor(255);
+        ofCircle(attraktoren[i], 10);
+    }
 
 }
 
@@ -530,7 +553,7 @@ void testApp::keyPressed(int key)
         break;
 
     case OF_KEY_DOWN:
-        //Kinect nach unten asurichten, bis max. 30 Grad
+        //Kinect nach unten ausrichten, bis max. 30 Grad
         angle--;
         if(angle<-30) angle=-30;
         kinect.setCameraTiltAngle(angle);

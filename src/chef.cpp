@@ -52,4 +52,5 @@ void Chef::draw(){
     //Kreis in Farbe Rosa wird gezeichnet
     ofSetColor(ofColor(238,18,137));
     ofCircle( drawPosX, drawPosY, dim);
+
     }
