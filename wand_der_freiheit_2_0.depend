@@ -6306,7 +6306,7 @@
 1376287964 c:\users\tobias\openframeworks\of_v0.8.0_win_cb_release\addons\ofxopencv\src\ofxcvshortimage.h
 	"ofxCvImage.h"
 
-1394114831 source:c:\users\tobias\openframeworks\of_v0.8.0_win_cb_release\addons\ofxopencv\src\ofxcvcontourfinder.cpp
+1394807826 source:c:\users\tobias\openframeworks\of_v0.8.0_win_cb_release\addons\ofxopencv\src\ofxcvcontourfinder.cpp
 	"ofxCvContourFinder.h"
 
 1376287964 c:\users\tobias\openframeworks\of_v0.8.0_win_cb_release\addons\ofxopencv\src\ofxcvcontourfinder.h
@@ -6386,7 +6386,7 @@
 1394027761 c:\users\tobias\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\ball.h
 	"ofMain.h"
 
-1394642802 source:c:\users\tobias\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\chef.cpp
+1394807572 source:c:\users\tobias\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\chef.cpp
 	"chef.h"
 
 1394027761 c:\users\tobias\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\chef.h
@@ -6402,7 +6402,7 @@
 	"ofMain.h"
 	"testApp.h"
 
-1394471322 c:\users\tobias\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\testapp.h
+1394813921 c:\users\tobias\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\testapp.h
 	"ofMain.h"
 	"ball.h"
 	"chef.h"
@@ -6410,11 +6410,11 @@
 	"ofxOpenCv.h"
 	"ofxKinect.h"
 
-1394121591 source:c:\users\tobias\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\testapp.cpp
+1394812013 source:c:\users\tobias\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\testapp.cpp
 	"testApp.h"
 	"chef.h"
 	"verfolger.h"
 
-1394192821 source:c:\users\tobias\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\verfolger.cpp
+1394807572 source:c:\users\tobias\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\verfolger.cpp
 	"verfolger.h"
 
