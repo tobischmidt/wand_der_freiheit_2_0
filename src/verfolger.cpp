@@ -31,22 +31,10 @@ void Verfolger::draw(){
     int drawPosY = pos.y*ofGetHeight();
 
     // Bälle sollen den Bildschirm nicht verlassen
-    if (drawPosX > ofGetWidth() - dim)
+    if ((drawPosX > ofGetWidth() - dim)||(drawPosX < dim)||(drawPosY > ofGetHeight() - dim)||(drawPosY < 0 + dim))
     {
-        drawPosX = ofGetWidth() - dim;
-    }
-    if (drawPosX < dim)
-    {
-        drawPosX = dim;
-    }
-
-    if (drawPosY > ofGetHeight() - dim)
-    {
-        drawPosY = ofGetHeight() - dim;
-    }
-    if (drawPosY < 0 + dim)
-    {
-        drawPosY = 0 + dim;
+        //drawPosX = ofGetWidth() - dim;
+        dir *= -1;
     }
 
     //Kreis in Farbe Grau wird gezeichnet

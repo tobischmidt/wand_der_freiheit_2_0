@@ -123,13 +123,32 @@ void testApp::update()
         // Wenn ein Körper von der Kinect getrackt wird
         if(contourFinder.blobs.size() > 0)
         {
-            //position.x = rightEnd.x/kinect.width;
-            //position.y = rightEnd.y/kinect.height;
+            position.x = rightEnd[0].x/kinect.width;
+            position.y = rightEnd[0].y/kinect.height;
 
-            attraktoren.push_back(rightEnd);
-            attraktoren.push_back(leftEnd);
+            //attraktoren.push_back((ofPoint)rightEnd);
+            //attraktoren.push_back(leftEnd);
+            attraktoren[0] = rightEnd[0];
+            attraktoren[1] = leftEnd[0];
+            attraktoren[2] = rightEnd[1];
+            attraktoren[3] = leftEnd[1];
 
-            //theChef[i]->update(timeCur-timeOld, attraktoren[i%2]/1000);
+            attraktoren[0].x /= kinect.width;
+            attraktoren[0].y /= kinect.height;
+
+            attraktoren[1].x /= kinect.width;
+            attraktoren[1].y /= kinect.height;
+
+            attraktoren[2].x /= kinect.width;
+            attraktoren[2].y /= kinect.height;
+
+            attraktoren[3].x /= kinect.width;
+            attraktoren[3].y /= kinect.height;
+
+            theChef[i]->update(timeCur-timeOld, attraktoren[i%4]);
+            //cout << "Position X: " << position.x << " - Position Y: " << position.y;
+            //cout << "Attraktor X: " << attraktoren[4].x << " - Attraktor Y: " << attraktoren[4].y;
+            //theChef[i]->update(timeCur-timeOld, position);
 
         }
         else
@@ -211,24 +230,29 @@ void testApp::update()
     }
 
 
-    leftEnd.set(2000, 500); //linkes/rechtes Ende der von der ersten Kinect erkannten Person
-    rightEnd.set(0, 500);
+    leftEnd[0].set(2000, 500); //linkes/rechtes Ende der von der ersten Kinect erkannten Person
+    rightEnd[0].set(0, 500);
+    leftEnd[1].set(2000, 500); //linkes/rechtes Ende der von der ersten Kinect erkannten Person
+    rightEnd[1].set(0, 500);
 
     if(contourFinder.blobs.size() > 0)//Wenn mindestens ein Objekt erkannt wird
     {
-        for( int i=0; i<contourFinder.blobs[0].nPts; i+=3 )//Iteriert durch die Punkte der Kontur, nimmt nur jeden dritten wegen Laufzeit
+        for (int j=0; j< 2; j++)
         {
-            if(contourFinder.blobs[0].pts[i].x/2 < leftEnd.x)
+            for( int i=0; i<contourFinder.blobs[j].nPts; i+=3 )//Iteriert durch die Punkte der Kontur, nimmt nur jeden dritten wegen Laufzeit
             {
-                //Wenn aktueller Punkt weiter links als gespeicherter Punkt wird dieser neu gespeichert
-                //x-Wert durch 2 geteilt, da nur auf linker Bidlschirmhälfte
-                leftEnd.set(contourFinder.blobs[0].pts[i].x/2, contourFinder.blobs[0].pts[i].y);
-            }
+                if(contourFinder.blobs[j].pts[i].x/2 < leftEnd[j].x)
+                {
+                    //Wenn aktueller Punkt weiter links als gespeicherter Punkt wird dieser neu gespeichert
+                    //x-Wert durch 2 geteilt, da nur auf linker Bidlschirmhälfte
+                    leftEnd[j].set(contourFinder.blobs[j].pts[i].x/2, contourFinder.blobs[j].pts[i].y);
+                }
 
-            if(contourFinder.blobs[0].pts[i].x/2 > rightEnd.x)
-            {
-                //Wenn aktueller Punkt weiter rechts als gespeicherter Punkt wird dieser neu gespeichert
-                rightEnd.set(contourFinder.blobs[0].pts[i].x/2, contourFinder.blobs[0].pts[i].y);
+                if(contourFinder.blobs[j].pts[i].x/2 > rightEnd[j].x)
+                {
+                    //Wenn aktueller Punkt weiter rechts als gespeicherter Punkt wird dieser neu gespeichert
+                    rightEnd[j].set(contourFinder.blobs[j].pts[i].x/2, contourFinder.blobs[j].pts[i].y);
+                }
             }
         }
     }
@@ -282,7 +306,7 @@ void testApp::update()
         }
     }
 
-    leftEnd2.set(5000, 500);
+    /*leftEnd2.set(5000, 500);
     rightEnd2.set(0, 500);
 
     if(contourFinder2.blobs.size() > 0)
@@ -299,7 +323,7 @@ void testApp::update()
                 rightEnd2.set(contourFinder2.blobs[0].pts[i].x/2 + ofGetWidth()/2, contourFinder2.blobs[0].pts[i].y);
             }
         }
-    }
+    }*/
 
 #endif
 
@@ -328,8 +352,10 @@ void testApp::draw()
           if(contourFinder.blobs.size() > 0)    //wenn mindestens ein Körper erkannt wird
           {
               ofSetHexColor(0xFF0000);
-              ofCircle(leftEnd.x*ofGetWidth()/640, leftEnd.y*ofGetHeight()/480, 7);   //zeichnet 2 Punkte an äußersten Punkten des Körpers
-              ofCircle(rightEnd.x*ofGetWidth()/640, rightEnd.y*ofGetHeight()/480, 7);
+              ofCircle(leftEnd[0].x*ofGetWidth()/640, leftEnd[0].y*ofGetHeight()/480, 7);   //zeichnet 2 Punkte an äußersten Punkten des Körpers
+              ofCircle(rightEnd[0].x*ofGetWidth()/640, rightEnd[0].y*ofGetHeight()/480, 7);
+              ofCircle(leftEnd[1].x*ofGetWidth()/640, leftEnd[1].y*ofGetHeight()/480, 7);   //zeichnet 2 Punkte an äußersten Punkten des Körpers
+              ofCircle(rightEnd[1].x*ofGetWidth()/640, rightEnd[1].y*ofGetHeight()/480, 7);
           }
         }
     }
@@ -339,7 +365,7 @@ void testApp::draw()
     ofSetColor(255, 255, 255);
 
     //kinect2.draw(0, 0, ofGetWidth()/2, ofGetWidth()/2*480/640);
-    grayImage2.draw(ofGetWidth()/2, 0, ofGetWidth()/2, ofGetHeight());
+    //grayImage2.draw(ofGetWidth()/2, 0, ofGetWidth()/2, ofGetHeight());
 
     if (tracking) {
        contourFinder2.draw(ofGetWidth()/2, 0, ofGetWidth()/2, ofGetHeight());
@@ -348,8 +374,8 @@ void testApp::draw()
           if(contourFinder2.blobs.size() > 0)    //wenn ein Körper erkannt wird
           {
               ofSetHexColor(0xFF0000);
-              ofCircle(leftEnd2.x*ofGetWidth()/640, leftEnd2.y*ofGetHeight()/480, 7);   //zeichnet 2 Punkte an äußersten Punkten des Körpers
-              ofCircle(rightEnd2.x*ofGetWidth()/640, rightEnd2.y*ofGetHeight()/480, 7);
+//              ofCircle(leftEnd2.x*ofGetWidth()/640, leftEnd2.y*ofGetHeight()/480, 7);   //zeichnet 2 Punkte an äußersten Punkten des Körpers
+  //            ofCircle(rightEnd2.x*ofGetWidth()/640, rightEnd2.y*ofGetHeight()/480, 7);
           }
         }
     }
@@ -460,7 +486,7 @@ void testApp::keyPressed(int key)
     case 'v':
 
         //neuer verfolger wird an zufälliger Position erstellt
-        theVerfolger[nVerfolger] = new Verfolger(ofPoint(ofRandom(1), ofRandom(1)), 10);
+        theVerfolger[nVerfolger] = new Verfolger(ofPoint(0.99, 0.6), 10);
         nVerfolger++;
         break;
 //
