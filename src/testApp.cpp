@@ -337,7 +337,6 @@ void testApp::draw()
 //----------------------------------TRACKING----------------------------------------------
 
 
-
     ofSetColor(255, 255, 255);
 
     //grayImage.draw(0, 0, ofGetWidth()/2, ofGetHeight());
@@ -431,12 +430,6 @@ void testApp::draw()
     }
 
     ofDrawBitmapString(reportStream.str(), 20, 652);*/
-
-    for(int i = 0; i<4; i++)
-    {
-        ofSetColor(255);
-        ofCircle(attraktoren[i], 10);
-    }
 
 }
 

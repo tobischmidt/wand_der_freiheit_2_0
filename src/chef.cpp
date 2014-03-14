@@ -31,10 +31,14 @@ void Chef::draw(){
     int drawPosY = pos.y * ofGetHeight();
 
     // Bälle sollen den Bildschirm nicht verlassen
-    if ((drawPosX > ofGetWidth() - dim)||(drawPosX < dim)||(drawPosY > ofGetHeight() - dim)||(drawPosY < 0 + dim))
+    if ((drawPosX > ofGetWidth() - dim)||(drawPosX < dim))
     {
-        //drawPosX = ofGetWidth() - dim;
-        dir *= -1;
+        dir.x *= -1;
+    }
+
+    if ((drawPosY > ofGetHeight() - dim)||(drawPosY < 0 + dim))
+    {
+        dir.y *= -1;
     }
 
     //Kreis in Farbe Rosa wird gezeichnet
