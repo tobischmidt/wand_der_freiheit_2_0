@@ -62,7 +62,6 @@ class testApp : public ofBaseApp{
 
 	    int angle;
 
-	    //vector<ofPoint> attraktoren;
 	    ofPoint attraktoren[8];
 
 	    ofPoint leftEnd[4];

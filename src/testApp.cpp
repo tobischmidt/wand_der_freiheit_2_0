@@ -113,71 +113,6 @@ void testApp::update()
     //Hintergrundfarbe schwarz
     ofBackground(0);
 
-//-----------------------------------VÖGEL-----------------------------------------------------------
-
-    timeCur = ofGetElapsedTimeMillis();
-    ofPoint position = ofPoint(0,0);
-
-    for (int i=0; i<nChef; i++)
-    {
-        // Wenn ein Körper von der Kinect getrackt wird
-        if(contourFinder.blobs.size() > 0)
-        {
-            position.x = rightEnd[0].x/kinect.width;
-            position.y = rightEnd[0].y/kinect.height;
-
-            //attraktoren.push_back((ofPoint)rightEnd);
-            //attraktoren.push_back(leftEnd);
-            attraktoren[0] = rightEnd[0];
-            attraktoren[1] = leftEnd[0];
-            attraktoren[2] = rightEnd[1];
-            attraktoren[3] = leftEnd[1];
-
-            attraktoren[0].x /= kinect.width;
-            attraktoren[0].y /= kinect.height;
-
-            attraktoren[1].x /= kinect.width;
-            attraktoren[1].y /= kinect.height;
-
-            attraktoren[2].x /= kinect.width;
-            attraktoren[2].y /= kinect.height;
-
-            attraktoren[3].x /= kinect.width;
-            attraktoren[3].y /= kinect.height;
-
-            theChef[i]->update(timeCur-timeOld, attraktoren[i%4]);
-            //cout << "Position X: " << position.x << " - Position Y: " << position.y;
-            //cout << "Attraktor X: " << attraktoren[4].x << " - Attraktor Y: " << attraktoren[4].y;
-            //theChef[i]->update(timeCur-timeOld, position);
-
-        }
-        else
-        {
-            if( !( ofGetSeconds()%3 ) )  // Alle 3 Sekunden
-            {
-                // Zufälliger Position folgen.
-                position = ofPoint( ofRandom(1), ofRandom(1) ); // Bei schnellen Prozessoren pendeln die Kugeln sich in der Mitte aus. Hier müsste ein Timer eingebaut werden, damit die Chefs erstmal eine Zeit lang in eine Richtung fliegen.
-            }
-            else  // Ansonnsten
-            {
-                // Dem letzten Punkt folgen.
-                position = ofPoint(-1, -1);
-            }
-            theChef[i]->update(timeCur-timeOld, position);
-        }
-        //theChef[i]->update(timeCur-timeOld, attraktoren[i]/1000);
-        //cout << "attraktor X:" << ofToString(attraktoren[i].x) << "  Y: " << ofToString(attraktoren[i].y) ;
-        //cout << "attraktor X:" << ofToString(position.x) << "  Y: " << ofToString(position.y) ;
-
-    }
-    for (int i=0; i<nVerfolger; i++)
-    {
-        // Die Verfolger werden nacheinander den n Chefs zugeordnet.
-        theVerfolger[i]->update(timeCur-timeOld, theChef[i%nChef]->getPos());
-    }
-    timeOld = timeCur;
-
-
 //----------------------------------TRACKING------------------------------------------------------------
 
     kinect.update();
@@ -327,6 +262,71 @@ void testApp::update()
 
 #endif
 
+
+//-----------------------------------VÖGEL-----------------------------------------------------------
+
+    timeCur = ofGetElapsedTimeMillis();
+    ofPoint position = ofPoint(0,0);
+
+    for (int i=0; i<nChef; i++)
+    {
+        // Wenn ein Körper von der Kinect getrackt wird
+        if(contourFinder.blobs.size() > 0)
+        {
+            position.x = rightEnd[0].x/kinect.width;
+            position.y = rightEnd[0].y/kinect.height;
+
+            //attraktoren.push_back((ofPoint)rightEnd);
+            //attraktoren.push_back(leftEnd);
+            attraktoren[0] = rightEnd[0];
+            attraktoren[1] = leftEnd[0];
+            attraktoren[2] = rightEnd[1];
+            attraktoren[3] = leftEnd[1];
+
+            attraktoren[0].x /= kinect.width;
+            attraktoren[0].y /= kinect.height;
+
+            attraktoren[1].x /= kinect.width;
+            attraktoren[1].y /= kinect.height;
+
+            attraktoren[2].x /= kinect.width;
+            attraktoren[2].y /= kinect.height;
+
+            attraktoren[3].x /= kinect.width;
+            attraktoren[3].y /= kinect.height;
+
+            theChef[i]->update(timeCur-timeOld, attraktoren[i%4]);
+            //cout << "Position X: " << position.x << " - Position Y: " << position.y;
+            //cout << "Attraktor X: " << attraktoren[4].x << " - Attraktor Y: " << attraktoren[4].y;
+            //theChef[i]->update(timeCur-timeOld, position);
+
+        }
+        else
+        {
+            if( !( ofGetSeconds()%3 ) )  // Alle 3 Sekunden
+            {
+                // Zufälliger Position folgen.
+                position = ofPoint( ofRandom(1), ofRandom(1) ); // Bei schnellen Prozessoren pendeln die Kugeln sich in der Mitte aus. Hier müsste ein Timer eingebaut werden, damit die Chefs erstmal eine Zeit lang in eine Richtung fliegen.
+            }
+            else  // Ansonnsten
+            {
+                // Dem letzten Punkt folgen.
+                position = ofPoint(-1, -1);
+            }
+            theChef[i]->update(timeCur-timeOld, position);
+        }
+        //theChef[i]->update(timeCur-timeOld, attraktoren[i]/1000);
+        //cout << "attraktor X:" << ofToString(attraktoren[i].x) << "  Y: " << ofToString(attraktoren[i].y) ;
+        //cout << "attraktor X:" << ofToString(position.x) << "  Y: " << ofToString(position.y) ;
+
+    }
+    for (int i=0; i<nVerfolger; i++)
+    {
+        // Die Verfolger werden nacheinander den n Chefs zugeordnet.
+        theVerfolger[i]->update(timeCur-timeOld, theChef[i%nChef]->getPos());
+    }
+    timeOld = timeCur;
+
 }
 
 //--------------------------------------------------------------
@@ -340,7 +340,6 @@ void testApp::draw()
     ofSetColor(255, 255, 255);
 
     //grayImage.draw(0, 0, ofGetWidth()/2, ofGetHeight());
-    //kinect.draw(ofGetWidth()/2, 0, ofGetWidth()/2, ofGetWidth()/2*480/640);
 
     //Wenn Tracking aktiviert ist wird die Kontur gezeichnet
     if(tracking) {
@@ -363,11 +362,10 @@ void testApp::draw()
 
     ofSetColor(255, 255, 255);
 
-    //kinect2.draw(0, 0, ofGetWidth()/2, ofGetWidth()/2*480/640);
     //grayImage2.draw(ofGetWidth()/2, 0, ofGetWidth()/2, ofGetHeight());
 
     if (tracking) {
-       contourFinder2.draw(ofGetWidth()/2, 0, ofGetWidth()/2, ofGetHeight());
+       //contourFinder2.draw(ofGetWidth()/2, 0, ofGetWidth()/2, ofGetHeight());
 
        if(enddraw){
           if(contourFinder2.blobs.size() > 0)    //wenn ein Körper erkannt wird

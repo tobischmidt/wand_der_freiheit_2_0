@@ -15,6 +15,8 @@ class Verfolger : public Ball{
     private:
 
         ofPoint saved_move_to;
+        ofImage textur;
+        double angle;
 };
 
 #endif

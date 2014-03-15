@@ -7,6 +7,7 @@ Chef::Chef(ofPoint _pos, int _dim){
     dim = _dim;
     speed = ofRandom(0.0002,0.0003);
     saved_move_to = ofPoint(0,0);
+    textur.loadImage("vogelhell.png");
 }
 
 void Chef::update(float dt, ofPoint move_to){
@@ -22,6 +23,9 @@ void Chef::update(float dt, ofPoint move_to){
         dir = (saved_move_to - pos) * par1 + dir * par2;
         dir.normalize();
         pos += dir * speed * dt;
+
+        // errechnet aus dem Richtungsvektor den Drehwinkel für die Flugrichtung
+        angle = acos(dir.x / sqrt(pow(dir.x, 2) + pow(dir.y, 2))) * 180 / 3.14159265;
 
 }
 
@@ -43,6 +47,13 @@ void Chef::draw(){
 
     //Kreis in Farbe Rosa wird gezeichnet
     ofSetColor(ofColor(238,18,137));
-    ofCircle( drawPosX, drawPosY, dim);
+    //ofCircle( drawPosX, drawPosY, dim);
+
+    ofPushMatrix();
+    ofTranslate(drawPosX, drawPosY, 0);
+    ofRotateZ(angle + 90);
+    //textur.setAnchorPercent(35, 20);
+    textur.draw(0, 0, 70, 40);
+    ofPopMatrix();
 
     }
