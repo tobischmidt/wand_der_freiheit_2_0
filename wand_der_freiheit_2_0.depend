@@ -6386,7 +6386,7 @@
 1394027761 c:\users\tobias\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\ball.h
 	"ofMain.h"
 
-1394895636 source:c:\users\tobias\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\chef.cpp
+1394900735 source:c:\users\tobias\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\chef.cpp
 	"chef.h"
 
 1394900617 c:\users\tobias\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\chef.h
@@ -6410,7 +6410,7 @@
 	"ofxOpenCv.h"
 	"ofxKinect.h"
 
-1394891427 source:c:\users\tobias\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\testapp.cpp
+1395065306 source:c:\users\tobias\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\testapp.cpp
 	"testApp.h"
 	"chef.h"
 	"verfolger.h"

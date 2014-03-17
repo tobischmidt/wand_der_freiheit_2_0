@@ -1,7 +1,7 @@
 #include "testApp.h"
 #include "chef.h"
 #include "verfolger.h"
-#define nChef 4
+#define nChef 8
 
 //--------------------------------------------------------------
 
@@ -174,7 +174,7 @@ void testApp::update()
     {
         for (int j=0; j< 2; j++)
         {
-            for( int i=0; i<contourFinder.blobs[j].nPts; i+=3 )//Iteriert durch die Punkte der Kontur, nimmt nur jeden dritten wegen Laufzeit
+            for( int i=0; i<contourFinder.blobs[j].nPts; i+=10 )//Iteriert durch die Punkte der Kontur, nimmt nur jeden dritten wegen Laufzeit
             {
                 if(contourFinder.blobs[j].pts[i].x/2 < leftEnd[j].x)
                 {
@@ -241,24 +241,32 @@ void testApp::update()
         }
     }
 
-    /*leftEnd2.set(5000, 500);
-    rightEnd2.set(0, 500);
+    leftEnd[2].set(5000, 500);
+    rightEnd[2].set(0, 500);
+    leftEnd[3].set(5000, 500);
+    rightEnd[3].set(0, 500);
 
     if(contourFinder2.blobs.size() > 0)
     {
-        for( int i=0; i<contourFinder2.blobs[0].nPts; i+=3 )
+        for (int j=0; j< 2; j++)
         {
-            if(contourFinder2.blobs[0].pts[i].x/2 + ofGetWidth()/2 < leftEnd2.x)
+            for( int i=0; i<contourFinder2.blobs[j].nPts; i+=10 )//Iteriert durch die Punkte der Kontur, nimmt nur jeden dritten wegen Laufzeit
             {
-                leftEnd2.set(contourFinder2.blobs[0].pts[i].x/2 + ofGetWidth()/2, contourFinder2.blobs[0].pts[i].y);
-            }
+                if(contourFinder2.blobs[j].pts[i].x/2 < leftEnd[j+2].x)
+                {
+                    //Wenn aktueller Punkt weiter links als gespeicherter Punkt wird dieser neu gespeichert
+                    //x-Wert durch 2 geteilt, da nur auf linker Bidlschirmhälfte
+                    leftEnd[j+2].set(contourFinder2.blobs[j].pts[i].x/2, contourFinder2.blobs[j].pts[i].y);
+                }
 
-            if(contourFinder2.blobs[0].pts[i].x/2 + ofGetWidth()/2 > rightEnd2.x)
-            {
-                rightEnd2.set(contourFinder2.blobs[0].pts[i].x/2 + ofGetWidth()/2, contourFinder2.blobs[0].pts[i].y);
+                if(contourFinder2.blobs[j].pts[i].x/2 > rightEnd[j+2].x)
+                {
+                    //Wenn aktueller Punkt weiter rechts als gespeicherter Punkt wird dieser neu gespeichert
+                    rightEnd[j+2].set(contourFinder2.blobs[j].pts[i].x/2, contourFinder2.blobs[j].pts[i].y);
+                }
             }
         }
-    }*/
+    }
 
 #endif
 
@@ -273,15 +281,14 @@ void testApp::update()
         // Wenn ein Körper von der Kinect getrackt wird
         if(contourFinder.blobs.size() > 0)
         {
-            position.x = rightEnd[0].x/kinect.width;
-            position.y = rightEnd[0].y/kinect.height;
-
-            //attraktoren.push_back((ofPoint)rightEnd);
-            //attraktoren.push_back(leftEnd);
             attraktoren[0] = rightEnd[0];
             attraktoren[1] = leftEnd[0];
             attraktoren[2] = rightEnd[1];
             attraktoren[3] = leftEnd[1];
+            attraktoren[4] = rightEnd[2];
+            attraktoren[5] = leftEnd[2];
+            attraktoren[6] = rightEnd[3];
+            attraktoren[7] = leftEnd[3];
 
             attraktoren[0].x /= kinect.width;
             attraktoren[0].y /= kinect.height;
@@ -295,7 +302,20 @@ void testApp::update()
             attraktoren[3].x /= kinect.width;
             attraktoren[3].y /= kinect.height;
 
-            theChef[i]->update(timeCur-timeOld, attraktoren[i%4]);
+            attraktoren[4].x = attraktoren[4].x/kinect.width + 0.5;
+            attraktoren[4].y /= kinect.height;
+            cout << attraktoren[1].x << " / ";
+
+            attraktoren[5].x = attraktoren[5].x/kinect.width + 0.5;
+            attraktoren[5].y /= kinect.height;
+
+            attraktoren[6].x = attraktoren[6].x/kinect.width + 0.5;
+            attraktoren[6].y /= kinect.height;
+
+            attraktoren[7].x = attraktoren[7].x/kinect.width + 0.5;
+            attraktoren[7].y /= kinect.height;
+
+            theChef[i]->update(timeCur-timeOld, attraktoren[i]);
             //cout << "Position X: " << position.x << " - Position Y: " << position.y;
             //cout << "Attraktor X: " << attraktoren[4].x << " - Attraktor Y: " << attraktoren[4].y;
             //theChef[i]->update(timeCur-timeOld, position);
@@ -349,11 +369,12 @@ void testApp::draw()
        if(enddraw){
           if(contourFinder.blobs.size() > 0)    //wenn mindestens ein Körper erkannt wird
           {
+               //zeichnet 4 Punkte an äußersten Punkten der beiden erkannten Körper
               ofSetHexColor(0xFF0000);
-              ofCircle(leftEnd[0].x*ofGetWidth()/640, leftEnd[0].y*ofGetHeight()/480, 7);   //zeichnet 2 Punkte an äußersten Punkten des Körpers
-              ofCircle(rightEnd[0].x*ofGetWidth()/640, rightEnd[0].y*ofGetHeight()/480, 7);
-              ofCircle(leftEnd[1].x*ofGetWidth()/640, leftEnd[1].y*ofGetHeight()/480, 7);   //zeichnet 2 Punkte an äußersten Punkten des Körpers
-              ofCircle(rightEnd[1].x*ofGetWidth()/640, rightEnd[1].y*ofGetHeight()/480, 7);
+              ofCircle(attraktoren[0].x*ofGetWidth(), attraktoren[0].y*ofGetHeight(), 7);
+              ofCircle(attraktoren[1].x*ofGetWidth(), attraktoren[1].y*ofGetHeight(), 7);
+              ofCircle(attraktoren[2].x*ofGetWidth(), attraktoren[2].y*ofGetHeight(), 7);
+              ofCircle(attraktoren[3].x*ofGetWidth(), attraktoren[3].y*ofGetHeight(), 7);
           }
         }
     }
@@ -365,14 +386,17 @@ void testApp::draw()
     //grayImage2.draw(ofGetWidth()/2, 0, ofGetWidth()/2, ofGetHeight());
 
     if (tracking) {
-       //contourFinder2.draw(ofGetWidth()/2, 0, ofGetWidth()/2, ofGetHeight());
+       contourFinder2.draw(ofGetWidth()/2, 0, ofGetWidth()/2, ofGetHeight());
 
        if(enddraw){
           if(contourFinder2.blobs.size() > 0)    //wenn ein Körper erkannt wird
           {
+              //zeichnet 4 Punkte an äußersten Punkten der beiden erkannten Körper
               ofSetHexColor(0xFF0000);
-//              ofCircle(leftEnd2.x*ofGetWidth()/640, leftEnd2.y*ofGetHeight()/480, 7);   //zeichnet 2 Punkte an äußersten Punkten des Körpers
-  //            ofCircle(rightEnd2.x*ofGetWidth()/640, rightEnd2.y*ofGetHeight()/480, 7);
+              ofCircle(attraktoren[4].x*ofGetWidth(), attraktoren[4].y*ofGetHeight(), 7);
+              ofCircle(attraktoren[5].x*ofGetWidth(), attraktoren[5].y*ofGetHeight(), 7);
+              ofCircle(attraktoren[6].x*ofGetWidth(), attraktoren[6].y*ofGetHeight(), 7);
+              ofCircle(attraktoren[7].x*ofGetWidth(), attraktoren[7].y*ofGetHeight(), 7);
           }
         }
     }
