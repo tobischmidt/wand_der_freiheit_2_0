@@ -8,6 +8,7 @@ Verfolger::Verfolger(ofPoint _pos, int _dim){
     speed = ofRandom(0.0002,0.0003);
     saved_move_to = ofPoint(0,0);
     textur.loadImage("vogelhell.png");
+    rangeWidth = ofGetWidth();
 }
 
 void Verfolger::update(float dt, ofPoint move_to){
@@ -26,7 +27,26 @@ void Verfolger::update(float dt, ofPoint move_to){
         pos += dir * speed * dt;
 
         // errechnet aus dem Richtungsvektor den Drehwinkel für die Flugrichtung
-        angle = acos(dir.x / sqrt(pow(dir.x, 2) + pow(dir.y, 2))) * 180 / 3.14159265;
+        if(dir.x >= 0 && dir.y >= 0)
+        {
+            flightAngle = acos(dir.y / sqrt(pow(dir.x, 2) + pow(dir.y, 2))) * 180 / 3.14159265;
+            cout  << " flightAngle 1 " << flightAngle << "\n";
+        }
+        else if(dir.x >= 0 && dir.y < 0)
+        {
+            flightAngle = (acos(dir.y / sqrt(pow(dir.x, 2) + pow(dir.y, 2))) * 180 / 3.14159265);
+            cout  << " flightAngle 2 " << flightAngle << "\n";
+        }
+        else if(dir.x < 0 && dir.y < 0)
+        {
+            flightAngle = 360 - (acos(dir.y / sqrt(pow(dir.x, 2) + pow(dir.y, 2))) * 180 / 3.14159265);
+            cout  << " flightAngle 3 " << flightAngle << "\n";
+        }
+        else if(dir.x < 0 && dir.y >= 0)
+        {
+            flightAngle = 360 - (acos(dir.y / sqrt(pow(dir.x, 2) + pow(dir.y, 2))) * 180 / 3.14159265);
+            cout  << " flightAngle 4 " << flightAngle << "\n";
+        }
 }
 
 void Verfolger::draw(){
@@ -35,7 +55,7 @@ void Verfolger::draw(){
     int drawPosY = pos.y*ofGetHeight();
 
     // Bälle sollen den Bildschirm nicht verlassen
-    if ((drawPosX > ofGetWidth() - dim)||(drawPosX < dim))
+    if ((drawPosX > rangeWidth - dim)||(drawPosX < dim))
     {
         dir.x *= -1;
     }
@@ -52,7 +72,7 @@ void Verfolger::draw(){
 
     ofPushMatrix();
     ofTranslate(drawPosX, drawPosY, 0);
-    ofRotateZ(angle + 90);
+    ofRotateZ(flightAngle);
     //textur.setAnchorPercent(35, 20);
     textur.draw(0, 0, 70, 40);
     ofPopMatrix();

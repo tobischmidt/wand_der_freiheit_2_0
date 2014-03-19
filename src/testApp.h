@@ -67,6 +67,17 @@ class testApp : public ofBaseApp{
 	    ofPoint leftEnd[4];
 	    ofPoint rightEnd[4];
 
+	    float startX;
+	    float startY;
+
+	    float adjustmentX;
+	    float adjustmentY;
+	    float adjustment2X;
+	    float adjustment2Y;
+
+	    float contourScaleWidth;
+	    float contourScaleHeight;
+
     private:
 
         float timeCur;

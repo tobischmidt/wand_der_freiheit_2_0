@@ -17,7 +17,8 @@ class Chef : public Ball{
 
         ofPoint saved_move_to;
         ofImage textur;
-        double angle;
+        float flightAngle;
+        float rangeWidth;
 };
 
 

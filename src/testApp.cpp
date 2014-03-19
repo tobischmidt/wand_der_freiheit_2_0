@@ -13,14 +13,13 @@ void testApp::setup()
 //---------------------------VÖGEL------------------------------------------
 
     nVerfolger = 1;
-//    nChef = 1;
 
     ofSetWindowTitle("Wand der Freiheit");
 
     theChef = new Chef*[nChef];
     theVerfolger = new Verfolger*[nVerfolger];
 
-    //nChef = 4 Chefs werden vordefiniert
+    //nChef Chefs werden vordefiniert
     for (int i = 0; i < nChef; i++)
     {
 
@@ -32,7 +31,7 @@ void testApp::setup()
     }
 
 
-    //nVerfolger = 1 Verfolger wird vordefiniert
+    //nVerfolger Verfolger wird vordefiniert
     for (int i = 0; i < nVerfolger; i++)
     {
 
@@ -46,10 +45,8 @@ void testApp::setup()
     timeOld = ofGetElapsedTimeMillis();
     timeCur = timeOld;
 
-    /*attraktoren.push_back(ofPoint(200, 200));
-    attraktoren.push_back(ofPoint(200, 600));
-    attraktoren.push_back(ofPoint(1000 , 200));
-    attraktoren.push_back(ofPoint(1000 , 600));*/
+    startX = 0.99;
+    startY = 0.5;
 
 
 //-------------------------TRACKING-----------------------------------------------
@@ -104,6 +101,16 @@ void testApp::setup()
     kinect2.setCameraTiltAngle(angle);
 #endif
 
+    adjustmentX = 0;
+    adjustmentY = 0;
+    adjustment2X = ofGetWidth()/2;
+    adjustment2Y = 0;
+
+    //contourScaleX = ofGetWidth()/2;
+    //contourScaleY = ofGetHeight();
+    contourScaleWidth = 1500;
+    contourScaleHeight = 500;
+
 }
 
 //--------------------------------------------------------------
@@ -156,7 +163,7 @@ void testApp::update()
         // update the cv images
         grayImage.flagImageChanged();
 
-        // Wenn Trackign aktiviert wird
+        // Wenn Tracking aktiviert wird
         // find contours which are between the size of 10 pixels and 1/2 the w*h pixels.
         // also, find holes is set to true so we will get interior contours as well....
         if (tracking) {
@@ -290,35 +297,31 @@ void testApp::update()
             attraktoren[6] = rightEnd[3];
             attraktoren[7] = leftEnd[3];
 
-            attraktoren[0].x /= kinect.width;
-            attraktoren[0].y /= kinect.height;
+            attraktoren[0].x = (attraktoren[0].x/kinect.width + adjustmentX/ofGetWidth()) * contourScaleWidth/ofGetWidth();
+            attraktoren[0].y = (attraktoren[0].y/kinect.height + adjustmentY/ofGetHeight()) * contourScaleHeight/ofGetHeight();
 
-            attraktoren[1].x /= kinect.width;
-            attraktoren[1].y /= kinect.height;
+            attraktoren[1].x = (attraktoren[1].x/kinect.width + adjustmentX/ofGetWidth()) * contourScaleWidth/ofGetWidth();
+            attraktoren[1].y = (attraktoren[1].y/kinect.height + adjustmentY/ofGetHeight()) * contourScaleHeight/ofGetHeight();
 
-            attraktoren[2].x /= kinect.width;
-            attraktoren[2].y /= kinect.height;
+            attraktoren[2].x = (attraktoren[2].x/kinect.width + adjustmentX/ofGetWidth()) * contourScaleWidth/ofGetWidth();
+            attraktoren[2].y = (attraktoren[2].y/kinect.height + adjustmentY/ofGetHeight()) * contourScaleHeight/ofGetHeight();
 
-            attraktoren[3].x /= kinect.width;
-            attraktoren[3].y /= kinect.height;
+            attraktoren[3].x = (attraktoren[3].x/kinect.width + adjustmentX/ofGetWidth()) * contourScaleWidth/ofGetWidth();
+            attraktoren[3].y = (attraktoren[3].y/kinect.height + adjustmentY/ofGetHeight()) * contourScaleHeight/ofGetHeight();
 
-            attraktoren[4].x = attraktoren[4].x/kinect.width + 0.5;
-            attraktoren[4].y /= kinect.height;
-            cout << attraktoren[1].x << " / ";
+            attraktoren[4].x = (attraktoren[4].x/kinect.width + adjustment2X/ofGetWidth()) * contourScaleWidth/ofGetWidth();
+            attraktoren[4].y = (attraktoren[4].y/kinect.height + adjustment2Y/ofGetHeight()) * contourScaleHeight/ofGetHeight();
 
-            attraktoren[5].x = attraktoren[5].x/kinect.width + 0.5;
-            attraktoren[5].y /= kinect.height;
+            attraktoren[5].x = (attraktoren[5].x/kinect.width + adjustment2X/ofGetWidth()) * contourScaleWidth/ofGetWidth();
+            attraktoren[5].y = (attraktoren[5].y/kinect.height + adjustment2Y/ofGetHeight()) * contourScaleHeight/ofGetHeight();
 
-            attraktoren[6].x = attraktoren[6].x/kinect.width + 0.5;
-            attraktoren[6].y /= kinect.height;
+            attraktoren[6].x = (attraktoren[6].x/kinect.width + adjustment2X/ofGetWidth()) * contourScaleWidth/ofGetWidth();
+            attraktoren[6].y = (attraktoren[6].y/kinect.height + adjustment2Y/ofGetHeight()) * contourScaleHeight/ofGetHeight();
 
-            attraktoren[7].x = attraktoren[7].x/kinect.width + 0.5;
-            attraktoren[7].y /= kinect.height;
+            attraktoren[7].x = (attraktoren[7].x/kinect.width + adjustment2X/ofGetWidth()) * contourScaleWidth/ofGetWidth();
+            attraktoren[7].y = (attraktoren[7].y/kinect.height + adjustment2Y/ofGetHeight()) * contourScaleHeight/ofGetHeight();
 
             theChef[i]->update(timeCur-timeOld, attraktoren[i]);
-            //cout << "Position X: " << position.x << " - Position Y: " << position.y;
-            //cout << "Attraktor X: " << attraktoren[4].x << " - Attraktor Y: " << attraktoren[4].y;
-            //theChef[i]->update(timeCur-timeOld, position);
 
         }
         else
@@ -357,13 +360,13 @@ void testApp::draw()
 //----------------------------------TRACKING----------------------------------------------
 
 
-    ofSetColor(255, 255, 255);
+    ofSetColor(122, 122, 122);
 
     //grayImage.draw(0, 0, ofGetWidth()/2, ofGetHeight());
 
     //Wenn Tracking aktiviert ist wird die Kontur gezeichnet
     if(tracking) {
-       contourFinder.draw(0, 0, ofGetWidth()/2, ofGetHeight());
+       contourFinder.draw(adjustmentX, adjustmentY, contourScaleWidth, contourScaleHeight);
 
        //Wenn enddraw = true werden die Attraktoren als rote Punkte dargestellt
        if(enddraw){
@@ -381,12 +384,14 @@ void testApp::draw()
 
 #ifdef USE_TWO_KINECTS
 
-    ofSetColor(255, 255, 255);
+    ofSetHexColor(0xFFFFFF);
 
     //grayImage2.draw(ofGetWidth()/2, 0, ofGetWidth()/2, ofGetHeight());
 
     if (tracking) {
-       contourFinder2.draw(ofGetWidth()/2, 0, ofGetWidth()/2, ofGetHeight());
+       contourFinder2.setAnchorPoint(-adjustment2X, -adjustment2Y);
+       contourFinder2.draw(0, 0, contourScaleWidth, contourScaleHeight);
+       //cout << adjustment2X << " - ";
 
        if(enddraw){
           if(contourFinder2.blobs.size() > 0)    //wenn ein Körper erkannt wird
@@ -463,6 +468,7 @@ void testApp::exit()
     kinect.close();
 
 #ifdef USE_TWO_KINECTS
+    kinect2.setCameraTiltAngle(0);
     kinect2.close();
 #endif
 }
@@ -500,16 +506,10 @@ void testApp::keyPressed(int key)
 
     case 'v':
 
-        //neuer verfolger wird an zufälliger Position erstellt
-        theVerfolger[nVerfolger] = new Verfolger(ofPoint(0.99, 0.6), 10);
+        //neuer verfolger wird erstellt
+        theVerfolger[nVerfolger] = new Verfolger(ofPoint(startX, startY), 10);
         nVerfolger++;
         break;
-//
-//        case 'c':
-//
-//            theChef[nChef] = new Chef(ofPoint(ofRandom(1), ofRandom(1)), 20);
-//            nChef++;
-//            break;
 
 
 //-----------------------------TRACKING-------------------------------------------
