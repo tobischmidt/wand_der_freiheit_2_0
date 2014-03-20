@@ -10,6 +10,8 @@ Chef::Chef(ofPoint _pos, int _dim){
     textur.loadImage("vogelhell.png");
     rangeWidth = ofGetWidth();
     flightAngle = 0;
+    texturWidth = 70;
+    texturHeight = 40;
 }
 
 void Chef::update(float dt, ofPoint move_to){
@@ -55,7 +57,7 @@ void Chef::draw(){
     ofTranslate(drawPosX, drawPosY, 0);
     ofRotateZ(flightAngle);
     //textur.setAnchorPercent(35, 20);
-    textur.draw(0, 0, 70, 40);
+    textur.draw(0, 0, texturWidth, texturHeight);
     ofPopMatrix();
 
     }

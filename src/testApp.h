@@ -75,8 +75,8 @@ class testApp : public ofBaseApp{
 	    float adjustment2X;
 	    float adjustment2Y;
 
-	    float contourScaleWidth;
-	    float contourScaleHeight;
+	    int contourScaleWidth;
+	    int contourScaleHeight;
 
     private:
 

@@ -9,6 +9,8 @@ Verfolger::Verfolger(ofPoint _pos, int _dim){
     saved_move_to = ofPoint(0,0);
     textur.loadImage("vogelhell.png");
     rangeWidth = ofGetWidth();
+    texturWidth = 70;
+    texturHeight = 40;
 }
 
 void Verfolger::update(float dt, ofPoint move_to){
@@ -74,6 +76,6 @@ void Verfolger::draw(){
     ofTranslate(drawPosX, drawPosY, 0);
     ofRotateZ(flightAngle);
     //textur.setAnchorPercent(35, 20);
-    textur.draw(0, 0, 70, 40);
+    textur.draw(0, 0, texturWidth, texturHeight);
     ofPopMatrix();
 }

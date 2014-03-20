@@ -88,7 +88,7 @@ void testApp::setup()
     ofSetFrameRate(60);
 
     // set the tilt to 15 on startup
-    angle = 15;
+    angle = 0;
     kinect.setCameraTiltAngle(angle);
 
 #ifdef USE_TWO_KINECTS
@@ -277,6 +277,16 @@ void testApp::update()
 
 #endif
 
+    /*if(OSC Signal von TrackingButton=einschalten kommt)
+    {
+        tracking = true;
+    }
+
+    if(OSC Signal von TrackingButton=ausschalten kommt)
+    {
+        tracking = false;
+    }*/
+
 
 //-----------------------------------VÖGEL-----------------------------------------------------------
 
@@ -349,6 +359,12 @@ void testApp::update()
         theVerfolger[i]->update(timeCur-timeOld, theChef[i%nChef]->getPos());
     }
     timeOld = timeCur;
+
+    /*if(OSC Signal von Vogelbutton kommt)
+    {
+        theVerfolger[nVerfolger] = new Verfolger(ofPoint(startX, startY), 10);
+        nVerfolger++;
+    }*/
 
 }
 
