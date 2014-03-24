@@ -49,23 +49,24 @@ void Verfolger::update(float dt, ofPoint move_to, float _speed/*NEW*/,float _tex
         if(dir.x >= 0 && dir.y >= 0)
         {
             flightAngle = acos(dir.y / sqrt(pow(dir.x, 2) + pow(dir.y, 2))) * 180 / 3.14159265;
-            //cout  << " flightAngle 1 " << flightAngle << "\n";
         }
+
         else if(dir.x >= 0 && dir.y < 0)
         {
-            flightAngle = (acos(dir.y / sqrt(pow(dir.x, 2) + pow(dir.y, 2))) * 180 / 3.14159265);
-            //cout  << " flightAngle 2 " << flightAngle << "\n";
+            flightAngle = 180 - (acos(-dir.y / sqrt(pow(dir.x, 2) + pow(dir.y, 2))) * 180 / 3.14159265);
         }
+
         else if(dir.x < 0 && dir.y < 0)
         {
-            flightAngle = 360 - (acos(dir.y / sqrt(pow(dir.x, 2) + pow(dir.y, 2))) * 180 / 3.14159265);
-            //cout  << " flightAngle 3 " << flightAngle << "\n";
+            flightAngle = 180 + (acos(-dir.y / sqrt(pow(dir.x, 2) + pow(dir.y, 2))) * 180 / 3.14159265);
         }
+
         else if(dir.x < 0 && dir.y >= 0)
         {
             flightAngle = 360 - (acos(dir.y / sqrt(pow(dir.x, 2) + pow(dir.y, 2))) * 180 / 3.14159265);
-            //cout  << " flightAngle 4 " << flightAngle << "\n";
         }
+
+        //cout << flightAngle << "\n";
 }
 
 void Verfolger::draw(){
@@ -92,7 +93,7 @@ void Verfolger::draw(){
     ofPushMatrix();
     ofTranslate(drawPosX, drawPosY, 0);
     ofRotateZ(flightAngle);
-    //textur.setAnchorPercent(35, 20);
+    textur.setAnchorPoint(35, 0);
     textur.draw(0, 0, texturWidth, texturHeight);
     ofPopMatrix();
 }

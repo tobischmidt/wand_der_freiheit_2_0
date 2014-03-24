@@ -48,7 +48,27 @@ void Chef::update(float dt, ofPoint move_to, float _speed/*NEW*/,float _texturWi
         pos += dir * speed * dt;
 
         // errechnet aus dem Richtungsvektor den Drehwinkel für die Flugrichtung
-        flightAngle = acos(dir.x / sqrt(pow(dir.x, 2) + pow(dir.y, 2))) * 180 / 3.14159265;
+        if(dir.x >= 0 && dir.y >= 0)
+        {
+            flightAngle = acos(dir.y / sqrt(pow(dir.x, 2) + pow(dir.y, 2))) * 180 / 3.14159265;
+        }
+
+        else if(dir.x >= 0 && dir.y < 0)
+        {
+            flightAngle = 180 - (acos(-dir.y / sqrt(pow(dir.x, 2) + pow(dir.y, 2))) * 180 / 3.14159265);
+        }
+
+        else if(dir.x < 0 && dir.y < 0)
+        {
+            flightAngle = 180 + (acos(-dir.y / sqrt(pow(dir.x, 2) + pow(dir.y, 2))) * 180 / 3.14159265);
+        }
+
+        else if(dir.x < 0 && dir.y >= 0)
+        {
+            flightAngle = 360 - (acos(dir.y / sqrt(pow(dir.x, 2) + pow(dir.y, 2))) * 180 / 3.14159265);
+        }
+
+        //cout << flightAngle << "\n";
 
 }
 
@@ -75,7 +95,7 @@ void Chef::draw(){
     ofPushMatrix();
     ofTranslate(drawPosX, drawPosY, 0);
     ofRotateZ(flightAngle);
-    //textur.setAnchorPercent(35, 20);
+    textur.setAnchorPoint(35, 0);
     textur.draw(0, 0, texturWidth, texturHeight);
     ofPopMatrix();
 

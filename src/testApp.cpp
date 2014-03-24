@@ -1,7 +1,6 @@
 #include "testApp.h"
 #include "chef.h"
 #include "verfolger.h"
-#define nChef 8
 
 //--------------------------------------------------------------
 
@@ -15,6 +14,8 @@ void testApp::setup()
     vogelTextur.loadImage("vogelhell.png");
 
     nVerfolger = 1;
+
+    nChef = 8;
 
     ofSetWindowTitle("Wand der Freiheit");
 
@@ -514,6 +515,8 @@ void testApp::draw()
 
     ofDrawBitmapString(reportStream.str(), 20, 652);*/
 
+    ofRect()
+
 }
 
 
@@ -565,6 +568,13 @@ void testApp::keyPressed(int key)
         //neuer verfolger wird erstellt
         theVerfolger[nVerfolger] = new Verfolger(ofPoint(osc.getSettings()[3]/*startX, startY*/), vogelTextur, 0.0001/*NEW*/, 70/*NEW*/, 40/*NEW*/, ofGetWidth()/*rangeWidth*/);
         nVerfolger++;
+        break;
+
+    case 'b':
+
+        //neuer chef wird erstellt
+        theChef[nChef] = new Chef(ofPoint(osc.getSettings()[3]/*startX, startY*/), vogelTextur, 0.0001/*NEW*/, 70/*NEW*/, 40/*NEW*/, ofGetWidth()/*rangeWidth*/);
+        nChef++;
         break;
 
 
