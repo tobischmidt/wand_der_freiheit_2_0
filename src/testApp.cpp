@@ -12,6 +12,8 @@ void testApp::setup()
 {
 //---------------------------VÖGEL------------------------------------------
 
+    vogelTextur.loadImage("vogelhell.png");
+
     nVerfolger = 1;
 
     ofSetWindowTitle("Wand der Freiheit");
@@ -23,11 +25,14 @@ void testApp::setup()
     for (int i = 0; i < nChef; i++)
     {
 
-        int dim = 10;
+ //       int dim = 10;
         ofPoint pos = ofPoint(ofRandom(1), ofRandom(1));
+        float speed = ofRandom(0.0001,0.0003);/*NEW*/
+        float texturWidth =  70; /*NEW*/
+        float texturHeight =  40; /*NEW*/
 
         //erstellt ein Objekt mit den Koordinaten und dim
-        theChef[i] = new Chef(pos, dim);
+        theChef[i] = new Chef(pos, vogelTextur, speed/*NEW*/, texturWidth/*NEW*/, texturHeight/*NEW*/, rangeWidth/*new*/);
     }
 
 
@@ -35,25 +40,31 @@ void testApp::setup()
     for (int i = 0; i < nVerfolger; i++)
     {
 
-        int dim = 10;
+  //      int dim = 10;
         ofPoint pos = ofPoint(ofRandom(1), ofRandom(1));
+        float speed = ofRandom(0.0001,0.0003);/*NEW*/
+        float createVerfolger = 0; /*NEW*/
+        float texturWidth =  70; /*NEW*/
+        float texturHeight =  40; /*NEW*/
+        float startX = 0.99;    /*NEW*/
+        float startY = 0.5; /*NEW*/
 
         // erstellt ein Objekt mit den Koordinaten und dim
-        theVerfolger[i] = new Verfolger(pos, dim);
+        theVerfolger[i] = new Verfolger(pos, vogelTextur, speed/*NEW*/, texturWidth/*NEW*/, texturHeight/*NEW*/, rangeWidth/*new*/);
     }
 
     timeOld = ofGetElapsedTimeMillis();
     timeCur = timeOld;
 
-    startX = 0.99;
-    startY = 0.5;
+//    startX = 0.99;
+//    startY = 0.5;
 
 
 //-------------------------TRACKING-----------------------------------------------
 
 
     //Tracking & Zeichnen der Endpunkte zunächst ausgeschalten
-    tracking = false;
+    tracking = 0;
     enddraw = false;
 
     ofSetLogLevel(OF_LOG_VERBOSE);
@@ -88,8 +99,11 @@ void testApp::setup()
     ofSetFrameRate(60);
 
     // set the tilt to 15 on startup
-    angle = 0;
+ //   angle = 15;
+    angle = osc.settings[11];
     kinect.setCameraTiltAngle(angle);
+
+    osc.setup(); /*NEW*/
 
 #ifdef USE_TWO_KINECTS
     //kinect2.init();
@@ -101,15 +115,22 @@ void testApp::setup()
     kinect2.setCameraTiltAngle(angle);
 #endif
 
-    adjustmentX = 0;
-    adjustmentY = 0;
-    adjustment2X = ofGetWidth()/2;
-    adjustment2Y = 0;
+//    adjustmentX = 0;
+//    adjustmentY = 0;
+//    adjustment2X = ofGetWidth()/2;
+//    adjustment2Y = 0;
+    adjustmentX = osc.settings[7]; /*NEW*/
+    adjustmentY = 0;        /*NEW*/
+    adjustment2X = osc.settings[18] /2; /*NEW*/
+    adjustment2Y = 0;   /*NEW*/
+
 
     //contourScaleX = ofGetWidth()/2;
     //contourScaleY = ofGetHeight();
-    contourScaleWidth = 1500;
-    contourScaleHeight = 500;
+    contourScaleWidth = osc.settings[6];    /*NEW*/
+    contourScaleHeight = osc.settings[17];  /*NEW*/
+//    contourScaleWidth = ofGetWidth();     /*old*/
+//    contourScaleHeight = ofGetHeight();   /*old*/
 
 }
 
@@ -119,6 +140,30 @@ void testApp::update()
 {
     //Hintergrundfarbe schwarz
     ofBackground(0);
+
+    osc.listen();/*NEW*/
+
+    if(osc.settings[8] == 1){
+        tracking = 1;
+    }
+    else{
+        tracking = 0;
+    }
+    cout << ofToString(tracking) << "\n" ;
+
+
+    nearThreshold = osc.settings[9];
+    farThreshold = osc.settings[10];
+    angle = osc.settings[11];
+    cout << "angle: " << angle << "\n" ;
+
+    adjustmentX = osc.settings[7]; /*NEW*/
+    adjustmentY = 0;        /*NEW*/
+    adjustment2X = osc.settings[18] /2; /*NEW*/
+    adjustment2Y = 0;   /*NEW*/
+
+    contourScaleWidth = osc.settings[6];    /*NEW*/
+    contourScaleHeight = osc.settings[17];  /*NEW*/
 
 //----------------------------------TRACKING------------------------------------------------------------
 
@@ -149,12 +194,10 @@ void testApp::update()
             int numPixels = grayImage.getWidth() * grayImage.getHeight();
             for(int i = 0; i < numPixels; i++)
             {
-                if(pix[i] < nearThreshold && pix[i] > farThreshold)
-                {
+                if(pix[i] < nearThreshold && pix[i] > farThreshold){
                     pix[i] = 255;
                 }
-                else
-                {
+                else{
                     pix[i] = 0;
                 }
             }
@@ -166,7 +209,7 @@ void testApp::update()
         // Wenn Tracking aktiviert wird
         // find contours which are between the size of 10 pixels and 1/2 the w*h pixels.
         // also, find holes is set to true so we will get interior contours as well....
-        if (tracking) {
+        if (tracking == 1) {
            contourFinder.findContours(grayImage, 10, (kinect.width*kinect.height)/2, 2, false);
         }
     }
@@ -243,7 +286,7 @@ void testApp::update()
 
         // find contours which are between the size of 10 pixels and 1/2 the w*h pixels.
         // also, find holes is set to true so we will get interior contours as well....
-        if (tracking) {
+        if (tracking == 1) {
            contourFinder2.findContours(grayImage2, 10, (kinect2.width*kinect2.height)/2, 2, false);
         }
     }
@@ -276,16 +319,6 @@ void testApp::update()
     }
 
 #endif
-
-    /*if(OSC Signal von TrackingButton=einschalten kommt)
-    {
-        tracking = true;
-    }
-
-    if(OSC Signal von TrackingButton=ausschalten kommt)
-    {
-        tracking = false;
-    }*/
 
 
 //-----------------------------------VÖGEL-----------------------------------------------------------
@@ -331,7 +364,7 @@ void testApp::update()
             attraktoren[7].x = (attraktoren[7].x/kinect.width + adjustment2X/ofGetWidth()) * contourScaleWidth/ofGetWidth();
             attraktoren[7].y = (attraktoren[7].y/kinect.height + adjustment2Y/ofGetHeight()) * contourScaleHeight/ofGetHeight();
 
-            theChef[i]->update(timeCur-timeOld, attraktoren[i]);
+            theChef[i]->update(timeCur-timeOld, attraktoren[i], osc.getSettings()[0], osc.getSettings()[1], osc.getSettings()[16], osc.getSettings()[2], osc.getSettings()[12]);
 
         }
         else
@@ -346,7 +379,7 @@ void testApp::update()
                 // Dem letzten Punkt folgen.
                 position = ofPoint(-1, -1);
             }
-            theChef[i]->update(timeCur-timeOld, position);
+            theChef[i]->update(timeCur-timeOld, position, osc.getSettings()[0], osc.getSettings()[1], osc.getSettings()[16], osc.getSettings()[2], osc.getSettings()[12]);
         }
         //theChef[i]->update(timeCur-timeOld, attraktoren[i]/1000);
         //cout << "attraktor X:" << ofToString(attraktoren[i].x) << "  Y: " << ofToString(attraktoren[i].y) ;
@@ -356,15 +389,22 @@ void testApp::update()
     for (int i=0; i<nVerfolger; i++)
     {
         // Die Verfolger werden nacheinander den n Chefs zugeordnet.
-        theVerfolger[i]->update(timeCur-timeOld, theChef[i%nChef]->getPos());
+        theVerfolger[i]->update(timeCur-timeOld, theChef[i%nChef]->getPos(), osc.getSettings()[0], osc.getSettings()[1], osc.getSettings()[16], osc.getSettings()[2], osc.getSettings()[12]);
     }
     timeOld = timeCur;
 
-    /*if(OSC Signal von Vogelbutton kommt)
+
+    createVerfolger = osc.settings[4];
+
+    //cout << createVerfolger << "\n" ;
+
+    if(createVerfolger == 1)
     {
-        theVerfolger[nVerfolger] = new Verfolger(ofPoint(startX, startY), 10);
+        theVerfolger[nVerfolger] = new Verfolger(ofPoint(osc.getSettings()[3]/*startX,startY*/), vogelTextur, 0.0001/*speed*/, 70/*texturWidth*/, 40/*texturHeight*/, ofGetWidth()/*rangeWidth*/);
         nVerfolger++;
-    }*/
+
+        createVerfolger = 0;
+    }
 
 }
 
@@ -376,12 +416,12 @@ void testApp::draw()
 //----------------------------------TRACKING----------------------------------------------
 
 
-    ofSetColor(122, 122, 122);
+    ofSetColor(255, 255, 255);
 
-    //grayImage.draw(0, 0, ofGetWidth()/2, ofGetHeight());
+    grayImage.draw(0, 0, ofGetWidth()/2, ofGetHeight());
 
     //Wenn Tracking aktiviert ist wird die Kontur gezeichnet
-    if(tracking) {
+    if(tracking == 1) {
        contourFinder.draw(adjustmentX, adjustmentY, contourScaleWidth, contourScaleHeight);
 
        //Wenn enddraw = true werden die Attraktoren als rote Punkte dargestellt
@@ -389,7 +429,7 @@ void testApp::draw()
           if(contourFinder.blobs.size() > 0)    //wenn mindestens ein Körper erkannt wird
           {
                //zeichnet 4 Punkte an äußersten Punkten der beiden erkannten Körper
-              ofSetHexColor(0xFF0000);
+              //ofSetHexColor(0xFF0000);
               ofCircle(attraktoren[0].x*ofGetWidth(), attraktoren[0].y*ofGetHeight(), 7);
               ofCircle(attraktoren[1].x*ofGetWidth(), attraktoren[1].y*ofGetHeight(), 7);
               ofCircle(attraktoren[2].x*ofGetWidth(), attraktoren[2].y*ofGetHeight(), 7);
@@ -402,9 +442,9 @@ void testApp::draw()
 
     ofSetHexColor(0xFFFFFF);
 
-    //grayImage2.draw(ofGetWidth()/2, 0, ofGetWidth()/2, ofGetHeight());
+    grayImage2.draw(ofGetWidth()/2, 0, ofGetWidth()/2, ofGetHeight());
 
-    if (tracking) {
+    if (tracking == 1) {
        contourFinder2.setAnchorPoint(-adjustment2X, -adjustment2Y);
        contourFinder2.draw(0, 0, contourScaleWidth, contourScaleHeight);
        //cout << adjustment2X << " - ";
@@ -413,7 +453,7 @@ void testApp::draw()
           if(contourFinder2.blobs.size() > 0)    //wenn ein Körper erkannt wird
           {
               //zeichnet 4 Punkte an äußersten Punkten der beiden erkannten Körper
-              ofSetHexColor(0xFF0000);
+              //ofSetHexColor(0xFF0000);
               ofCircle(attraktoren[4].x*ofGetWidth(), attraktoren[4].y*ofGetHeight(), 7);
               ofCircle(attraktoren[5].x*ofGetWidth(), attraktoren[5].y*ofGetHeight(), 7);
               ofCircle(attraktoren[6].x*ofGetWidth(), attraktoren[6].y*ofGetHeight(), 7);
@@ -523,7 +563,7 @@ void testApp::keyPressed(int key)
     case 'v':
 
         //neuer verfolger wird erstellt
-        theVerfolger[nVerfolger] = new Verfolger(ofPoint(startX, startY), 10);
+        theVerfolger[nVerfolger] = new Verfolger(ofPoint(osc.getSettings()[3]/*startX, startY*/), vogelTextur, 0.0001/*NEW*/, 70/*NEW*/, 40/*NEW*/, ofGetWidth()/*rangeWidth*/);
         nVerfolger++;
         break;
 

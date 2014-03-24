@@ -10,6 +10,10 @@
 #include "ofxOpenCv.h"
 #include "ofxKinect.h"
 
+#include "oscHelper.h" /*NEW*/
+#define PORT 8000   /*NEW*/
+#define NUM_MSG_STRINGS 20  /*NEW*/
+
 #define USE_TWO_KINECTS
 
 class testApp : public ofBaseApp{
@@ -33,7 +37,7 @@ class testApp : public ofBaseApp{
 
 //------------------------------TRACKING----------------------------------
 
-	    bool tracking;
+	    float tracking;
 	    bool enddraw;
 
 	    ofxKinect kinect;
@@ -57,10 +61,9 @@ class testApp : public ofBaseApp{
 
 	    bool bThreshWithOpenCV;
 
-	    int nearThreshold;
-	    int farThreshold;
-
-	    int angle;
+	    float nearThreshold;
+	    float farThreshold;
+	    float angle;
 
 	    ofPoint attraktoren[8];
 
@@ -75,8 +78,14 @@ class testApp : public ofBaseApp{
 	    float adjustment2X;
 	    float adjustment2Y;
 
-	    int contourScaleWidth;
-	    int contourScaleHeight;
+	    float contourScaleWidth;
+	    float contourScaleHeight;
+
+        int current_msg_string; /*NEW*/
+		string msg_strings[NUM_MSG_STRINGS];    /*NEW*/
+		float timers[NUM_MSG_STRINGS];  /*NEW*/
+
+		ofImage vogelTextur;
 
     private:
 
@@ -84,6 +93,14 @@ class testApp : public ofBaseApp{
         float timeOld;
         int nVerfolger;
         int nChef;
+        float createVerfolger; /*NEW*/
+        float texturWidth; /*NEW*/
+        float texturHeight; /*NEW*/
+        float speed; /*NEW*/
+        float par1; /*NEW*/
+        float rangeWidth; /*new*/
+
+        oscHelper osc; /*NEW*/
 
 };
 

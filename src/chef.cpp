@@ -1,22 +1,41 @@
 #include "chef.h"
 
 
-Chef::Chef(ofPoint _pos, int _dim){
+Chef::Chef(ofPoint _pos, ofImage _textur, float _speed/*NEW*/,float _texturWidth/*NEW*/, float _texturHeight/*NEW*/, float _rangeWidth/*NEW*/){
 
     pos = _pos;
-    dim = _dim;
-    speed = ofRandom(0.0002,0.0003);
+    speed = _speed; /*NEW*/
     saved_move_to = ofPoint(0,0);
-    textur.loadImage("vogelhell.png");
+    textur = _textur;
     rangeWidth = ofGetWidth();
     flightAngle = 0;
-    texturWidth = 70;
-    texturHeight = 40;
+    texturWidth = _texturWidth;
+    texturHeight = _texturHeight;
 }
 
-void Chef::update(float dt, ofPoint move_to){
-    par1=0.4;
-    par2=0.6;
+void Chef::update(float dt, ofPoint move_to, float _speed/*NEW*/,float _texturWidth/*NEW*/, float _texturHeight/*NEW*/, float _par1/*NEW*/, float _rangeWidth/*new*/)
+{
+    par1= 0.4;
+    par2= 1- par1;
+
+    if(_texturWidth){
+        texturWidth = _texturWidth;/*NEW*/
+    }
+    if(_texturHeight){
+        texturHeight = _texturHeight; /*NEW*/
+    }
+    if(_speed){
+        speed = _speed; /*NEW*/
+    }
+    if (_par1){
+        par1 = _par1;  /*NEW*/
+        par2= 1- par1; /*NEW*/
+    }
+       if (_rangeWidth){
+        rangeWidth = _rangeWidth; /*NEW*/
+    }
+
+
 
     // Wenn kein move_to mitgegeben wurde oder -1, dann dem letzten Punkt folgen, also kein Update durchführen.
         if(move_to.x >= 0){

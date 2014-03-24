@@ -7,7 +7,7 @@ class Ball{
 
     public:
 
-        virtual void update(float, ofPoint) = 0;
+        virtual void update(float, ofPoint, float/*speed*/, float/*texturWidth*/, float/*texturHeight*/, float /*distance*/, float) = 0;
         virtual void draw();
         ofPoint getPos();
 
@@ -17,8 +17,10 @@ class Ball{
         float par2;
         ofPoint pos;
         ofPoint dir;
-        float speed;
         float dim;
+        float texturWidth;
+        float texturHeight;
+        float speed;
 };
 
 #endif

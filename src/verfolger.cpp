@@ -1,22 +1,39 @@
 #include "verfolger.h"
 
 
-Verfolger::Verfolger(ofPoint _pos, int _dim){
+Verfolger::Verfolger(ofPoint _pos, ofImage _textur, float _speed/*NEW*/,float _texturWidth/*NEW*/, float _texturHeight/*NEW*/, float _rangeWidth/*NEW*/){
 
     pos = _pos;
-    dim = _dim;
-    speed = ofRandom(0.0002,0.0003);
+    speed = _speed; /*NEW*/
     saved_move_to = ofPoint(0,0);
-    textur.loadImage("vogelhell.png");
+    textur = _textur;
     rangeWidth = ofGetWidth();
-    texturWidth = 70;
-    texturHeight = 40;
+    texturWidth = _texturWidth;
+    texturHeight = _texturHeight;
 }
 
-void Verfolger::update(float dt, ofPoint move_to){
-
+void Verfolger::update(float dt, ofPoint move_to, float _speed/*NEW*/,float _texturWidth/*NEW*/, float _texturHeight/*NEW*/, float _par1/*NEW*/, float _rangeWidth/*new*/)
+{
     par1=0.4;
-    par2=0.6;
+    par2= 1- par1;
+
+    if(_texturWidth){
+        texturWidth = _texturWidth;/*NEW*/
+    }
+    if(_texturHeight){
+        texturHeight = _texturHeight;   /*NEW*/
+    }
+    if(_speed){
+        speed = _speed;   /*NEW*/
+    }
+    if (_par1){
+        par1 = _par1;  /*NEW*/
+        par2 = 1- par1;
+    }
+      if (_rangeWidth){
+        rangeWidth = _rangeWidth; /*NEW*/
+    }
+
 
     // Wenn kein move_to mitgegeben wurde oder -1, dann dem letzten Punkt folgen, also kein Update durchführen.
         if(move_to.x >= 0){
@@ -32,22 +49,22 @@ void Verfolger::update(float dt, ofPoint move_to){
         if(dir.x >= 0 && dir.y >= 0)
         {
             flightAngle = acos(dir.y / sqrt(pow(dir.x, 2) + pow(dir.y, 2))) * 180 / 3.14159265;
-            cout  << " flightAngle 1 " << flightAngle << "\n";
+            //cout  << " flightAngle 1 " << flightAngle << "\n";
         }
         else if(dir.x >= 0 && dir.y < 0)
         {
             flightAngle = (acos(dir.y / sqrt(pow(dir.x, 2) + pow(dir.y, 2))) * 180 / 3.14159265);
-            cout  << " flightAngle 2 " << flightAngle << "\n";
+            //cout  << " flightAngle 2 " << flightAngle << "\n";
         }
         else if(dir.x < 0 && dir.y < 0)
         {
             flightAngle = 360 - (acos(dir.y / sqrt(pow(dir.x, 2) + pow(dir.y, 2))) * 180 / 3.14159265);
-            cout  << " flightAngle 3 " << flightAngle << "\n";
+            //cout  << " flightAngle 3 " << flightAngle << "\n";
         }
         else if(dir.x < 0 && dir.y >= 0)
         {
             flightAngle = 360 - (acos(dir.y / sqrt(pow(dir.x, 2) + pow(dir.y, 2))) * 180 / 3.14159265);
-            cout  << " flightAngle 4 " << flightAngle << "\n";
+            //cout  << " flightAngle 4 " << flightAngle << "\n";
         }
 }
 

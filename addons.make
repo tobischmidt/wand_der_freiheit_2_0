@@ -1,4 +1,5 @@
 ofxKinect
 ofxOpenCv
+ofxOsc
 ofxXmlSettings
-ofxGLWarper
+ofxGifDecoder-master
