@@ -4,8 +4,11 @@
 void oscHelper::setup()
 {
 
-    cout << "listening for osc messages on port " << 8000 << "\n";
-    receiver.setup(8000);
+    cout << "listening for osc messages on port " << 1100 << "\n";
+    receiver.setup(1100); // von Tablet
+
+    cout << "listening for osc messages on port " << 1919 << "\n";
+    herz.setup(1919); // von Antonio
 
     /*---Vögel----*/
     settings[0] = 0; //Speed
@@ -14,8 +17,8 @@ void oscHelper::setup()
     settings[2] = 0; //distance
     settings[3] = 0; //ausgabe pos vögel
     settings[4] = 0; //vogel ausgeben (hängt sich bei 4 vögel auf)
+    settings[19] = 0; // Vogel asugeben von Antonio
 
-    settings[5] = 0; //speed video
 
     /*---Silhoutte/Kinect----*/
     settings[6] = 0; //contourScaleWidth
@@ -47,11 +50,25 @@ void oscHelper::listen()
 //        }
 
     // check for waiting messages
+    while(herz.hasWaitingMessages())
+    {
+        ofxOscMessage n;
+        herz.getNextMessage(&n);
+
+        // Vogel ausgeben von Antonio
+        if(n.getAddress() == "/generateBird")
+        {
+            settings[19] = (n.getArgAsFloat(0));
+            cout << n.getAddress() << "\n";
+        }
+    }
+
     while(receiver.hasWaitingMessages())
     {
         // get the next message
         ofxOscMessage m;
         receiver.getNextMessage(&m);
+
 
 
  /*----------------------------Vögel---------------------------*/
@@ -129,15 +146,16 @@ void oscHelper::listen()
 //            settings[13] = (m.getArgAsFloat(0)) ;
 //        }
 //         // osc herz
-//         if(m.getAddress() == "/3/led2"){
-//            settings[14] = (m.getArgAsFloat(0)) ;
-//        }
+         if(m.getAddress() == "/3/led2"){
+            settings[19] = (m.getArgAsFloat(0)) ;
+        }
 //         // save einstellung
 //         if(m.getAddress() == "/3/toggle4"){
 //            settings[15] = (m.getArgAsFloat(0)) ;
 //        }
     }
 }
+
 float* oscHelper::getSettings()
 {
     return settings;

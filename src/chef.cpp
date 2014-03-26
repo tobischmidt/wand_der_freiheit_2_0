@@ -18,58 +18,47 @@ void Chef::update(float dt, ofPoint move_to, float _speed/*NEW*/,float _texturWi
     par1= 0.4;
     par2= 1- par1;
 
-    if(_texturWidth){
+    if(_texturWidth)
+    {
         texturWidth = _texturWidth;/*NEW*/
     }
-    if(_texturHeight){
+
+    if(_texturHeight)
+    {
         texturHeight = _texturHeight; /*NEW*/
     }
-    if(_speed){
+
+    if(_speed)
+    {
         speed = _speed; /*NEW*/
     }
-    if (_par1){
+
+    if (_par1)
+    {
         par1 = _par1;  /*NEW*/
         par2= 1- par1; /*NEW*/
     }
-       if (_rangeWidth){
+
+    if (_rangeWidth)
+    {
         rangeWidth = _rangeWidth; /*NEW*/
     }
 
 
 
     // Wenn kein move_to mitgegeben wurde oder -1, dann dem letzten Punkt folgen, also kein Update durchführen.
-        if(move_to.x >= 0){
-            saved_move_to = move_to;
-        }
+    if(move_to.x >= 0)
+    {
+        saved_move_to = move_to;
+    }
 
     // steuert die bewegung vom Chef zur Maus - position= (aktuelle)position+richtung*geschwindigkeit*zeit
-        dir = (saved_move_to - pos) * par1 + dir * par2;
-        dir.normalize();
-        pos += dir * speed * dt;
+    dir = (saved_move_to - pos) * par1 + dir * par2;
+    dir.normalize();
+    pos += dir * speed * dt;
 
-        // errechnet aus dem Richtungsvektor den Drehwinkel für die Flugrichtung
-        if(dir.x >= 0 && dir.y >= 0)
-        {
-            flightAngle = acos(dir.y / sqrt(pow(dir.x, 2) + pow(dir.y, 2))) * 180 / 3.14159265;
-        }
-
-        else if(dir.x >= 0 && dir.y < 0)
-        {
-            flightAngle = 180 - (acos(-dir.y / sqrt(pow(dir.x, 2) + pow(dir.y, 2))) * 180 / 3.14159265);
-        }
-
-        else if(dir.x < 0 && dir.y < 0)
-        {
-            flightAngle = 180 + (acos(-dir.y / sqrt(pow(dir.x, 2) + pow(dir.y, 2))) * 180 / 3.14159265);
-        }
-
-        else if(dir.x < 0 && dir.y >= 0)
-        {
-            flightAngle = 360 - (acos(dir.y / sqrt(pow(dir.x, 2) + pow(dir.y, 2))) * 180 / 3.14159265);
-        }
-
-        //cout << flightAngle << "\n";
-
+    // errechnet aus dem Richtungsvektor den Drehwinkel für die Flugrichtung
+    flightAngle = ofVec2f(0, 1).angle(dir);
 }
 
 void Chef::draw(){
@@ -88,15 +77,12 @@ void Chef::draw(){
         dir.y *= -1;
     }
 
-    //Kreis in Farbe Rosa wird gezeichnet
     ofSetColor(ofColor(238,18,137));
-    //ofCircle( drawPosX, drawPosY, dim);
 
     ofPushMatrix();
     ofTranslate(drawPosX, drawPosY, 0);
-    ofRotateZ(flightAngle);
-    textur.setAnchorPoint(35, 0);
+    ofRotateZ(flightAngle + 180);
+    textur.setAnchorPoint(35, 20);
     textur.draw(0, 0, texturWidth, texturHeight);
     ofPopMatrix();
-
-    }
+}

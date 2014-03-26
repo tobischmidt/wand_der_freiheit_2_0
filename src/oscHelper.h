@@ -11,11 +11,12 @@ class oscHelper{
         void setup();
         void listen();
         float* getSettings(); /*NEW*/
-        float settings[19];    /*NEW*/
+        float settings[20];    /*NEW*/
 
     private:
 
         ofxOscReceiver receiver;    /*NEW*/
+        ofxOscReceiver herz;
 
 };
 

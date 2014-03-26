@@ -25,8 +25,6 @@ void testApp::setup()
     //nChef Chefs werden vordefiniert
     for (int i = 0; i < nChef; i++)
     {
-
- //       int dim = 10;
         ofPoint pos = ofPoint(ofRandom(1), ofRandom(1));
         float speed = ofRandom(0.0001,0.0003);/*NEW*/
         float texturWidth =  70; /*NEW*/
@@ -40,8 +38,6 @@ void testApp::setup()
     //nVerfolger Verfolger wird vordefiniert
     for (int i = 0; i < nVerfolger; i++)
     {
-
-  //      int dim = 10;
         ofPoint pos = ofPoint(ofRandom(1), ofRandom(1));
         float speed = ofRandom(0.0001,0.0003);/*NEW*/
         float createVerfolger = 0; /*NEW*/
@@ -50,7 +46,7 @@ void testApp::setup()
         float startX = 0.99;    /*NEW*/
         float startY = 0.5; /*NEW*/
 
-        // erstellt ein Objekt mit den Koordinaten und dim
+        // erstellt ein Objekt mit den Koordinaten
         theVerfolger[i] = new Verfolger(pos, vogelTextur, speed/*NEW*/, texturWidth/*NEW*/, texturHeight/*NEW*/, rangeWidth/*new*/);
     }
 
@@ -125,9 +121,6 @@ void testApp::setup()
     adjustment2X = osc.settings[18] /2; /*NEW*/
     adjustment2Y = 0;   /*NEW*/
 
-
-    //contourScaleX = ofGetWidth()/2;
-    //contourScaleY = ofGetHeight();
     contourScaleWidth = osc.settings[6];    /*NEW*/
     contourScaleHeight = osc.settings[17];  /*NEW*/
 //    contourScaleWidth = ofGetWidth();     /*old*/
@@ -382,20 +375,18 @@ void testApp::update()
             }
             theChef[i]->update(timeCur-timeOld, position, osc.getSettings()[0], osc.getSettings()[1], osc.getSettings()[16], osc.getSettings()[2], osc.getSettings()[12]);
         }
-        //theChef[i]->update(timeCur-timeOld, attraktoren[i]/1000);
-        //cout << "attraktor X:" << ofToString(attraktoren[i].x) << "  Y: " << ofToString(attraktoren[i].y) ;
-        //cout << "attraktor X:" << ofToString(position.x) << "  Y: " << ofToString(position.y) ;
-
     }
+
     for (int i=0; i<nVerfolger; i++)
     {
         // Die Verfolger werden nacheinander den n Chefs zugeordnet.
         theVerfolger[i]->update(timeCur-timeOld, theChef[i%nChef]->getPos(), osc.getSettings()[0], osc.getSettings()[1], osc.getSettings()[16], osc.getSettings()[2], osc.getSettings()[12]);
     }
+
     timeOld = timeCur;
 
-
     createVerfolger = osc.settings[4];
+    createVerfolger = osc.settings[19];
 
     //cout << createVerfolger << "\n" ;
 
@@ -514,9 +505,6 @@ void testApp::draw()
     }
 
     ofDrawBitmapString(reportStream.str(), 20, 652);*/
-
-    ofRect()
-
 }
 
 
