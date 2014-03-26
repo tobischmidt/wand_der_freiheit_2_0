@@ -16,7 +16,7 @@ void oscHelper::setup()
     settings[16] = 0; //texturHight
     settings[2] = 0; //distance
     settings[3] = 0; //ausgabe pos vögel
-    settings[4] = 0; //vogel ausgeben (hängt sich bei 4 vögel auf)
+    settings[4] = 0; //vogel ausgeben
     settings[19] = 0; // Vogel asugeben von Antonio
 
 

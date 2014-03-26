@@ -61,7 +61,7 @@ void testApp::setup()
 
 
     //Tracking & Zeichnen der Endpunkte zunächst ausgeschalten
-    tracking = 0;
+    tracking = false;
     enddraw = false;
 
     ofSetLogLevel(OF_LOG_VERBOSE);
@@ -116,13 +116,13 @@ void testApp::setup()
 //    adjustmentY = 0;
 //    adjustment2X = ofGetWidth()/2;
 //    adjustment2Y = 0;
-    adjustmentX = osc.settings[7]; /*NEW*/
+    adjustmentX = 0; /*NEW*/
     adjustmentY = 0;        /*NEW*/
-    adjustment2X = osc.settings[18] /2; /*NEW*/
+    adjustment2X = ofGetWidth() /2; /*NEW*/
     adjustment2Y = 0;   /*NEW*/
 
-    contourScaleWidth = osc.settings[6];    /*NEW*/
-    contourScaleHeight = osc.settings[17];  /*NEW*/
+    contourScaleWidth = ofGetWidth();    /*NEW*/
+    contourScaleHeight = ofGetHeight();  /*NEW*/
 //    contourScaleWidth = ofGetWidth();     /*old*/
 //    contourScaleHeight = ofGetHeight();   /*old*/
 
@@ -138,26 +138,68 @@ void testApp::update()
     osc.listen();/*NEW*/
 
     if(osc.settings[8] == 1){
-        tracking = 1;
+        tracking = true;
     }
     else{
-        tracking = 0;
+        tracking = false;
     }
-    cout << ofToString(tracking) << "\n" ;
+    //cout << ofToString(tracking) << "\n" ;
 
 
-    nearThreshold = osc.settings[9];
+    if(osc.settings[9] != 0)
+    {
+        nearThreshold = osc.settings[9];
+    }
+    else
+    {
+        nearThreshold = 255;
+    }
+
     farThreshold = osc.settings[10];
-    angle = osc.settings[11];
-    cout << "angle: " << angle << "\n" ;
 
-    adjustmentX = osc.settings[7]; /*NEW*/
+    if(osc.settings[11] != 0)
+    {
+        angle = osc.settings[11];
+    }
+    //cout << "angle: " << angle << "\n" ;
+
+    if(osc.settings[7] != 0)
+    {
+        adjustmentX = osc.settings[7]; /*NEW*/
+    }
+    else
+    {
+        adjustmentX = 0;
+    }
     adjustmentY = 0;        /*NEW*/
-    adjustment2X = osc.settings[18] /2; /*NEW*/
+
+    if(osc.settings[18] != 0)
+    {
+        adjustment2X = osc.settings[18] /2; /*NEW*/
+    }
+    else
+    {
+        adjustment2X = ofGetWidth()/2;
+    }
     adjustment2Y = 0;   /*NEW*/
 
-    contourScaleWidth = osc.settings[6];    /*NEW*/
-    contourScaleHeight = osc.settings[17];  /*NEW*/
+    if(osc.settings[6] != 0)
+    {
+        contourScaleWidth = osc.settings[6] * ofGetWidth();    /*NEW*/
+    }
+    else
+    {
+        contourScaleWidth = ofGetWidth();
+    }
+
+    if(osc.settings[17] != 0)
+    {
+        contourScaleHeight = osc.settings[17] * ofGetHeight();  /*NEW*/
+    }
+    else
+    {
+        contourScaleHeight = ofGetHeight();
+    }
 
 //----------------------------------TRACKING------------------------------------------------------------
 
@@ -203,7 +245,7 @@ void testApp::update()
         // Wenn Tracking aktiviert wird
         // find contours which are between the size of 10 pixels and 1/2 the w*h pixels.
         // also, find holes is set to true so we will get interior contours as well....
-        if (tracking == 1) {
+        if (tracking) {
            contourFinder.findContours(grayImage, 10, (kinect.width*kinect.height)/2, 2, false);
         }
     }
@@ -280,7 +322,7 @@ void testApp::update()
 
         // find contours which are between the size of 10 pixels and 1/2 the w*h pixels.
         // also, find holes is set to true so we will get interior contours as well....
-        if (tracking == 1) {
+        if (tracking) {
            contourFinder2.findContours(grayImage2, 10, (kinect2.width*kinect2.height)/2, 2, false);
         }
     }
@@ -386,7 +428,6 @@ void testApp::update()
     timeOld = timeCur;
 
     createVerfolger = osc.settings[4];
-    createVerfolger = osc.settings[19];
 
     //cout << createVerfolger << "\n" ;
 
@@ -410,10 +451,10 @@ void testApp::draw()
 
     ofSetColor(255, 255, 255);
 
-    grayImage.draw(0, 0, ofGetWidth()/2, ofGetHeight());
+    //grayImage.draw(0, 0, ofGetWidth()/2, ofGetHeight());
 
     //Wenn Tracking aktiviert ist wird die Kontur gezeichnet
-    if(tracking == 1) {
+    if(tracking) {
        contourFinder.draw(adjustmentX, adjustmentY, contourScaleWidth, contourScaleHeight);
 
        //Wenn enddraw = true werden die Attraktoren als rote Punkte dargestellt
@@ -421,11 +462,12 @@ void testApp::draw()
           if(contourFinder.blobs.size() > 0)    //wenn mindestens ein Körper erkannt wird
           {
                //zeichnet 4 Punkte an äußersten Punkten der beiden erkannten Körper
-              //ofSetHexColor(0xFF0000);
+              ofSetHexColor(0xFF0000);
               ofCircle(attraktoren[0].x*ofGetWidth(), attraktoren[0].y*ofGetHeight(), 7);
               ofCircle(attraktoren[1].x*ofGetWidth(), attraktoren[1].y*ofGetHeight(), 7);
               ofCircle(attraktoren[2].x*ofGetWidth(), attraktoren[2].y*ofGetHeight(), 7);
               ofCircle(attraktoren[3].x*ofGetWidth(), attraktoren[3].y*ofGetHeight(), 7);
+
           }
         }
     }
@@ -436,7 +478,7 @@ void testApp::draw()
 
     grayImage2.draw(ofGetWidth()/2, 0, ofGetWidth()/2, ofGetHeight());
 
-    if (tracking == 1) {
+    if (tracking) {
        contourFinder2.setAnchorPoint(-adjustment2X, -adjustment2Y);
        contourFinder2.draw(0, 0, contourScaleWidth, contourScaleHeight);
        //cout << adjustment2X << " - ";
@@ -445,7 +487,7 @@ void testApp::draw()
           if(contourFinder2.blobs.size() > 0)    //wenn ein Körper erkannt wird
           {
               //zeichnet 4 Punkte an äußersten Punkten der beiden erkannten Körper
-              //ofSetHexColor(0xFF0000);
+              ofSetHexColor(0xFF0000);
               ofCircle(attraktoren[4].x*ofGetWidth(), attraktoren[4].y*ofGetHeight(), 7);
               ofCircle(attraktoren[5].x*ofGetWidth(), attraktoren[5].y*ofGetHeight(), 7);
               ofCircle(attraktoren[6].x*ofGetWidth(), attraktoren[6].y*ofGetHeight(), 7);

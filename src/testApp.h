@@ -37,7 +37,7 @@ class testApp : public ofBaseApp{
 
 //------------------------------TRACKING----------------------------------
 
-	    float tracking;
+	    bool tracking;
 	    bool enddraw;
 
 	    ofxKinect kinect;
