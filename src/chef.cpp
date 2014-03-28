@@ -1,12 +1,11 @@
 #include "chef.h"
 
 
-Chef::Chef(ofPoint _pos, ofImage _textur, float _speed/*NEW*/,float _texturWidth/*NEW*/, float _texturHeight/*NEW*/, float _rangeWidth/*NEW*/){
+Chef::Chef(ofPoint _pos, float _speed/*NEW*/,float _texturWidth/*NEW*/, float _texturHeight/*NEW*/, float _rangeWidth/*NEW*/){
 
     pos = _pos;
     speed = _speed; /*NEW*/
     saved_move_to = ofPoint(0,0);
-    textur = _textur;
     rangeWidth = ofGetWidth();
     flightAngle = 0;
     texturWidth = _texturWidth;
@@ -79,10 +78,32 @@ void Chef::draw(){
 
     ofSetColor(ofColor(238,18,137));
 
-    ofPushMatrix();
+    /*ofPushMatrix();
     ofTranslate(drawPosX, drawPosY, 0);
     ofRotateZ(flightAngle + 180);
     textur.setAnchorPoint(35, 20);
     textur.draw(0, 0, texturWidth, texturHeight);
-    ofPopMatrix();
+    ofPopMatrix();*/
+
+    glPushMatrix();
+
+            glTranslated(drawPosX, drawPosY, 0);
+            glRotatef(flightAngle + 180, 0, 0, 1);
+            glBegin(GL_QUADS);
+
+                glTexCoord2f(0, 0);
+                glVertex2f(-50, -25);
+
+                glTexCoord2f(676, 0);
+                glVertex2f(50, -25);
+
+                glTexCoord2f(676, 280);
+                glVertex2f(50, 25);
+
+                glTexCoord2f(0, 280);
+                glVertex2f(-50, 25);
+
+            glEnd();
+
+        glPopMatrix();
 }

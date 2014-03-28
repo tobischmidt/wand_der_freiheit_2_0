@@ -8,14 +8,13 @@ class Verfolger : public Ball{
 
     public:
 
-        Verfolger(ofPoint, ofImage, float/*speed*/, float /*texturWidth*/, float /*texturHeight*/, float /*rangewidth*/);
+        Verfolger(ofPoint, float/*speed*/, float /*texturWidth*/, float /*texturHeight*/, float /*rangewidth*/);
         void update(float, ofPoint, float/*speed*/, float /*texturWidth*/, float /*texturHeight*/, float /*distance*/, float /*rangewidth*/);
         void draw();
 
     private:
 
         ofPoint saved_move_to;
-        ofImage textur;
         float flightAngle;
         float rangeWidth;
 

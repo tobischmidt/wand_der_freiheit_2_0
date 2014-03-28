@@ -35,6 +35,9 @@ class testApp : public ofBaseApp{
         Chef** theChef;
         Verfolger** theVerfolger;
 
+        int framePosX;
+        int framePosY;
+
 //------------------------------TRACKING----------------------------------
 
 	    bool tracking;

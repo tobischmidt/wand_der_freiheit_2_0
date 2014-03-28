@@ -11,7 +11,7 @@ void testApp::setup()
 {
 //---------------------------VÖGEL------------------------------------------
 
-    vogelTextur.loadImage("vogelhell.png");
+    vogelTextur.loadImage("vogel_neu.png");
 
     nVerfolger = 1;
 
@@ -31,7 +31,7 @@ void testApp::setup()
         float texturHeight =  40; /*NEW*/
 
         //erstellt ein Objekt mit den Koordinaten und dim
-        theChef[i] = new Chef(pos, vogelTextur, speed/*NEW*/, texturWidth/*NEW*/, texturHeight/*NEW*/, rangeWidth/*new*/);
+        theChef[i] = new Chef(pos, speed/*NEW*/, texturWidth/*NEW*/, texturHeight/*NEW*/, rangeWidth/*new*/);
     }
 
 
@@ -47,7 +47,7 @@ void testApp::setup()
         float startY = 0.5; /*NEW*/
 
         // erstellt ein Objekt mit den Koordinaten
-        theVerfolger[i] = new Verfolger(pos, vogelTextur, speed/*NEW*/, texturWidth/*NEW*/, texturHeight/*NEW*/, rangeWidth/*new*/);
+        theVerfolger[i] = new Verfolger(pos, speed/*NEW*/, texturWidth/*NEW*/, texturHeight/*NEW*/, rangeWidth/*new*/);
     }
 
     timeOld = ofGetElapsedTimeMillis();
@@ -433,7 +433,7 @@ void testApp::update()
 
     if(createVerfolger == 1)
     {
-        theVerfolger[nVerfolger] = new Verfolger(ofPoint(osc.getSettings()[3]/*startX,startY*/), vogelTextur, 0.0001/*speed*/, 70/*texturWidth*/, 40/*texturHeight*/, ofGetWidth()/*rangeWidth*/);
+        theVerfolger[nVerfolger] = new Verfolger(ofPoint(osc.getSettings()[3]/*startX,startY*/), 0.0001/*speed*/, 70/*texturWidth*/, 40/*texturHeight*/, ofGetWidth()/*rangeWidth*/);
         nVerfolger++;
 
         createVerfolger = 0;
@@ -501,6 +501,10 @@ void testApp::draw()
 
 //----------------------------VÖGEL--------------------------------------------------------
 
+    vogelTextur.getTextureReference().bind();
+
+    //ofRect(0, 0, vogelTextur.getWidth()/3, vogelTextur.getHeight()/4);
+
     //Zeichnet alle Chefs
     for (int i=0; i<nChef; i++)
     {
@@ -512,6 +516,8 @@ void testApp::draw()
     {
         theVerfolger[i]->draw();
     }
+
+    vogelTextur.getTextureReference().unbind();
 
     // Gibt Framerate in linker oberer Ecke aus
     ofDrawBitmapString(ofToString(ofGetFrameRate()),10,10);
@@ -596,14 +602,14 @@ void testApp::keyPressed(int key)
     case 'v':
 
         //neuer verfolger wird erstellt
-        theVerfolger[nVerfolger] = new Verfolger(ofPoint(osc.getSettings()[3]/*startX, startY*/), vogelTextur, 0.0001/*NEW*/, 70/*NEW*/, 40/*NEW*/, ofGetWidth()/*rangeWidth*/);
+        theVerfolger[nVerfolger] = new Verfolger(ofPoint(osc.getSettings()[3]/*startX, startY*/), 0.0001/*NEW*/, 70/*NEW*/, 40/*NEW*/, ofGetWidth()/*rangeWidth*/);
         nVerfolger++;
         break;
 
     case 'b':
 
         //neuer chef wird erstellt
-        theChef[nChef] = new Chef(ofPoint(osc.getSettings()[3]/*startX, startY*/), vogelTextur, 0.0001/*NEW*/, 70/*NEW*/, 40/*NEW*/, ofGetWidth()/*rangeWidth*/);
+        theChef[nChef] = new Chef(ofPoint(osc.getSettings()[3]/*startX, startY*/), 0.0001/*NEW*/, 70/*NEW*/, 40/*NEW*/, ofGetWidth()/*rangeWidth*/);
         nChef++;
         break;
 

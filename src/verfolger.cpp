@@ -1,12 +1,11 @@
 #include "verfolger.h"
 
 
-Verfolger::Verfolger(ofPoint _pos, ofImage _textur, float _speed/*NEW*/,float _texturWidth/*NEW*/, float _texturHeight/*NEW*/, float _rangeWidth/*NEW*/){
+Verfolger::Verfolger(ofPoint _pos, float _speed/*NEW*/,float _texturWidth/*NEW*/, float _texturHeight/*NEW*/, float _rangeWidth/*NEW*/){
 
     pos = _pos;
     speed = _speed; /*NEW*/
     saved_move_to = ofPoint(0,0);
-    textur = _textur;
     rangeWidth = ofGetWidth();
     texturWidth = _texturWidth;
     texturHeight = _texturHeight;
@@ -74,12 +73,40 @@ void Verfolger::draw(){
         dir.y *= -1;
     }
 
-    ofSetColor(ofColor(112,112,112));
+    ofSetColor(255);
 
-    ofPushMatrix();
+    /*ofPushMatrix();
+
     ofTranslate(drawPosX, drawPosY, 0);
     ofRotateZ(flightAngle + 180);
     textur.setAnchorPoint(35, 20);
     textur.draw(0, 0, texturWidth, texturHeight);
-    ofPopMatrix();
+
+    ofPopMatrix();*/
+
+    //textur.getTextureReference().bind();
+
+    glPushMatrix();
+
+            glTranslated(drawPosX, drawPosY, 0);
+            glRotatef(flightAngle + 180, 0, 0, 1);
+            glBegin(GL_QUADS);
+
+                glTexCoord2f(0, 0);
+                glVertex2f(-50, -25);
+
+                glTexCoord2f(676, 0);
+                glVertex2f(50, -25);
+
+                glTexCoord2f(676, 280);
+                glVertex2f(50, 25);
+
+                glTexCoord2f(0, 280);
+                glVertex2f(-50, 25);
+
+            glEnd();
+
+        glPopMatrix();
+
+    //textur.getTextureReference().unbind();
 }
