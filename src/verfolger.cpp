@@ -6,9 +6,10 @@ Verfolger::Verfolger(ofPoint _pos, float _speed/*NEW*/,float _texturWidth/*NEW*/
     pos = _pos;
     speed = _speed; /*NEW*/
     saved_move_to = ofPoint(0,0);
-    rangeWidth = ofGetWidth();
+    rangeWidth = ofGetScreenWidth();
     texturWidth = _texturWidth;
     texturHeight = _texturHeight;
+    frameCounter = 0;
 }
 
 void Verfolger::update(float dt, ofPoint move_to, float _speed/*NEW*/,float _texturWidth/*NEW*/, float _texturHeight/*NEW*/, float _par1/*NEW*/, float _rangeWidth/*new*/)
@@ -18,12 +19,12 @@ void Verfolger::update(float dt, ofPoint move_to, float _speed/*NEW*/,float _tex
 
     if(_texturWidth)
     {
-        texturWidth = _texturWidth;/*NEW*/
+        texturWidth = _texturWidth * 0.8;/*NEW*/
     }
 
     if(_texturHeight)
     {
-        texturHeight = _texturHeight;   /*NEW*/
+        texturHeight = _texturHeight * 0.8;   /*NEW*/
     }
 
     if(_speed)
@@ -86,27 +87,85 @@ void Verfolger::draw(){
 
     //textur.getTextureReference().bind();
 
+    switch (frameCounter)
+    {
+        case 0:
+            frame = ofPoint(0,0);
+            break;
+
+        case 1:
+            frame = ofPoint(676,0);
+            break;
+
+        case 2:
+            frame = ofPoint(1352,0);
+            break;
+
+        case 3:
+            frame = ofPoint(0,279);
+            break;
+
+        case 4:
+            frame = ofPoint(676,279);
+            break;
+
+        case 5:
+            frame = ofPoint(1352,279);
+            break;
+
+        case 6:
+            frame = ofPoint(0,558);
+            break;
+
+        case 7:
+            frame = ofPoint(676,558);
+            break;
+
+        case 8:
+            frame = ofPoint(1352,558);
+            break;
+
+        case 9:
+            frame = ofPoint(0,837);
+            break;
+
+        case 10:
+            frame = ofPoint(676,837);
+            break;
+
+        case 11:
+            frame = ofPoint(1352,837);
+            break;
+    }
+
     glPushMatrix();
 
-            glTranslated(drawPosX, drawPosY, 0);
-            glRotatef(flightAngle + 180, 0, 0, 1);
-            glBegin(GL_QUADS);
+        glTranslated(drawPosX, drawPosY, 0);
+        glRotatef(flightAngle + 180, 0, 0, 1);
+        glBegin(GL_QUADS);
 
-                glTexCoord2f(0, 0);
-                glVertex2f(-50, -25);
+            glTexCoord2f(frame.x, frame.y);
+            glVertex2f(-texturWidth, -texturHeight);
 
-                glTexCoord2f(676, 0);
-                glVertex2f(50, -25);
+            glTexCoord2f(frame.x + 676, frame.y);
+            glVertex2f(texturWidth, -texturHeight);
 
-                glTexCoord2f(676, 280);
-                glVertex2f(50, 25);
+            glTexCoord2f(frame.x + 676, frame.y + 279);
+            glVertex2f(texturWidth, texturHeight);
 
-                glTexCoord2f(0, 280);
-                glVertex2f(-50, 25);
+            glTexCoord2f(frame.x, frame.y + 279);
+            glVertex2f(-texturWidth, texturHeight);
 
             glEnd();
 
-        glPopMatrix();
+    glPopMatrix();
+
+    frameCounter ++;
+
+    if(frameCounter > 11)
+    {
+        frameCounter = 0;
+    }
 
     //textur.getTextureReference().unbind();
 }

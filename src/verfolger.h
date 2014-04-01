@@ -22,6 +22,10 @@ class Verfolger : public Ball{
         float texturHeight;
         float speed;
         float par1;
+
+        ofPoint frame;
+
+        int frameCounter;
 };
 
 #endif
