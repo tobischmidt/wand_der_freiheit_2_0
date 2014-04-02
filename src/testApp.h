@@ -75,6 +75,8 @@ class testApp : public ofBaseApp{
 	    float startX;
 	    float startY;
 
+	        int blubb;
+
 	    float adjustmentX;
 	    float adjustmentY;
 	    float adjustment2X;

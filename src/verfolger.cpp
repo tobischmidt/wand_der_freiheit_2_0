@@ -41,7 +41,7 @@ void Verfolger::update(float dt, ofPoint move_to, float _speed/*NEW*/,float _tex
 
     if (_rangeWidth)
     {
-        rangeWidth = _rangeWidth; /*NEW*/
+        rangeWidth = _rangeWidth * ofGetWidth(); /*NEW*/
     }
 
 
@@ -65,12 +65,12 @@ void Verfolger::draw(){
     int drawPosY = pos.y*ofGetHeight();
 
     // Bälle sollen den Bildschirm nicht verlassen
-    if ((drawPosX > rangeWidth - dim)||(drawPosX < dim))
+    if ((drawPosX > ofGetWidth() - rangeWidth)||(drawPosX < 0))
     {
         dir.x *= -1;
     }
 
-    if ((drawPosY > ofGetHeight() - dim)||(drawPosY < 0 + dim))
+    if ((drawPosY > ofGetHeight())||(drawPosY < 0 ))
     {
         dir.y *= -1;
     }

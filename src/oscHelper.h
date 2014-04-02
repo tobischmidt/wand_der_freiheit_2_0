@@ -11,7 +11,7 @@ class oscHelper{
         void setup();
         void listen();
         float* getSettings(); /*NEW*/
-        float settings[20];    /*NEW*/
+        float settings[22];    /*NEW*/
 
     private:
 

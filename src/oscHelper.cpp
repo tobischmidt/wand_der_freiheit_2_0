@@ -23,13 +23,14 @@ void oscHelper::setup()
     /*---Silhoutte/Kinect----*/
     settings[6] = 0; //contourScaleWidth
     settings[17] = 0; //contourScaleHeight
-    settings[7] = 0; //verschiebung 1
-    settings[18] = 0; //verschiebung 2
+    settings[7] = 0; //verschiebung 1 x
+    settings[20] = 0; //verschiebung 1 y
+    settings[18] = 0; //verschiebung 2 x
+    settings[21] = 0; // vershciebung 2 y
     settings[8] = 0; //Interaktion an/aus
 
     settings[9] = 0; //nearThreshold
     settings[10] = 0; //farThreshold
-    settings[11] = 0; //angle
 
      /*---Animation----*/
     settings[12] = 0; //Grenze rechts
@@ -110,13 +111,21 @@ void oscHelper::listen()
         if(m.getAddress() == "/2/fader2"){
             settings[17] = (m.getArgAsFloat(0));
         }
-//        // verschiebung 1
-        if(m.getAddress() == "/2/xy1"){
+//        // verschiebung 1 x
+        if(m.getAddress() == "/2/fader3"){
             settings[7] = (m.getArgAsFloat(0));
         }
-//        // verschiebung 2
-        if(m.getAddress() == "/2/xy2"){
+//        // verschiebung 1 y
+        if(m.getAddress() == "/2/fader5"){
+            settings[20] = (m.getArgAsFloat(0));
+        }
+//        // verschiebung 2 x
+        if(m.getAddress() == "/2/fader6"){
             settings[18] = (m.getArgAsFloat(0));
+        }
+//        // verschiebung 2 y
+        if(m.getAddress() == "/2/fader7"){
+            settings[21] = (m.getArgAsFloat(0));
         }
 //      // Interaktion starten
         if(m.getAddress() == "/2/toggle3"){
@@ -130,10 +139,6 @@ void oscHelper::listen()
 //          // farThreshold
          if(m.getAddress() == "/2/fader4"){
             settings[10] = (m.getArgAsFloat(0)) * 255;
-        }
-//         // angle
-         if(m.getAddress() == "/2/fader5"){
-            settings[11] = (m.getArgAsFloat(0)) * 30;
         }
 
 /*------------------------------Animation------------------------------------*/

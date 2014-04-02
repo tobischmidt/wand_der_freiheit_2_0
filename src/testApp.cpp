@@ -152,31 +152,43 @@ void testApp::update()
 
     farThreshold = osc.settings[10];
 
-    if(osc.settings[11] != 0)
-    {
-        angle = osc.settings[11];
-    }
-    //cout << "angle: " << angle << "\n" ;
-
+    // verschiebung 1 x
     if(osc.settings[7] != 0)
     {
-        adjustmentX = osc.settings[7]; /*NEW*/
+        adjustmentX = osc.settings[7] * ofGetWidth(); /*NEW*/
     }
     else
     {
         adjustmentX = 0;
     }
-    adjustmentY = 0;        /*NEW*/
 
-    if(osc.settings[18] != 0)
+    // verschiebung 1 y
+    if(osc.settings[20] != 0)
     {
-        adjustment2X = osc.settings[18] /2; /*NEW*/
+        adjustmentY = osc.settings[20] * ofGetHeight(); /*NEW*/
     }
     else
     {
-        adjustment2X = ofGetWidth()/2;
+        adjustmentY = 0;
     }
-    adjustment2Y = 0;   /*NEW*/
+
+    if(osc.settings[18] != 0)
+    {
+        adjustment2X = osc.settings[18] * ofGetWidth(); /*NEW*/
+    }
+    else
+    {
+        adjustment2X = 0;
+    }
+
+    if(osc.settings[21] != 0)
+    {
+        adjustment2Y = osc.settings[21] * ofGetHeight(); /*NEW*/
+    }
+    else
+    {
+        adjustment2Y = 0;
+    }
 
     if(osc.settings[6] != 0)
     {
@@ -194,6 +206,11 @@ void testApp::update()
     else
     {
         contourScaleHeight = ofGetHeight();
+    }
+
+    if(osc.settings[12] != 0)
+    {
+        blubb = ofGetWidth() - (osc.settings[12] * ofGetWidth());  /*NEW*/
     }
 
 //----------------------------------TRACKING------------------------------------------------------------
@@ -379,8 +396,8 @@ void testApp::update()
 
             for(int j=4; j<8; j++)
             {
-                attraktoren[j].x = (attraktoren[j].x/kinect.width + adjustmentX/ofGetWidth()) * contourScaleWidth/ofGetWidth() + 0.5;
-                attraktoren[j].y = (attraktoren[j].y/kinect.height + adjustmentY/ofGetHeight()) * contourScaleHeight/ofGetHeight();
+                attraktoren[j].x = (attraktoren[j].x/kinect.width + adjustment2X/ofGetWidth()) * contourScaleWidth/ofGetWidth() + 0.5;
+                attraktoren[j].y = (attraktoren[j].y/kinect.height + adjustment2Y/ofGetHeight()) * contourScaleHeight/ofGetHeight();
             }
 
             cout << "contourscalewidth: " << contourScaleWidth << "\n";
@@ -471,7 +488,7 @@ void testApp::drawContours()
 
 		for(int j=0; j<contourFinder2.blobs[i].nPts; j++)
         {
-            contours[i].addVertex((contourFinder2.blobs[i].pts[j].x*ofGetWidth()/640/2 + adjustmentX) * contourScaleWidth/ofGetWidth() + adjustment2X, (contourFinder2.blobs[i].pts[j].y*ofGetHeight()/480 + adjustmentY) * contourScaleHeight/ofGetHeight());
+            contours[i].addVertex((contourFinder2.blobs[i].pts[j].x*ofGetWidth()/640/2 + adjustment2X) * contourScaleWidth/ofGetWidth() + ofGetWidth()/2, (contourFinder2.blobs[i].pts[j].y*ofGetHeight()/480 + adjustment2Y) * contourScaleHeight/ofGetHeight());
         }
 
 		//contours[i].getSmoothed(10, 1);
@@ -562,6 +579,10 @@ void testApp::draw()
 
     // Gibt Framerate in linker oberer Ecke aus
     ofDrawBitmapString(ofToString(ofGetFrameRate()),10,10);
+
+    //Linie, um Fluggrenze rechts zu zeigen
+    //ofSetColor(255);
+    //ofRect(blubb, 0, 5, ofGetHeight());
 
 
     // draw instructions
