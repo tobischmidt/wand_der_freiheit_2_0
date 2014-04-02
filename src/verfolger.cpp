@@ -9,7 +9,8 @@ Verfolger::Verfolger(ofPoint _pos, float _speed/*NEW*/,float _texturWidth/*NEW*/
     rangeWidth = ofGetScreenWidth();
     texturWidth = _texturWidth;
     texturHeight = _texturHeight;
-    frameCounter = 0;
+    frameCounterX = 0;
+    frameCounterY = 0;
 }
 
 void Verfolger::update(float dt, ofPoint move_to, float _speed/*NEW*/,float _texturWidth/*NEW*/, float _texturHeight/*NEW*/, float _par1/*NEW*/, float _rangeWidth/*new*/)
@@ -76,67 +77,23 @@ void Verfolger::draw(){
 
     ofSetColor(255);
 
-    /*ofPushMatrix();
 
-    ofTranslate(drawPosX, drawPosY, 0);
-    ofRotateZ(flightAngle + 180);
-    textur.setAnchorPoint(35, 20);
-    textur.draw(0, 0, texturWidth, texturHeight);
-
-    ofPopMatrix();*/
-
-    //textur.getTextureReference().bind();
-
-    switch (frameCounter)
+    if(frameCounterX > 7)
     {
-        case 0:
-            frame = ofPoint(0,0);
-            break;
-
-        case 1:
-            frame = ofPoint(676,0);
-            break;
-
-        case 2:
-            frame = ofPoint(1352,0);
-            break;
-
-        case 3:
-            frame = ofPoint(0,279);
-            break;
-
-        case 4:
-            frame = ofPoint(676,279);
-            break;
-
-        case 5:
-            frame = ofPoint(1352,279);
-            break;
-
-        case 6:
-            frame = ofPoint(0,558);
-            break;
-
-        case 7:
-            frame = ofPoint(676,558);
-            break;
-
-        case 8:
-            frame = ofPoint(1352,558);
-            break;
-
-        case 9:
-            frame = ofPoint(0,837);
-            break;
-
-        case 10:
-            frame = ofPoint(676,837);
-            break;
-
-        case 11:
-            frame = ofPoint(1352,837);
-            break;
+        frameCounterY++;
+        frameCounterX = 0;
     }
+
+    frame.x = frameCounterX * 213;
+
+    if(frameCounterY > 7)
+    {
+        frameCounterY = 0;
+    }
+
+    frame.y = frameCounterY * 104;
+
+    frameCounterX++;
 
     glPushMatrix();
 
@@ -147,25 +104,18 @@ void Verfolger::draw(){
             glTexCoord2f(frame.x, frame.y);
             glVertex2f(-texturWidth, -texturHeight);
 
-            glTexCoord2f(frame.x + 676, frame.y);
+            glTexCoord2f(frame.x + 213, frame.y);
             glVertex2f(texturWidth, -texturHeight);
 
-            glTexCoord2f(frame.x + 676, frame.y + 279);
+            glTexCoord2f(frame.x + 213, frame.y + 104);
             glVertex2f(texturWidth, texturHeight);
 
-            glTexCoord2f(frame.x, frame.y + 279);
+            glTexCoord2f(frame.x, frame.y + 104);
             glVertex2f(-texturWidth, texturHeight);
 
             glEnd();
 
     glPopMatrix();
-
-    frameCounter ++;
-
-    if(frameCounter > 11)
-    {
-        frameCounter = 0;
-    }
 
     //textur.getTextureReference().unbind();
 }

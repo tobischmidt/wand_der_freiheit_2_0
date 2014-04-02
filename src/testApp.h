@@ -25,6 +25,8 @@ class testApp : public ofBaseApp{
         void draw();
 	    void exit();
 
+	    void drawContours();
+
         void keyPressed(int);
         void mouseReleased(int x, int y, int button);
 
@@ -86,6 +88,10 @@ class testApp : public ofBaseApp{
 		float timers[NUM_MSG_STRINGS];  /*NEW*/
 
 		ofImage vogelTextur;
+
+		vector<ofPolyline> contours;
+
+		ofFbo trace;
 
     private:
 

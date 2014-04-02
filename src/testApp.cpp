@@ -11,7 +11,7 @@ void testApp::setup()
 {
 //---------------------------VÖGEL------------------------------------------
 
-    vogelTextur.loadImage("vogel_neu.png");
+    vogelTextur.loadImage("vogel.png");
 
     nVerfolger = 1;
 
@@ -53,9 +53,6 @@ void testApp::setup()
     timeOld = ofGetElapsedTimeMillis();
     timeCur = timeOld;
 
-//    startX = 0.99;
-//    startY = 0.5;
-
 
 //-------------------------TRACKING-----------------------------------------------
 
@@ -95,15 +92,14 @@ void testApp::setup()
 
     ofSetFrameRate(60);
 
-    // set the tilt to 15 on startup
- //   angle = 15;
-    angle = osc.settings[11];
+    // set the tilt to 0 on startup
+    angle = 0;
     kinect.setCameraTiltAngle(angle);
 
     osc.setup(); /*NEW*/
 
 #ifdef USE_TWO_KINECTS
-    //kinect2.init();
+
     kinect2.init(false, false);
     kinect2.open();
 
@@ -112,10 +108,6 @@ void testApp::setup()
     kinect2.setCameraTiltAngle(angle);
 #endif
 
-//    adjustmentX = 0;
-//    adjustmentY = 0;
-//    adjustment2X = ofGetWidth()/2;
-//    adjustment2Y = 0;
     adjustmentX = 0; /*NEW*/
     adjustmentY = 0;        /*NEW*/
     adjustment2X = ofGetWidth() /2; /*NEW*/
@@ -123,9 +115,12 @@ void testApp::setup()
 
     contourScaleWidth = ofGetWidth();    /*NEW*/
     contourScaleHeight = ofGetHeight();  /*NEW*/
-//    contourScaleWidth = ofGetWidth();     /*old*/
-//    contourScaleHeight = ofGetHeight();   /*old*/
 
+    trace.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA32F_ARB);
+
+    trace.begin();
+	ofClear(255,255,255, 0);
+    trace.end();
 }
 
 //--------------------------------------------------------------
@@ -381,29 +376,6 @@ void testApp::update()
                 attraktoren[j].x = (attraktoren[j].x/kinect.width + adjustmentX/ofGetWidth()) * contourScaleWidth/ofGetWidth();
                 attraktoren[j].y = (attraktoren[j].y/kinect.height + adjustmentY/ofGetHeight()) * contourScaleHeight/ofGetHeight();
             }
-            /*attraktoren[0].x = (attraktoren[0].x/kinect.width + adjustmentX/ofGetWidth()) * contourScaleWidth/ofGetWidth();
-            attraktoren[0].y = (attraktoren[0].y/kinect.height + adjustmentY/ofGetHeight()) * contourScaleHeight/ofGetHeight();
-
-            attraktoren[1].x = (attraktoren[1].x/kinect.width + adjustmentX/ofGetWidth()) * contourScaleWidth/ofGetWidth();
-            attraktoren[1].y = (attraktoren[1].y/kinect.height + adjustmentY/ofGetHeight()) * contourScaleHeight/ofGetHeight();
-
-            attraktoren[2].x = (attraktoren[2].x/kinect.width + adjustmentX/ofGetWidth()) * contourScaleWidth/ofGetWidth();
-            attraktoren[2].y = (attraktoren[2].y/kinect.height + adjustmentY/ofGetHeight()) * contourScaleHeight/ofGetHeight();
-
-            attraktoren[3].x = (attraktoren[3].x/kinect.width + adjustmentX/ofGetWidth()) * contourScaleWidth/ofGetWidth();
-            attraktoren[3].y = (attraktoren[3].y/kinect.height + adjustmentY/ofGetHeight()) * contourScaleHeight/ofGetHeight();
-
-            attraktoren[4].x = (attraktoren[4].x/kinect.width + adjustment2X/ofGetWidth()) * contourScaleWidth/ofGetWidth();
-            attraktoren[4].y = (attraktoren[4].y/kinect.height + adjustment2Y/ofGetHeight()) * contourScaleHeight/ofGetHeight();
-
-            attraktoren[5].x = (attraktoren[5].x/kinect.width + adjustment2X/ofGetWidth()) * contourScaleWidth/ofGetWidth();
-            attraktoren[5].y = (attraktoren[5].y/kinect.height + adjustment2Y/ofGetHeight()) * contourScaleHeight/ofGetHeight();
-
-            attraktoren[6].x = (attraktoren[6].x/kinect.width + adjustment2X/ofGetWidth()) * contourScaleWidth/ofGetWidth();
-            attraktoren[6].y = (attraktoren[6].y/kinect.height + adjustment2Y/ofGetHeight()) * contourScaleHeight/ofGetHeight();
-
-            attraktoren[7].x = (attraktoren[7].x/kinect.width + adjustment2X/ofGetWidth()) * contourScaleWidth/ofGetWidth();
-            attraktoren[7].y = (attraktoren[7].y/kinect.height + adjustment2Y/ofGetHeight()) * contourScaleHeight/ofGetHeight();*/
 
             theChef[i]->update(timeCur-timeOld, attraktoren[i], osc.getSettings()[0], osc.getSettings()[1], osc.getSettings()[16], osc.getSettings()[2], osc.getSettings()[12]);
 
@@ -444,9 +416,70 @@ void testApp::update()
         createVerfolger = 0;
     }
 
+    ofEnableAlphaBlending();
+
+    trace.begin();
+        drawContours();
+    trace.end();
+
 }
 
 //--------------------------------------------------------------
+
+
+void testApp::drawContours()
+{
+    ofFill();
+	ofSetColor(0,0,0,10);
+	ofRect(0, 0, ofGetWidth(), ofGetHeight());
+
+    ofPushStyle();
+
+	// ---------------------------- draw the blobs
+	//ofSetColor(0x00FFFF);
+	//ofFill();
+	ofSetColor(255, 255, 255);
+
+	for( int i=0; i<(int)contourFinder.blobs.size(); i++ )
+    {
+
+		contours.push_back(contourFinder.blobs[i].pts);
+		contours[i].clear();
+
+		for(int j=0; j<contourFinder.blobs[i].nPts; j++)
+        {
+            contours[i].addVertex((contourFinder.blobs[i].pts[j].x*ofGetWidth()/640/2 + adjustmentX) * contourScaleWidth/ofGetWidth(), (contourFinder.blobs[i].pts[j].y*ofGetHeight()/480 + adjustmentY) * contourScaleHeight/ofGetHeight());
+        }
+
+		//contours[i].getSmoothed(10, 1);
+		contours[i].draw();
+		/*ofPath path = new ofPath(contours[i].getPath());
+
+		ofFill();
+		path.draw();*/
+
+	}
+	contours.clear();
+
+	for( int i=0; i<(int)contourFinder2.blobs.size(); i++ )
+    {
+
+		contours.push_back(contourFinder2.blobs[i].pts);
+		contours[i].clear();
+
+		for(int j=0; j<contourFinder2.blobs[i].nPts; j++)
+        {
+            contours[i].addVertex((contourFinder2.blobs[i].pts[j].x*ofGetWidth()/640/2 + adjustmentX) * contourScaleWidth/ofGetWidth(), (contourFinder2.blobs[i].pts[j].y*ofGetHeight()/480 + adjustmentY) * contourScaleHeight/ofGetHeight());
+        }
+
+		//contours[i].getSmoothed(10, 1);
+		contours[i].draw();
+
+	}
+	contours.clear();
+
+	ofPopStyle();
+}
 
 void testApp::draw()
 {
@@ -460,7 +493,9 @@ void testApp::draw()
 
     //Wenn Tracking aktiviert ist wird die Kontur gezeichnet
     if(tracking) {
-       contourFinder.draw(adjustmentX, adjustmentY, contourScaleWidth, contourScaleHeight);
+       //contourFinder.draw();
+       //drawContours();
+       trace.draw(0, 0);
 
        //Wenn enddraw = true werden die Attraktoren als rote Punkte dargestellt
        if(enddraw){
@@ -651,10 +686,6 @@ void testApp::keyPressed(int key)
         if (nearThreshold < 0) nearThreshold = 0;
         break;
 
-    case 'w':
-        kinect.enableDepthNearValueWhite(!kinect.isDepthNearValueWhite());
-        break;
-
     case 'o':
         //Kinect wieder einschalten
         kinect.setCameraTiltAngle(angle); // go back to prev tilt
@@ -665,30 +696,6 @@ void testApp::keyPressed(int key)
         //Kinect ausschalten
         kinect.setCameraTiltAngle(0); // zero the tilt
         kinect.close();
-        break;
-
-    case '1':
-        kinect.setLed(ofxKinect::LED_GREEN);
-        break;
-
-    case '2':
-        kinect.setLed(ofxKinect::LED_YELLOW);
-        break;
-
-    case '3':
-        kinect.setLed(ofxKinect::LED_RED);
-        break;
-
-    case '4':
-        kinect.setLed(ofxKinect::LED_BLINK_GREEN);
-        break;
-
-    case '5':
-        kinect.setLed(ofxKinect::LED_BLINK_YELLOW_RED);
-        break;
-
-    case '0':
-        kinect.setLed(ofxKinect::LED_OFF);
         break;
 
     case OF_KEY_UP:

@@ -25,7 +25,8 @@ class Verfolger : public Ball{
 
         ofPoint frame;
 
-        int frameCounter;
+        int frameCounterX;
+        int frameCounterY;
 };
 
 #endif

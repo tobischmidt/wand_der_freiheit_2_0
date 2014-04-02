@@ -26,7 +26,8 @@ class Chef : public Ball{
 
         ofPoint frame;
 
-        int frameCounter;
+        int frameCounterX;
+        int frameCounterY;
 };
 
 
