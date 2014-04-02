@@ -110,13 +110,13 @@ void testApp::setup()
 
     adjustmentX = 0; /*NEW*/
     adjustmentY = 0;        /*NEW*/
-    adjustment2X = ofGetWidth() /2; /*NEW*/
+    adjustment2X = ofGetScreenWidth() /2; /*NEW*/
     adjustment2Y = 0;   /*NEW*/
 
-    contourScaleWidth = ofGetWidth();    /*NEW*/
-    contourScaleHeight = ofGetHeight();  /*NEW*/
+    contourScaleWidth = ofGetScreenWidth();    /*NEW*/
+    contourScaleHeight = ofGetScreenHeight();  /*NEW*/
 
-    trace.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA32F_ARB);
+    trace.allocate(ofGetScreenWidth(), ofGetScreenHeight(), GL_RGBA32F_ARB);
 
     trace.begin();
 	ofClear(255,255,255, 0);
@@ -135,9 +135,9 @@ void testApp::update()
     if(osc.settings[8] == 1){
         tracking = true;
     }
-    /*else{
+    else{
         tracking = false;
-    }*/
+    }
     //cout << ofToString(tracking) << "\n" ;
 
 
@@ -371,11 +371,19 @@ void testApp::update()
             attraktoren[6] = rightEnd[3];
             attraktoren[7] = leftEnd[3];
 
-            for(int j=0; j<8; j++)
+            for(int j=0; j<4; j++)
             {
                 attraktoren[j].x = (attraktoren[j].x/kinect.width + adjustmentX/ofGetWidth()) * contourScaleWidth/ofGetWidth();
                 attraktoren[j].y = (attraktoren[j].y/kinect.height + adjustmentY/ofGetHeight()) * contourScaleHeight/ofGetHeight();
             }
+
+            for(int j=4; j<8; j++)
+            {
+                attraktoren[j].x = (attraktoren[j].x/kinect.width + adjustmentX/ofGetWidth()) * contourScaleWidth/ofGetWidth() + 0.5;
+                attraktoren[j].y = (attraktoren[j].y/kinect.height + adjustmentY/ofGetHeight()) * contourScaleHeight/ofGetHeight();
+            }
+
+            cout << "contourscalewidth: " << contourScaleWidth << "\n";
 
             theChef[i]->update(timeCur-timeOld, attraktoren[i], osc.getSettings()[0], osc.getSettings()[1], osc.getSettings()[16], osc.getSettings()[2], osc.getSettings()[12]);
 
@@ -451,13 +459,7 @@ void testApp::drawContours()
             contours[i].addVertex((contourFinder.blobs[i].pts[j].x*ofGetWidth()/640/2 + adjustmentX) * contourScaleWidth/ofGetWidth(), (contourFinder.blobs[i].pts[j].y*ofGetHeight()/480 + adjustmentY) * contourScaleHeight/ofGetHeight());
         }
 
-		//contours[i].getSmoothed(10, 1);
 		contours[i].draw();
-		/*ofPath path = new ofPath(contours[i].getPath());
-
-		ofFill();
-		path.draw();*/
-
 	}
 	contours.clear();
 
@@ -469,7 +471,7 @@ void testApp::drawContours()
 
 		for(int j=0; j<contourFinder2.blobs[i].nPts; j++)
         {
-            contours[i].addVertex((contourFinder2.blobs[i].pts[j].x*ofGetWidth()/640/2 + adjustmentX) * contourScaleWidth/ofGetWidth(), (contourFinder2.blobs[i].pts[j].y*ofGetHeight()/480 + adjustmentY) * contourScaleHeight/ofGetHeight());
+            contours[i].addVertex((contourFinder2.blobs[i].pts[j].x*ofGetWidth()/640/2 + adjustmentX) * contourScaleWidth/ofGetWidth() + adjustment2X, (contourFinder2.blobs[i].pts[j].y*ofGetHeight()/480 + adjustmentY) * contourScaleHeight/ofGetHeight());
         }
 
 		//contours[i].getSmoothed(10, 1);
@@ -519,8 +521,8 @@ void testApp::draw()
     //grayImage2.draw(ofGetWidth()/2, 0, ofGetWidth()/2, ofGetHeight());
 
     if (tracking) {
-       contourFinder2.setAnchorPoint(-adjustment2X, -adjustment2Y);
-       contourFinder2.draw(0, 0, contourScaleWidth, contourScaleHeight);
+       //contourFinder2.setAnchorPoint(-adjustment2X, -adjustment2Y);
+       //contourFinder2.draw(0, 0, contourScaleWidth, contourScaleHeight);
        //cout << adjustment2X << " - ";
 
        if(enddraw){
