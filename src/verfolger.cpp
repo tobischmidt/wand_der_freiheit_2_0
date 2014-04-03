@@ -43,6 +43,10 @@ void Verfolger::update(float dt, ofPoint move_to, float _speed/*NEW*/,float _tex
     {
         rangeWidth = _rangeWidth * ofGetWidth(); /*NEW*/
     }
+    else
+    {
+        rangeWidth = 0;
+    }
 
 
     // Wenn kein move_to mitgegeben wurde oder -1, dann dem letzten Punkt folgen, also kein Update durchführen.

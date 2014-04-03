@@ -6967,7 +6967,7 @@
 1395685566 e:\entwicklung\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\ball.h
 	"ofMain.h"
 
-1396358705 source:e:\entwicklung\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\chef.cpp
+1396525142 source:e:\entwicklung\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\chef.cpp
 	"chef.h"
 
 1396358645 e:\entwicklung\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\chef.h
@@ -6983,7 +6983,7 @@
 	"ofMain.h"
 	"testApp.h"
 
-1396367861 e:\entwicklung\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\testapp.h
+1396538746 e:\entwicklung\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\testapp.h
 	"ofMain.h"
 	"ball.h"
 	"chef.h"
@@ -6992,7 +6992,7 @@
 	"ofxKinect.h"
 	"oscHelper.h"
 
-1395846139 e:\entwicklung\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\oschelper.h
+1396458455 e:\entwicklung\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\oschelper.h
 	"ofMain.h"
 	"ofxOsc.h"
 
@@ -7002,16 +7002,16 @@
 	"ofxOscSender.h"
 	"ofxOscReceiver.h"
 
-1395847027 source:e:\entwicklung\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\oschelper.cpp
+1396458455 source:e:\entwicklung\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\oschelper.cpp
 	"oscHelper.h"
 	"testApp.h"
 
-1396367904 source:e:\entwicklung\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\testapp.cpp
+1396539046 source:e:\entwicklung\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\testapp.cpp
 	"testApp.h"
 	"chef.h"
 	"verfolger.h"
 
-1396358645 source:e:\entwicklung\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\verfolger.cpp
+1396525142 source:e:\entwicklung\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\verfolger.cpp
 	"verfolger.h"
 
 1333436192 source:e:\entwicklung\openframeworks\of_v0.8.0_win_cb_release\addons\ofxgifdecoder-master\src\ofxgifdecoder.cpp

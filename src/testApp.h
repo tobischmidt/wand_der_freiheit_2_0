@@ -93,6 +93,9 @@ class testApp : public ofBaseApp{
 
 		vector<ofPolyline> contours;
 
+		//vector<ofPolyline> fence;
+		vector<ofPoint> fence;
+
 		ofFbo trace;
 
     private:

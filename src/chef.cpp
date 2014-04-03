@@ -44,6 +44,10 @@ void Chef::update(float dt, ofPoint move_to, float _speed/*NEW*/,float _texturWi
     {
         rangeWidth = _rangeWidth * ofGetWidth(); /*NEW*/
     }
+    else
+    {
+        rangeWidth = 0;
+    }
 
 
 

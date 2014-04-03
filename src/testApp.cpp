@@ -11,7 +11,7 @@ void testApp::setup()
 {
 //---------------------------VÖGEL------------------------------------------
 
-    vogelTextur.loadImage("vogel.png");
+    vogelTextur.loadImage("Vögel_weiß.png");
 
     nVerfolger = 1;
 
@@ -26,7 +26,7 @@ void testApp::setup()
     for (int i = 0; i < nChef; i++)
     {
         ofPoint pos = ofPoint(ofRandom(1), ofRandom(1));
-        float speed = ofRandom(0.0001,0.0003);/*NEW*/
+        float speed = 0.00015;/*NEW*/
         float texturWidth =  35; /*NEW*/
         float texturHeight =  20; /*NEW*/
 
@@ -39,7 +39,7 @@ void testApp::setup()
     for (int i = 0; i < nVerfolger; i++)
     {
         ofPoint pos = ofPoint(ofRandom(1), ofRandom(1));
-        float speed = ofRandom(0.0001,0.0003);/*NEW*/
+        float speed = 0.00015;/*NEW*/
         float createVerfolger = 0; /*NEW*/
         float texturWidth =  35; /*NEW*/
         float texturHeight =  20; /*NEW*/
@@ -135,9 +135,9 @@ void testApp::update()
     if(osc.settings[8] == 1){
         tracking = true;
     }
-    else{
+    /*else{
         tracking = false;
-    }
+    }*/
     //cout << ofToString(tracking) << "\n" ;
 
 
@@ -400,7 +400,7 @@ void testApp::update()
                 attraktoren[j].y = (attraktoren[j].y/kinect.height + adjustment2Y/ofGetHeight()) * contourScaleHeight/ofGetHeight();
             }
 
-            cout << "contourscalewidth: " << contourScaleWidth << "\n";
+            //cout << "contourscalewidth: " << contourScaleWidth << "\n";
 
             theChef[i]->update(timeCur-timeOld, attraktoren[i], osc.getSettings()[0], osc.getSettings()[1], osc.getSettings()[16], osc.getSettings()[2], osc.getSettings()[12]);
 
@@ -422,7 +422,8 @@ void testApp::update()
     }
 
     for (int i=0; i<nVerfolger; i++)
-    {
+    {trace.draw(0, 0);
+
         // Die Verfolger werden nacheinander den n Chefs zugeordnet.
         theVerfolger[i]->update(timeCur-timeOld, theChef[i%nChef]->getPos(), osc.getSettings()[0], osc.getSettings()[1], osc.getSettings()[16], osc.getSettings()[2], osc.getSettings()[12]);
     }
@@ -447,6 +448,17 @@ void testApp::update()
         drawContours();
     trace.end();
 
+
+//--------------------------ABSCHLUSS-----------------------------------------------------
+
+
+    fence.push_back(ofPoint(0, 0));
+    fence.push_back(ofPoint(100, 100));
+    fence.push_back(ofPoint(200, 300));
+    fence.push_back(ofPoint(300, 200));
+    fence.push_back(ofPoint(400, 300));
+    fence.push_back(ofPoint(500, 200));
+
 }
 
 //--------------------------------------------------------------
@@ -455,14 +467,14 @@ void testApp::update()
 void testApp::drawContours()
 {
     ofFill();
-	ofSetColor(0,0,0,10);
+	ofSetColor(0,0,0,30);
 	ofRect(0, 0, ofGetWidth(), ofGetHeight());
 
     ofPushStyle();
 
 	// ---------------------------- draw the blobs
 	//ofSetColor(0x00FFFF);
-	//ofFill();
+	ofFill();
 	ofSetColor(255, 255, 255);
 
 	for( int i=0; i<(int)contourFinder.blobs.size(); i++ )
@@ -511,6 +523,9 @@ void testApp::draw()
     //grayImage.draw(0, 0, ofGetWidth()/2, ofGetHeight());
 
     //Wenn Tracking aktiviert ist wird die Kontur gezeichnet
+    trace.draw(0, 0);
+
+
     if(tracking) {
        //contourFinder.draw();
        //drawContours();
@@ -584,7 +599,16 @@ void testApp::draw()
     //ofSetColor(255);
     //ofRect(blubb, 0, 5, ofGetHeight());
 
+    //ofNoFill();
 
+    /*ofSetHexColor(0x00FFFF);
+
+    ofBeginShape();
+
+    ofNoFill();
+    ofCurveVertices(fence);
+
+    ofEndShape();*/
     // draw instructions
     /*ofSetColor(255);
     stringstream reportStream;
@@ -664,14 +688,14 @@ void testApp::keyPressed(int key)
     case 'v':
 
         //neuer verfolger wird erstellt
-        theVerfolger[nVerfolger] = new Verfolger(ofPoint(osc.getSettings()[3]/*startX, startY*/), 0.0001/*NEW*/, texturWidth/*NEW*/, texturHeight/*NEW*/, ofGetWidth()/*rangeWidth*/);
+        theVerfolger[nVerfolger] = new Verfolger(ofPoint(startX, startY), 0.00015/*NEW*/, texturWidth/*NEW*/, texturHeight/*NEW*/, ofGetWidth()/*rangeWidth*/);
         nVerfolger++;
         break;
 
     case 'b':
 
         //neuer chef wird erstellt
-        theChef[nChef] = new Chef(ofPoint(osc.getSettings()[3]/*startX, startY*/), 0.0001/*NEW*/, texturWidth/*NEW*/, texturHeight/*NEW*/, ofGetWidth()/*rangeWidth*/);
+        theChef[nChef] = new Chef(ofPoint(startX, startY), 0.00015/*NEW*/, texturWidth/*NEW*/, texturHeight/*NEW*/, ofGetWidth()/*rangeWidth*/);
         nChef++;
         break;
 
