@@ -678,6 +678,15 @@ void testApp::draw()
         curve4.draw();
     }
 
+    if(setzen)
+    {
+        for(int i=0; i<nChef; i++)
+            {
+                ofSetHexColor(0x00FF00);
+                ofCircle(zaun2[i*20].x, zaun2[i*20].y, 5);
+            }
+    }
+
 //----------------------------------TRACKING----------------------------------------------
 
 
