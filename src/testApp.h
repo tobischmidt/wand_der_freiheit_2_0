@@ -93,10 +93,26 @@ class testApp : public ofBaseApp{
 
 		vector<ofPolyline> contours;
 
+		ofPolyline curve;
+		ofPolyline curve2;
+		ofPolyline curve3;
+		ofPolyline curve4;
 		//vector<ofPolyline> fence;
-		vector<ofPoint> fence;
+		//vector<ofPoint> fencePoints;
+
+		//ofPoint test;
+
+		vector<ofVec2f> zaun;
+		vector<ofVec2f> zaun2;
+		vector<ofVec2f> zaun3;
+		vector<ofVec2f> zaun4;
+
+		int counter;
 
 		ofFbo trace;
+
+		bool setzen;
+		bool linien;
 
     private:
 

@@ -2,6 +2,10 @@
 #include "chef.h"
 #include "verfolger.h"
 
+#ifndef M_PI
+#define M_PI    3.14159265358979323846f
+#endif
+
 //--------------------------------------------------------------
 
 // TODO: BEI MEHR ALS ca. 20 Verfolgern stürzt das Programm ab! -> solution
@@ -121,12 +125,140 @@ void testApp::setup()
     trace.begin();
 	ofClear(255,255,255, 0);
     trace.end();
+
+    //--------------------------ABSCHLUSS-----------------------------------------------------
+
+    //fencePoints.push_back(ofPoint(ofGetScreenWidth(), 350));
+    //fencePoints.push_back(ofPoint(ofGetScreenWidth()/2, 700));
+
+    curve.addVertex(ofGetScreenWidth(), 500);
+
+    //curve.addVertex(fencePoints[0]);
+    //curve.addVertex(fencePoints[1]);
+
+    /*curve.curveTo(ofGetScreenWidth()+100, 370);
+    curve.curveTo(ofGetScreenWidth(), 550);
+    curve.curveTo(ofGetScreenWidth() - 300, 600);
+    curve.curveTo(ofGetScreenWidth()/2, 500);
+    curve.curveTo(ofGetScreenWidth()/4, 550);
+    curve.curveTo(400, 200);*/
+
+    /*fence.push_back(curve);
+    curve.clear();
+
+    curve.curveTo(ofGetScreenWidth()+100, 350);
+    curve.curveTo(ofGetScreenWidth(), 500);
+    curve.curveTo(ofGetScreenWidth() - 300, 650);
+    curve.curveTo(ofGetScreenWidth()/2, 450);
+    curve.curveTo(ofGetScreenWidth()/4, 300);
+    curve.curveTo(400, 200);
+
+    fence.push_back(curve);
+    curve.clear();
+
+    curve.curveTo(ofGetScreenWidth()+100, 250);
+    curve.curveTo(ofGetScreenWidth(), 350);
+    curve.curveTo(ofGetScreenWidth() - 300, 500);
+    curve.curveTo(ofGetScreenWidth()/2, 350);
+    curve.curveTo(ofGetScreenWidth()/4, 200);
+    curve.curveTo(400, 200);
+
+    fence.push_back(curve);
+    curve.clear();*/
+
+   counter = 0;
+
+   for(int i=0; i<200; i++)
+   {
+       zaun.push_back(ofVec2f(ofGetScreenWidth() - (i*10), 500));
+   }
+
+   for(float i=0; i<200; i++)
+   {
+       if(i <= 54)
+       {
+           zaun2.push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/15) * 50 + 600));
+       }
+       else if(i > 54 && i <=  122)
+       {
+           zaun2.push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/40 + M_PI*538/1000) * 140 + 564));
+       }
+       else
+       {
+           zaun2.push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/40 + M_PI*538/1000) * 70 + 494));
+       }
+   }
+
+   for(float i=0; i<200; i++)
+   {
+       if(i <= 54)
+       {
+           zaun3.push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/15 + M_PI) * 120 + 400));
+       }
+       else if(i > 54 && i <= 95)
+       {
+           zaun3.push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/20 + M_PI) * 170 + 526));
+       }
+       else
+       {
+           zaun3.push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/40 + M_PI*1738/1000) * 30 + 666));
+       }
+   }
+
+   for(float i=0; i<200; i++)
+   {
+       if(i <= 100)
+       {
+           zaun4.push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/30 + M_PI*3/4) * 100 + 430));
+       }
+       else if(i > 100 && i <= 150)
+       {
+           zaun4.push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/20 + M_PI*5/100) * 125 + 487));
+       }
+       else
+       {
+           zaun4.push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/40 + M_PI*1738/1000 + M_PI*3/2) * 100 + 512));
+       }
+   }
+
+   setzen = false;
+   linien = false;
 }
 
 //--------------------------------------------------------------
 
 void testApp::update()
 {
+    if(linien)
+    {
+        counter++;
+
+        if((counter%2) == 0 && counter/2 < zaun.size())
+        {
+            curve.lineTo(zaun[counter/2].x, zaun[counter/2].y);
+            //cout << "new point \n";
+        }
+
+        if((counter%2) == 0 && counter/2 < zaun2.size())
+        {
+            curve2.curveTo(zaun2[counter/2].x, zaun2[counter/2].y);
+            //cout << "new point" << zaun2[counter/2].y << "\n";
+        }
+
+        if((counter%2) == 0 && counter/2 < zaun2.size())
+        {
+            curve3.curveTo(zaun3[counter/2].x, zaun3[counter/2].y);
+            //cout << "new point" << zaun2[counter/2].y << "\n";
+        }
+
+        if((counter%2) == 0 && counter/2 < zaun2.size())
+        {
+            curve4.curveTo(zaun4[counter/2].x, zaun4[counter/2].y);
+            //cout << "new point" << zaun2[counter/2].y << "\n";
+        }
+    }
+
+
     //Hintergrundfarbe schwarz
     ofBackground(0);
 
@@ -448,16 +580,21 @@ void testApp::update()
         drawContours();
     trace.end();
 
+    //test = fencePoints[0] + ((fencePoints[1] - fencePoints[0]) * (ofGetElapsedTimeMillis()/5000));
 
-//--------------------------ABSCHLUSS-----------------------------------------------------
+    //fence[0].clear();
+    //fence[0].curveTo(ofGetScreenWidth() + 100, 350);
+    //fence[0].curveTo(ofGetScreenWidth(), 350);
+    //fence[0].curveTo(test);
+    //fence[0].curveTo(0, 0);
 
-
-    fence.push_back(ofPoint(0, 0));
-    fence.push_back(ofPoint(100, 100));
-    fence.push_back(ofPoint(200, 300));
-    fence.push_back(ofPoint(300, 200));
-    fence.push_back(ofPoint(400, 300));
-    fence.push_back(ofPoint(500, 200));
+    if(setzen)
+    {
+        for(int i=0; i<nChef; i++)
+        {
+            theChef[i]->update(timeCur-timeOld, ofPoint(zaun2[i*20].x/ofGetWidth(), zaun2[i*20].y/ofGetHeight()), osc.getSettings()[0], osc.getSettings()[1], osc.getSettings()[16], osc.getSettings()[2], osc.getSettings()[12]);
+        }
+    }
 
 }
 
@@ -514,6 +651,32 @@ void testApp::drawContours()
 
 void testApp::draw()
 {
+        //ofNoFill();
+
+    ofSetColor(120);
+
+    /*ofBeginShape();
+
+    ofNoFill();
+
+    ofSetLineWidth(3);
+
+    for(int i = 0; i<fence.size(); i++)
+    {
+        fence[i].draw();
+    }
+
+    ofEndShape();*/
+
+    //curve.draw();
+    if(linien)
+    {
+        ofSetLineWidth(3);
+
+        curve2.draw();
+        curve3.draw();
+        curve4.draw();
+    }
 
 //----------------------------------TRACKING----------------------------------------------
 
@@ -599,16 +762,6 @@ void testApp::draw()
     //ofSetColor(255);
     //ofRect(blubb, 0, 5, ofGetHeight());
 
-    //ofNoFill();
-
-    /*ofSetHexColor(0x00FFFF);
-
-    ofBeginShape();
-
-    ofNoFill();
-    ofCurveVertices(fence);
-
-    ofEndShape();*/
     // draw instructions
     /*ofSetColor(255);
     stringstream reportStream;
@@ -677,6 +830,15 @@ void testApp::keyPressed(int key)
 
     switch (key)
     {
+
+    case 'l' :
+        linien = !linien;
+        break;
+
+    case 's' :
+        setzen = !setzen;
+        break;
+
 
     case 'f' :
         //Fullcreen
