@@ -15,11 +15,11 @@ void testApp::setup()
 {
 //---------------------------VÖGEL------------------------------------------
 
-    vogelTextur.loadImage("Vögel_weiß.png");
+    vogelTextur.loadImage("Vögel_weiß_Var3.png");
 
-    nVerfolger = 1;
+    nVerfolger = 3;
 
-    nChef = 8;
+    nChef = 3;
 
     ofSetWindowTitle("Wand der Freiheit");
 
