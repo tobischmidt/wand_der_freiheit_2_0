@@ -1,7 +1,7 @@
 #include "verfolger.h"
 
 
-Verfolger::Verfolger(ofPoint _pos, float _speed/*NEW*/,float _texturWidth/*NEW*/, float _texturHeight/*NEW*/, float _rangeWidth/*NEW*/){
+Verfolger::Verfolger(ofPoint _pos, float _speed/*NEW*/,float _texturWidth/*NEW*/, float _texturHeight/*NEW*/, float _rangeWidth/*NEW*/, float _grauwert/*new*/){
 
     pos = _pos;
     speed = _speed; /*NEW*/
@@ -13,7 +13,7 @@ Verfolger::Verfolger(ofPoint _pos, float _speed/*NEW*/,float _texturWidth/*NEW*/
     frameCounterY = 0;
 }
 
-void Verfolger::update(float dt, ofPoint move_to, float _speed/*NEW*/,float _texturWidth/*NEW*/, float _texturHeight/*NEW*/, float _par1/*NEW*/, float _rangeWidth/*new*/)
+void Verfolger::update(float dt, ofPoint move_to, float _speed/*NEW*/,float _texturWidth/*NEW*/, float _texturHeight/*NEW*/, float _par1/*NEW*/, float _rangeWidth/*new*/, float _grauwert/*new*/)
 {
     par1=0.4;
     par2= 1- par1;
@@ -48,6 +48,16 @@ void Verfolger::update(float dt, ofPoint move_to, float _speed/*NEW*/,float _tex
         rangeWidth = 0;
     }
 
+    if (_grauwert)
+    {
+        grauwert = _grauwert ;
+    }
+    else
+    {
+        grauwert = 255;
+    }
+
+
 
     // Wenn kein move_to mitgegeben wurde oder -1, dann dem letzten Punkt folgen, also kein Update durchführen.
     if(move_to.x >= 0){
@@ -79,7 +89,7 @@ void Verfolger::draw(){
         dir.y *= -1;
     }
 
-    ofSetColor(255);
+    ofSetColor(grauwert);
 
 
     if(frameCounterX > 7)

@@ -1,7 +1,7 @@
 #include "chef.h"
 
 
-Chef::Chef(ofPoint _pos, float _speed/*NEW*/,float _texturWidth/*NEW*/, float _texturHeight/*NEW*/, float _rangeWidth/*NEW*/){
+Chef::Chef(ofPoint _pos, float _speed/*NEW*/,float _texturWidth/*NEW*/, float _texturHeight/*NEW*/, float _rangeWidth/*NEW*/, float _grauwert/*new*/){
 
     pos = _pos;
     speed = _speed; /*NEW*/
@@ -12,9 +12,10 @@ Chef::Chef(ofPoint _pos, float _speed/*NEW*/,float _texturWidth/*NEW*/, float _t
     texturHeight = _texturHeight;
     frameCounterX = 0;
     frameCounterY = 0;
+    grauwert = _grauwert;
 }
 
-void Chef::update(float dt, ofPoint move_to, float _speed/*NEW*/,float _texturWidth/*NEW*/, float _texturHeight/*NEW*/, float _par1/*NEW*/, float _rangeWidth/*new*/)
+void Chef::update(float dt, ofPoint move_to, float _speed/*NEW*/,float _texturWidth/*NEW*/, float _texturHeight/*NEW*/, float _par1/*NEW*/, float _rangeWidth/*new*/, float _grauwert/*NEW*/)
 {
     par1= 0.4;
     par2= 1- par1;
@@ -47,6 +48,15 @@ void Chef::update(float dt, ofPoint move_to, float _speed/*NEW*/,float _texturWi
     else
     {
         rangeWidth = 0;
+    }
+
+    if (_grauwert)
+    {
+        grauwert = _grauwert ;
+    }
+    else
+    {
+        grauwert = 255;
     }
 
 
@@ -82,7 +92,8 @@ void Chef::draw(){
         dir.y *= -1;
     }
 
-    ofSetColor(ofColor(238,18,137));
+//    ofSetColor(ofColor(238,18,137));
+     ofSetColor(grauwert);
 
     if(frameCounterX > 7)
     {

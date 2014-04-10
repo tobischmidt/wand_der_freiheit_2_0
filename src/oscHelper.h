@@ -3,6 +3,7 @@
 
 #include "ofMain.h"
 #include "ofxOsc.h"
+#include "ofxXMLSettings.h"
 
 class oscHelper{
 
@@ -12,11 +13,16 @@ class oscHelper{
         void listen();
         float* getSettings(); /*NEW*/
         float settings[22];    /*NEW*/
+        void save();
+        void load();
+
 
     private:
 
         ofxOscReceiver receiver;    /*NEW*/
         ofxOscReceiver herz;
+        ofxXmlSettings XML;
+        int tagNum;
 
 };
 

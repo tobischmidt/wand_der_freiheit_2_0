@@ -75,7 +75,7 @@ class testApp : public ofBaseApp{
 	    float startX;
 	    float startY;
 
-	        int blubb;
+        int blubb;
 
 	    float adjustmentX;
 	    float adjustmentY;
@@ -126,6 +126,7 @@ class testApp : public ofBaseApp{
         float speed; /*NEW*/
         float par1; /*NEW*/
         float rangeWidth; /*new*/
+        float grauwert; /*new*/
 
         oscHelper osc; /*NEW*/
 

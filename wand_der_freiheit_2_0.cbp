@@ -6,7 +6,7 @@
 		<Option makefile="makefile" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
-		<Option virtualFolders="addons\;src\;addons\ofxOpenCv\libs\opencv\include\opencv2\contrib\;addons\ofxGifDecoder-master\src\;addons\ofxKinect\libs\libfreenect\src\;addons\ofxOpenCv\libs\opencv\include\opencv2\flann\;addons\ofxOsc\libs\oscpack\src\osc\;addons\ofxOpenCv\libs\opencv\include\opencv2\core\;addons\ofxKinect\libs\libusb-win32\include\;addons\ofxOpenCv\src\;addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\;addons\ofxXmlSettings\src\;addons\ofxOpenCv\libs\opencv\include\opencv2\video\;addons\ofxOpenCv\libs\opencv\include\opencv2\highgui\;addons\ofxXmlSettings\libs\;addons\ofxOsc\src\;addons\ofxOpenCv\libs\opencv\include\opencv2\imgproc\;addons\ofxKinect\libs\libfreenect\platform\windows\libusb10emu\libusb-1.0\;addons\ofxOpenCv\libs\opencv\include\opencv2\legacy\;addons\ofxOpenCv\libs\opencv\include\opencv\;addons\ofxKinect\libs\libfreenect\platform\windows\;addons\ofxOpenCv\libs\opencv\include\opencv2\objdetect\;addons\ofxOpenCv\libs\opencv\include\opencv2\ts\;addons\ofxOsc\libs\oscpack\src\ip\;addons\ofxKinect\src\;addons\ofxOsc\libs\oscpack\src\ip\posix\;addons\ofxKinect\libs\libfreenect\include\;addons\ofxOpenCv\libs\opencv\include\opencv2\calib3d\;addons\ofxOsc\libs\oscpack\src\ip\win32\;addons\ofxKinect\libs\libusb-1.0\include\libusb-1.0\;addons\ofxOpenCv\libs\opencv\include\opencv2\features2d\;addons\ofxOpenCv\libs\opencv\include\opencv2\ml\;addons\ofxOpenCv\libs\opencv\include\opencv2\;" />
+		<Option virtualFolders="addons\;src\;addons\ofxOpenCv\libs\opencv\include\opencv2\contrib\;addons\ofxKinect\libs\libfreenect\src\;addons\ofxOpenCv\libs\opencv\include\opencv2\flann\;addons\ofxOsc\libs\oscpack\src\osc\;addons\ofxOpenCv\libs\opencv\include\opencv2\core\;addons\ofxKinect\libs\libusb-win32\include\;addons\ofxOpenCv\src\;addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\;addons\ofxXmlSettings\src\;addons\ofxOpenCv\libs\opencv\include\opencv2\video\;addons\ofxOpenCv\libs\opencv\include\opencv2\highgui\;addons\ofxXmlSettings\libs\;addons\ofxOsc\src\;addons\ofxOpenCv\libs\opencv\include\opencv2\imgproc\;addons\ofxKinect\libs\libfreenect\platform\windows\libusb10emu\libusb-1.0\;addons\ofxOpenCv\libs\opencv\include\opencv2\legacy\;addons\ofxOpenCv\libs\opencv\include\opencv\;addons\ofxKinect\libs\libfreenect\platform\windows\;addons\ofxOpenCv\libs\opencv\include\opencv2\objdetect\;addons\ofxOpenCv\libs\opencv\include\opencv2\ts\;addons\ofxOsc\libs\oscpack\src\ip\;addons\ofxKinect\src\;addons\ofxOsc\libs\oscpack\src\ip\posix\;addons\ofxKinect\libs\libfreenect\include\;addons\ofxOpenCv\libs\opencv\include\opencv2\calib3d\;addons\ofxOsc\libs\oscpack\src\ip\win32\;addons\ofxKinect\libs\libusb-1.0\include\libusb-1.0\;addons\ofxOpenCv\libs\opencv\include\opencv2\features2d\;addons\ofxOpenCv\libs\opencv\include\opencv2\ml\;addons\ofxOpenCv\libs\opencv\include\opencv2\;" />
 		<Build>
 			<Target title="release">
 				<Option output="bin/$(PROJECT_NAME)" prefix_auto="1" extension_auto="1" />
@@ -201,24 +201,12 @@
 			<Add after='cmd /c if not exist &quot;$(PROJECT_DIR)bin/data&quot; mkdir &quot;$(PROJECT_DIR)bin/data&quot;' />
 			<Mode after="always" />
 		</ExtraCommands>
-		<Unit filename="../../../addons/ofxGifDecoder-master/src/ofxGifDecoder.cpp">
-			<Option virtualFolder="addons/ofxGifDecoder-master/src" />
-		</Unit>
-		<Unit filename="../../../addons/ofxGifDecoder-master/src/ofxGifDecoder.h">
-			<Option virtualFolder="addons/ofxGifDecoder-master/src" />
-		</Unit>
-		<Unit filename="../../../addons/ofxGifDecoder-master/src/ofxGifFile.cpp">
-			<Option virtualFolder="addons/ofxGifDecoder-master/src" />
-		</Unit>
-		<Unit filename="../../../addons/ofxGifDecoder-master/src/ofxGifFile.h">
-			<Option virtualFolder="addons/ofxGifDecoder-master/src" />
-		</Unit>
-		<Unit filename="../../../addons/ofxGifDecoder-master/src/ofxGifFrame.cpp">
-			<Option virtualFolder="addons/ofxGifDecoder-master/src" />
-		</Unit>
-		<Unit filename="../../../addons/ofxGifDecoder-master/src/ofxGifFrame.h">
-			<Option virtualFolder="addons/ofxGifDecoder-master/src" />
-		</Unit>
+		<Unit filename="../../../addons/ofxGifDecoder-master/src/ofxGifDecoder.cpp" />
+		<Unit filename="../../../addons/ofxGifDecoder-master/src/ofxGifDecoder.h" />
+		<Unit filename="../../../addons/ofxGifDecoder-master/src/ofxGifFile.cpp" />
+		<Unit filename="../../../addons/ofxGifDecoder-master/src/ofxGifFile.h" />
+		<Unit filename="../../../addons/ofxGifDecoder-master/src/ofxGifFrame.cpp" />
+		<Unit filename="../../../addons/ofxGifDecoder-master/src/ofxGifFrame.h" />
 		<Unit filename="../../../addons/ofxKinect/libs/libfreenect/include/libfreenect-registration.h">
 			<Option virtualFolder="addons/ofxKinect/libs/libfreenect/include" />
 		</Unit>

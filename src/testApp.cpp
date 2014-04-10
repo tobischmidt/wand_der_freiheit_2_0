@@ -8,9 +8,6 @@
 
 //--------------------------------------------------------------
 
-// TODO: BEI MEHR ALS ca. 20 Verfolgern stürzt das Programm ab! -> solution
-// Wand MUSS schwarz sein, sonnst kann man das nicht auf eine Wand projezieren.
-
 void testApp::setup()
 {
 //---------------------------VÖGEL------------------------------------------
@@ -33,9 +30,10 @@ void testApp::setup()
         float speed = 0.00015;/*NEW*/
         float texturWidth =  35; /*NEW*/
         float texturHeight =  20; /*NEW*/
+        float grauwert = 255; /*new*/
 
         //erstellt ein Objekt mit den Koordinaten und dim
-        theChef[i] = new Chef(pos, speed/*NEW*/, texturWidth/*NEW*/, texturHeight/*NEW*/, rangeWidth/*new*/);
+        theChef[i] = new Chef(pos, speed/*NEW*/, texturWidth/*NEW*/, texturHeight/*NEW*/, rangeWidth/*new*/, grauwert/*new*/);
     }
 
 
@@ -51,7 +49,7 @@ void testApp::setup()
         float startY = 0.5; /*NEW*/
 
         // erstellt ein Objekt mit den Koordinaten
-        theVerfolger[i] = new Verfolger(pos, speed/*NEW*/, texturWidth/*NEW*/, texturHeight/*NEW*/, rangeWidth/*new*/);
+        theVerfolger[i] = new Verfolger(pos, speed/*NEW*/, texturWidth/*NEW*/, texturHeight/*NEW*/, rangeWidth/*new*/, grauwert/*new*/);
     }
 
     timeOld = ofGetElapsedTimeMillis();
@@ -260,7 +258,7 @@ void testApp::update()
 
 
     //Hintergrundfarbe schwarz
-    ofBackground(0);
+    ofBackground(50,50,50);
 
     osc.listen();/*NEW*/
 
@@ -534,7 +532,7 @@ void testApp::update()
 
             //cout << "contourscalewidth: " << contourScaleWidth << "\n";
 
-            theChef[i]->update(timeCur-timeOld, attraktoren[i], osc.getSettings()[0], osc.getSettings()[1], osc.getSettings()[16], osc.getSettings()[2], osc.getSettings()[12]);
+            theChef[i]->update(timeCur-timeOld, attraktoren[i], osc.getSettings()[0], osc.getSettings()[1], osc.getSettings()[16], osc.getSettings()[2], osc.getSettings()[12], osc.getSettings()[5]);
 
         }
         else
@@ -549,7 +547,7 @@ void testApp::update()
                 // Dem letzten Punkt folgen.
                 position = ofPoint(-1, -1);
             }
-            theChef[i]->update(timeCur-timeOld, position, osc.getSettings()[0], osc.getSettings()[1], osc.getSettings()[16], osc.getSettings()[2], osc.getSettings()[12]);
+            theChef[i]->update(timeCur-timeOld, position, osc.getSettings()[0], osc.getSettings()[1], osc.getSettings()[16], osc.getSettings()[2], osc.getSettings()[12],osc.getSettings()[5]);
         }
     }
 
@@ -557,7 +555,7 @@ void testApp::update()
     {trace.draw(0, 0);
 
         // Die Verfolger werden nacheinander den n Chefs zugeordnet.
-        theVerfolger[i]->update(timeCur-timeOld, theChef[i%nChef]->getPos(), osc.getSettings()[0], osc.getSettings()[1], osc.getSettings()[16], osc.getSettings()[2], osc.getSettings()[12]);
+        theVerfolger[i]->update(timeCur-timeOld, theChef[i%nChef]->getPos(), osc.getSettings()[0], osc.getSettings()[1], osc.getSettings()[16], osc.getSettings()[2], osc.getSettings()[12], osc.getSettings()[5]);
     }
 
     timeOld = timeCur;
@@ -568,7 +566,7 @@ void testApp::update()
 
     if(createVerfolger == 1)
     {
-        theVerfolger[nVerfolger] = new Verfolger(ofPoint(osc.getSettings()[3]/*startX,startY*/), 0.0001/*speed*/, 70/*texturWidth*/, 40/*texturHeight*/, ofGetWidth()/*rangeWidth*/);
+        theVerfolger[nVerfolger] = new Verfolger(ofPoint(osc.getSettings()[3]/*startX,startY*/), 0.0001/*speed*/, 70/*texturWidth*/, 40/*texturHeight*/, ofGetWidth()/*rangeWidth*/, osc.getSettings()[5]);
         nVerfolger++;
 
         createVerfolger = 0;
@@ -592,7 +590,7 @@ void testApp::update()
     {
         for(int i=0; i<nChef; i++)
         {
-            theChef[i]->update(timeCur-timeOld, ofPoint(zaun2[i*20].x/ofGetWidth(), zaun2[i*20].y/ofGetHeight()), osc.getSettings()[0], osc.getSettings()[1], osc.getSettings()[16], osc.getSettings()[2], osc.getSettings()[12]);
+            theChef[i]->update(timeCur-timeOld, ofPoint(zaun2[i*20].x/ofGetWidth(), zaun2[i*20].y/ofGetHeight()), osc.getSettings()[0], osc.getSettings()[1], osc.getSettings()[16], osc.getSettings()[2], osc.getSettings()[12], osc.getSettings()[5]);
         }
     }
 
@@ -859,14 +857,14 @@ void testApp::keyPressed(int key)
     case 'v':
 
         //neuer verfolger wird erstellt
-        theVerfolger[nVerfolger] = new Verfolger(ofPoint(startX, startY), 0.00015/*NEW*/, texturWidth/*NEW*/, texturHeight/*NEW*/, ofGetWidth()/*rangeWidth*/);
+        theVerfolger[nVerfolger] = new Verfolger(ofPoint(startX, startY), 0.00015/*NEW*/, texturWidth/*NEW*/, texturHeight/*NEW*/, ofGetWidth()/*rangeWidth*/, grauwert/*new*/);
         nVerfolger++;
         break;
 
     case 'b':
 
         //neuer chef wird erstellt
-        theChef[nChef] = new Chef(ofPoint(startX, startY), 0.00015/*NEW*/, texturWidth/*NEW*/, texturHeight/*NEW*/, ofGetWidth()/*rangeWidth*/);
+        theChef[nChef] = new Chef(ofPoint(startX, startY), 0.00015/*NEW*/, texturWidth/*NEW*/, texturHeight/*NEW*/, ofGetWidth()/*rangeWidth*/, grauwert/*new*/);
         nChef++;
         break;
 

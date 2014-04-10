@@ -17,6 +17,7 @@ void oscHelper::setup()
     settings[2] = 0; //distance
     settings[3] = 0; //ausgabe pos vögel
     settings[4] = 0; //vogel ausgeben
+    settings[5] = 0; //grauwert
     settings[19] = 0; // Vogel asugeben von Antonio
 
 
@@ -34,10 +35,9 @@ void oscHelper::setup()
 
      /*---Animation----*/
     settings[12] = 0; //Grenze rechts
-    settings[13] = 0; //Ausgangspunkt Linien
+    settings[13] = 0; //Lienen ausgeben
 
     settings[14] = 0; //osc herz
-    settings[15] = 0; //save Einstellung
 
 }
 
@@ -97,10 +97,10 @@ void oscHelper::listen()
         if(m.getAddress() == "/1/push1"){
             settings[4] = (m.getArgAsFloat(0));
         }
-//        // speed video
-//        if(m.getAddress() == "/1/fader9"){
-//            settings[5] = (m.getArgAsFloat(0));
-//        }
+        // grauwert
+        if(m.getAddress() == "/1/fader5"){
+            settings[5] = (m.getArgAsFloat(0) * 255);
+        }
 
 /*------------------------Silhoutte/Kinect---------------------------*/
         // contourScaleWidth
@@ -111,55 +111,110 @@ void oscHelper::listen()
         if(m.getAddress() == "/2/fader2"){
             settings[17] = (m.getArgAsFloat(0));
         }
-//        // verschiebung 1 x
+        // verschiebung 1 x
         if(m.getAddress() == "/2/fader3"){
             settings[7] = (m.getArgAsFloat(0));
         }
-//        // verschiebung 1 y
+        // verschiebung 1 y
         if(m.getAddress() == "/2/fader5"){
             settings[20] = (m.getArgAsFloat(0));
         }
-//        // verschiebung 2 x
+        // verschiebung 2 x
         if(m.getAddress() == "/2/fader6"){
             settings[18] = (m.getArgAsFloat(0));
         }
-//        // verschiebung 2 y
+        // verschiebung 2 y
         if(m.getAddress() == "/2/fader7"){
             settings[21] = (m.getArgAsFloat(0));
         }
-//      // Interaktion starten
+      // Interaktion starten
         if(m.getAddress() == "/2/toggle3"){
             settings[8] = (m.getArgAsFloat(0));
              cout << settings[8] << "\n" ;
         }
-//        // nearThreshold
+        // nearThreshold
          if(m.getAddress() == "/2/fader1"){
             settings[9] = (m.getArgAsFloat(0)) * 255;
         }
-//          // farThreshold
+          // farThreshold
          if(m.getAddress() == "/2/fader4"){
             settings[10] = (m.getArgAsFloat(0)) * 255;
         }
 
 /*------------------------------Animation------------------------------------*/
-//        // Grenze rechts
+        // Grenze rechts
          if(m.getAddress() == "/3/fader18"){
             settings[12] = (m.getArgAsFloat(0)) ;
         }
-//         // ausgangspunkt linien
-//         if(m.getAddress() == "/3/xy3"){
-//            settings[13] = (m.getArgAsFloat(0)) ;
-//        }
-//         // osc herz
+         // Linien ausgeben
+         if(m.getAddress() == "/3/toggle1"){
+            settings[13] = (m.getArgAsFloat(0)) ;
+        }
+         // osc herz
          if(m.getAddress() == "/3/led2"){
             settings[19] = (m.getArgAsFloat(0)) ;
         }
-//         // save einstellung
-//         if(m.getAddress() == "/3/toggle4"){
-//            settings[15] = (m.getArgAsFloat(0)) ;
-//        }
+         // save einstellung
+         if(m.getAddress() == "/3/push1"){
+            save();
+        }
+        //laden
+        if(m.getAddress() == "/3/push2"){
+            load();
+        }
     }
 }
+
+/*
+ * SETTING SPEICHERN
+ */
+    void oscHelper::save(){
+
+        XML.popTag();
+        XML.clear();
+
+        // -------------------------
+
+        for(int i=0; i<22; i++){
+
+            tagNum = XML.addTag( ofToString(i) );
+            XML.setValue( ofToString(i) + ":VALUE", settings[i], tagNum );
+            XML.popTag();
+        }
+
+        if(XML.saveFile("setting.xml")){
+            cout << "alles gut" << endl;
+        } else {
+            cout << "geht net" << endl;
+        }
+    }
+
+/*
+ * SETTING LADEN
+ */
+void oscHelper::load(){
+
+        XML.popTag();
+        XML.clear();
+
+        if( XML.loadFile("setting.xml") ){
+
+            XML.popTag();
+
+            for(int i=0; i<22; i++){
+
+                XML.popTag();
+                settings[i] = XML.getValue( ofToString(i) + ":VALUE", 0.5, 0);
+            }
+
+            cout << "Setting erfolgreich geladen!" << endl;
+
+        } else {
+
+            cout << "Datei -setting.xml- nicht gefunden!";
+        }
+    }
+
 
 float* oscHelper::getSettings()
 {
