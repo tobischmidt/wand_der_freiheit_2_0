@@ -14,9 +14,9 @@ void testApp::setup()
 
     vogelTextur.loadImage("Vögel_weiß_Var3.png");
 
-    nVerfolger = 3;
+    nVerfolger = 8;
 
-    nChef = 3;
+    nChef = 8;
 
     ofSetWindowTitle("Wand der Freiheit");
 
@@ -121,148 +121,81 @@ void testApp::setup()
     trace.allocate(ofGetScreenWidth(), ofGetScreenHeight(), GL_RGBA32F_ARB);
 
     trace.begin();
-	ofClear(255,255,255, 0);
+    ofClear(255,255,255, 0);
     trace.end();
 
     //--------------------------ABSCHLUSS-----------------------------------------------------
 
-    //fencePoints.push_back(ofPoint(ofGetScreenWidth(), 350));
-    //fencePoints.push_back(ofPoint(ofGetScreenWidth()/2, 700));
-
     curve.addVertex(ofGetScreenWidth(), 500);
 
-    //curve.addVertex(fencePoints[0]);
-    //curve.addVertex(fencePoints[1]);
+    counter = 0;
 
-    /*curve.curveTo(ofGetScreenWidth()+100, 370);
-    curve.curveTo(ofGetScreenWidth(), 550);
-    curve.curveTo(ofGetScreenWidth() - 300, 600);
-    curve.curveTo(ofGetScreenWidth()/2, 500);
-    curve.curveTo(ofGetScreenWidth()/4, 550);
-    curve.curveTo(400, 200);*/
+    for(float i=0; i<200; i++)
+    {
+        if(i <= 54)
+        {
+            zaun2.push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/15) * 50 + 600));
+        }
+        else if(i > 54 && i <=  122)
+        {
+            zaun2.push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/40 + M_PI*538/1000) * 140 + 564));
+        }
+        else
+        {
+            zaun2.push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/40 + M_PI*538/1000) * 70 + 494));
+        }
+    }
 
-    /*fence.push_back(curve);
-    curve.clear();
+    for(float i=0; i<200; i++)
+    {
+        if(i <= 54)
+        {
+            zaun3.push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/15 + M_PI) * 120 + 400));
+        }
+        else if(i > 54 && i <= 95)
+        {
+            zaun3.push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/20 + M_PI) * 170 + 526));
+        }
+        else
+        {
+            zaun3.push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/40 + M_PI*1738/1000) * 30 + 666));
+        }
+    }
 
-    curve.curveTo(ofGetScreenWidth()+100, 350);
-    curve.curveTo(ofGetScreenWidth(), 500);
-    curve.curveTo(ofGetScreenWidth() - 300, 650);
-    curve.curveTo(ofGetScreenWidth()/2, 450);
-    curve.curveTo(ofGetScreenWidth()/4, 300);
-    curve.curveTo(400, 200);
+    for(float i=0; i<200; i++)
+    {
+        if(i <= 100)
+        {
+            zaun4.push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/30 + M_PI*3/4) * 100 + 430));
+        }
+        else if(i > 100 && i <= 150)
+        {
+            zaun4.push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/20 + M_PI*5/100) * 125 + 487));
+        }
+        else
+        {
+            zaun4.push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/40 + M_PI*1738/1000 + M_PI*3/2) * 100 + 512));
+        }
+    }
 
-    fence.push_back(curve);
-    curve.clear();
-
-    curve.curveTo(ofGetScreenWidth()+100, 250);
-    curve.curveTo(ofGetScreenWidth(), 350);
-    curve.curveTo(ofGetScreenWidth() - 300, 500);
-    curve.curveTo(ofGetScreenWidth()/2, 350);
-    curve.curveTo(ofGetScreenWidth()/4, 200);
-    curve.curveTo(400, 200);
-
-    fence.push_back(curve);
-    curve.clear();*/
-
-   counter = 0;
-
-   for(int i=0; i<200; i++)
-   {
-       zaun.push_back(ofVec2f(ofGetScreenWidth() - (i*10), 500));
-   }
-
-   for(float i=0; i<200; i++)
-   {
-       if(i <= 54)
-       {
-           zaun2.push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/15) * 50 + 600));
-       }
-       else if(i > 54 && i <=  122)
-       {
-           zaun2.push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/40 + M_PI*538/1000) * 140 + 564));
-       }
-       else
-       {
-           zaun2.push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/40 + M_PI*538/1000) * 70 + 494));
-       }
-   }
-
-   for(float i=0; i<200; i++)
-   {
-       if(i <= 54)
-       {
-           zaun3.push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/15 + M_PI) * 120 + 400));
-       }
-       else if(i > 54 && i <= 95)
-       {
-           zaun3.push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/20 + M_PI) * 170 + 526));
-       }
-       else
-       {
-           zaun3.push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/40 + M_PI*1738/1000) * 30 + 666));
-       }
-   }
-
-   for(float i=0; i<200; i++)
-   {
-       if(i <= 100)
-       {
-           zaun4.push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/30 + M_PI*3/4) * 100 + 430));
-       }
-       else if(i > 100 && i <= 150)
-       {
-           zaun4.push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/20 + M_PI*5/100) * 125 + 487));
-       }
-       else
-       {
-           zaun4.push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/40 + M_PI*1738/1000 + M_PI*3/2) * 100 + 512));
-       }
-   }
-
-   setzen = false;
-   linien = false;
+    setzen = false;
+    linien = false;
+    createVerfolger = false;
 }
 
 //--------------------------------------------------------------
 
 void testApp::update()
 {
-    if(linien)
-    {
-        counter++;
-
-        if((counter%2) == 0 && counter/2 < zaun.size())
-        {
-            curve.lineTo(zaun[counter/2].x, zaun[counter/2].y);
-            //cout << "new point \n";
-        }
-
-        if((counter%2) == 0 && counter/2 < zaun2.size())
-        {
-            curve2.curveTo(zaun2[counter/2].x, zaun2[counter/2].y);
-            //cout << "new point" << zaun2[counter/2].y << "\n";
-        }
-
-        if((counter%2) == 0 && counter/2 < zaun2.size())
-        {
-            curve3.curveTo(zaun3[counter/2].x, zaun3[counter/2].y);
-            //cout << "new point" << zaun2[counter/2].y << "\n";
-        }
-
-        if((counter%2) == 0 && counter/2 < zaun2.size())
-        {
-            curve4.curveTo(zaun4[counter/2].x, zaun4[counter/2].y);
-            //cout << "new point" << zaun2[counter/2].y << "\n";
-        }
-    }
-
-
     //Hintergrundfarbe schwarz
-    ofBackground(50,50,50);
+    ofBackground(0);
+
+//-------------------------------------------------------OSC----------------------------------------------
 
     osc.listen();/*NEW*/
 
-    if(osc.settings[8] == 1){
+    if(osc.settings[8] == 1)
+    {
         tracking = true;
     }
     /*else{
@@ -372,10 +305,12 @@ void testApp::update()
             int numPixels = grayImage.getWidth() * grayImage.getHeight();
             for(int i = 0; i < numPixels; i++)
             {
-                if(pix[i] < nearThreshold && pix[i] > farThreshold){
+                if(pix[i] < nearThreshold && pix[i] > farThreshold)
+                {
                     pix[i] = 255;
                 }
-                else{
+                else
+                {
                     pix[i] = 0;
                 }
             }
@@ -387,8 +322,9 @@ void testApp::update()
         // Wenn Tracking aktiviert wird
         // find contours which are between the size of 10 pixels and 1/2 the w*h pixels.
         // also, find holes is set to true so we will get interior contours as well....
-        if (tracking) {
-           contourFinder.findContours(grayImage, 10, (kinect.width*kinect.height)/2, 2, false);
+        if (tracking)
+        {
+            contourFinder.findContours(grayImage, 10, (kinect.width*kinect.height)/2, 2, false);
         }
     }
 
@@ -422,9 +358,9 @@ void testApp::update()
 
 //selbe Funktionen wie für die erste Kinect, nur auf rechte Bildschirmhälfte bezogen
 #ifdef USE_TWO_KINECTS
-	kinect2.update();
+    kinect2.update();
 
-	// there is a new frame and we are connected
+    // there is a new frame and we are connected
     if(kinect2.isFrameNew())
     {
         // load grayscale depth image from the kinect source
@@ -464,8 +400,9 @@ void testApp::update()
 
         // find contours which are between the size of 10 pixels and 1/2 the w*h pixels.
         // also, find holes is set to true so we will get interior contours as well....
-        if (tracking) {
-           contourFinder2.findContours(grayImage2, 10, (kinect2.width*kinect2.height)/2, 2, false);
+        if (tracking)
+        {
+            contourFinder2.findContours(grayImage2, 10, (kinect2.width*kinect2.height)/2, 2, false);
         }
     }
 
@@ -530,8 +467,6 @@ void testApp::update()
                 attraktoren[j].y = (attraktoren[j].y/kinect.height + adjustment2Y/ofGetHeight()) * contourScaleHeight/ofGetHeight();
             }
 
-            //cout << "contourscalewidth: " << contourScaleWidth << "\n";
-
             theChef[i]->update(timeCur-timeOld, attraktoren[i], osc.getSettings()[0], osc.getSettings()[1], osc.getSettings()[16], osc.getSettings()[2], osc.getSettings()[12], osc.getSettings()[5]);
 
         }
@@ -542,7 +477,7 @@ void testApp::update()
                 // Zufälliger Position folgen.
                 position = ofPoint( ofRandom(1), ofRandom(1) ); // Bei schnellen Prozessoren pendeln die Kugeln sich in der Mitte aus. Hier müsste ein Timer eingebaut werden, damit die Chefs erstmal eine Zeit lang in eine Richtung fliegen.
             }
-            else  // Ansonnsten
+            else  // Ansonsten
             {
                 // Dem letzten Punkt folgen.
                 position = ofPoint(-1, -1);
@@ -551,49 +486,65 @@ void testApp::update()
         }
     }
 
-    for (int i=0; i<nVerfolger; i++)
-    {trace.draw(0, 0);
 
+    for (int i=0; i<nVerfolger; i++)
+    {
         // Die Verfolger werden nacheinander den n Chefs zugeordnet.
         theVerfolger[i]->update(timeCur-timeOld, theChef[i%nChef]->getPos(), osc.getSettings()[0], osc.getSettings()[1], osc.getSettings()[16], osc.getSettings()[2], osc.getSettings()[12], osc.getSettings()[5]);
     }
 
+
     timeOld = timeCur;
 
-    createVerfolger = osc.settings[4];
+    if(osc.settings[4] == 1)
+    {
+        createVerfolger = true;
+    }
 
-    //cout << createVerfolger << "\n" ;
-
-    if(createVerfolger == 1)
+    if(createVerfolger)
     {
         theVerfolger[nVerfolger] = new Verfolger(ofPoint(osc.getSettings()[3]/*startX,startY*/), 0.0001/*speed*/, 70/*texturWidth*/, 40/*texturHeight*/, ofGetWidth()/*rangeWidth*/, osc.getSettings()[5]);
         nVerfolger++;
 
-        createVerfolger = 0;
+        createVerfolger = false;
     }
 
     ofEnableAlphaBlending();
 
     trace.begin();
-        drawContours();
+    drawContours();
     trace.end();
 
-    //test = fencePoints[0] + ((fencePoints[1] - fencePoints[0]) * (ofGetElapsedTimeMillis()/5000));
+//-------------------------------------------Abschluss--------------------------------------------------------------------
 
-    //fence[0].clear();
-    //fence[0].curveTo(ofGetScreenWidth() + 100, 350);
-    //fence[0].curveTo(ofGetScreenWidth(), 350);
-    //fence[0].curveTo(test);
-    //fence[0].curveTo(0, 0);
-
-    if(setzen)
+    if(linien)
     {
-        for(int i=0; i<nChef; i++)
+        counter++;
+
+        if((counter%2) == 0 && counter/2 < zaun2.size())
         {
-            theChef[i]->update(timeCur-timeOld, ofPoint(zaun2[i*20].x/ofGetWidth(), zaun2[i*20].y/ofGetHeight()), osc.getSettings()[0], osc.getSettings()[1], osc.getSettings()[16], osc.getSettings()[2], osc.getSettings()[12], osc.getSettings()[5]);
+            curve2.curveTo(zaun2[counter/2].x, zaun2[counter/2].y);
+        }
+
+        if((counter%2) == 0 && counter/2 < zaun2.size()+20 && counter > 20)
+        {
+            curve3.curveTo(zaun3[(counter-20)/2].x, zaun3[(counter-20)/2].y);
+        }
+
+        if((counter%2) == 0 && counter/2 < zaun2.size()+40 && counter > 40)
+        {
+            curve4.curveTo(zaun4[(counter-40)/2].x, zaun4[(counter-40)/2].y);
         }
     }
 
+    if(setzen)
+    {
+        for(int i=0; i<nVerfolger; i++)
+        {
+            theChef[i]->update(timeCur-timeOld, ofPoint(zaun2[i*20].x/ofGetWidth(), zaun2[i*20].y/ofGetHeight()), osc.getSettings()[0], osc.getSettings()[1], osc.getSettings()[16], osc.getSettings()[2], osc.getSettings()[12], osc.getSettings()[5]);
+            //theVerfolger[i]->update(timeCur-timeOld, ofPoint(zaun2[i*20].x/ofGetWidth(), zaun2[i*20].y/ofGetHeight()), osc.getSettings()[0], osc.getSettings()[1], osc.getSettings()[16], osc.getSettings()[2], osc.getSettings()[12], osc.getSettings()[5]);
+        }
+    }
 }
 
 //--------------------------------------------------------------
@@ -602,87 +553,73 @@ void testApp::update()
 void testApp::drawContours()
 {
     ofFill();
-	ofSetColor(0,0,0,30);
-	ofRect(0, 0, ofGetWidth(), ofGetHeight());
+    ofSetColor(0,0,0,30);
+    ofRect(0, 0, ofGetWidth(), ofGetHeight());
 
     ofPushStyle();
 
-	// ---------------------------- draw the blobs
-	//ofSetColor(0x00FFFF);
-	ofFill();
-	ofSetColor(255, 255, 255);
+    // ---------------------------- draw the contours
 
-	for( int i=0; i<(int)contourFinder.blobs.size(); i++ )
+    ofFill();
+    ofSetColor(255, 255, 255);
+
+    for( int i=0; i<(int)contourFinder.blobs.size(); i++ )
     {
 
-		contours.push_back(contourFinder.blobs[i].pts);
-		contours[i].clear();
+        contours.push_back(contourFinder.blobs[i].pts);
+        contours[i].clear();
 
-		for(int j=0; j<contourFinder.blobs[i].nPts; j++)
+        for(int j=0; j<contourFinder.blobs[i].nPts; j++)
         {
             contours[i].addVertex((contourFinder.blobs[i].pts[j].x*ofGetWidth()/640/2 + adjustmentX) * contourScaleWidth/ofGetWidth(), (contourFinder.blobs[i].pts[j].y*ofGetHeight()/480 + adjustmentY) * contourScaleHeight/ofGetHeight());
         }
 
-		contours[i].draw();
-	}
-	contours.clear();
+        contours[i].draw();
+    }
+    contours.clear();
 
-	for( int i=0; i<(int)contourFinder2.blobs.size(); i++ )
+    for( int i=0; i<(int)contourFinder2.blobs.size(); i++ )
     {
 
-		contours.push_back(contourFinder2.blobs[i].pts);
-		contours[i].clear();
+        contours.push_back(contourFinder2.blobs[i].pts);
+        contours[i].clear();
 
-		for(int j=0; j<contourFinder2.blobs[i].nPts; j++)
+        for(int j=0; j<contourFinder2.blobs[i].nPts; j++)
         {
             contours[i].addVertex((contourFinder2.blobs[i].pts[j].x*ofGetWidth()/640/2 + adjustment2X) * contourScaleWidth/ofGetWidth() + ofGetWidth()/2, (contourFinder2.blobs[i].pts[j].y*ofGetHeight()/480 + adjustment2Y) * contourScaleHeight/ofGetHeight());
         }
 
-		//contours[i].getSmoothed(10, 1);
-		contours[i].draw();
+        contours[i].draw();
 
-	}
-	contours.clear();
+    }
+    contours.clear();
 
-	ofPopStyle();
+    ofPopStyle();
 }
 
 void testApp::draw()
 {
-        //ofNoFill();
-
     ofSetColor(120);
 
-    /*ofBeginShape();
-
-    ofNoFill();
-
-    ofSetLineWidth(3);
-
-    for(int i = 0; i<fence.size(); i++)
-    {
-        fence[i].draw();
-    }
-
-    ofEndShape();*/
-
-    //curve.draw();
     if(linien)
     {
+        ofPushStyle();
         ofSetLineWidth(3);
 
         curve2.draw();
         curve3.draw();
         curve4.draw();
+
+        ofPopStyle();
     }
 
     if(setzen)
     {
-        for(int i=0; i<nChef; i++)
-            {
-                ofSetHexColor(0x00FF00);
-                ofCircle(zaun2[i*20].x, zaun2[i*20].y, 5);
-            }
+        for(int i=0; i<nVerfolger; i++)
+        {
+            ofSetHexColor(0x00FF00);
+            ofCircle(zaun2[i*20].x, zaun2[i*20].y, 5);
+        }
     }
 
 //----------------------------------TRACKING----------------------------------------------
@@ -692,27 +629,24 @@ void testApp::draw()
 
     //grayImage.draw(0, 0, ofGetWidth()/2, ofGetHeight());
 
-    //Wenn Tracking aktiviert ist wird die Kontur gezeichnet
-    trace.draw(0, 0);
+    if(tracking)
+    {
+        //Wenn Tracking aktiviert ist wird die Kontur gezeichnet
+        trace.draw(0, 0);
 
+        //Wenn enddraw = true werden die Attraktoren als rote Punkte dargestellt
+        if(enddraw)
+        {
+            if(contourFinder.blobs.size() > 0)    //wenn mindestens ein Körper erkannt wird
+            {
+                //zeichnet 4 Punkte an äußersten Punkten der beiden erkannten Körper
+                ofSetHexColor(0xFF0000);
+                ofCircle(attraktoren[0].x*ofGetWidth(), attraktoren[0].y*ofGetHeight(), 7);
+                ofCircle(attraktoren[1].x*ofGetWidth(), attraktoren[1].y*ofGetHeight(), 7);
+                ofCircle(attraktoren[2].x*ofGetWidth(), attraktoren[2].y*ofGetHeight(), 7);
+                ofCircle(attraktoren[3].x*ofGetWidth(), attraktoren[3].y*ofGetHeight(), 7);
 
-    if(tracking) {
-       //contourFinder.draw();
-       //drawContours();
-       trace.draw(0, 0);
-
-       //Wenn enddraw = true werden die Attraktoren als rote Punkte dargestellt
-       if(enddraw){
-          if(contourFinder.blobs.size() > 0)    //wenn mindestens ein Körper erkannt wird
-          {
-               //zeichnet 4 Punkte an äußersten Punkten der beiden erkannten Körper
-              ofSetHexColor(0xFF0000);
-              ofCircle(attraktoren[0].x*ofGetWidth(), attraktoren[0].y*ofGetHeight(), 7);
-              ofCircle(attraktoren[1].x*ofGetWidth(), attraktoren[1].y*ofGetHeight(), 7);
-              ofCircle(attraktoren[2].x*ofGetWidth(), attraktoren[2].y*ofGetHeight(), 7);
-              ofCircle(attraktoren[3].x*ofGetWidth(), attraktoren[3].y*ofGetHeight(), 7);
-
-          }
+            }
         }
     }
 
@@ -722,21 +656,19 @@ void testApp::draw()
 
     //grayImage2.draw(ofGetWidth()/2, 0, ofGetWidth()/2, ofGetHeight());
 
-    if (tracking) {
-       //contourFinder2.setAnchorPoint(-adjustment2X, -adjustment2Y);
-       //contourFinder2.draw(0, 0, contourScaleWidth, contourScaleHeight);
-       //cout << adjustment2X << " - ";
-
-       if(enddraw){
-          if(contourFinder2.blobs.size() > 0)    //wenn ein Körper erkannt wird
-          {
-              //zeichnet 4 Punkte an äußersten Punkten der beiden erkannten Körper
-              ofSetHexColor(0xFF0000);
-              ofCircle(attraktoren[4].x*ofGetWidth(), attraktoren[4].y*ofGetHeight(), 7);
-              ofCircle(attraktoren[5].x*ofGetWidth(), attraktoren[5].y*ofGetHeight(), 7);
-              ofCircle(attraktoren[6].x*ofGetWidth(), attraktoren[6].y*ofGetHeight(), 7);
-              ofCircle(attraktoren[7].x*ofGetWidth(), attraktoren[7].y*ofGetHeight(), 7);
-          }
+    if (tracking)
+    {
+        if(enddraw)
+        {
+            if(contourFinder2.blobs.size() > 0)    //wenn ein Körper erkannt wird
+            {
+                //zeichnet 4 Punkte an äußersten Punkten der beiden erkannten Körper
+                ofSetHexColor(0xFF0000);
+                ofCircle(attraktoren[4].x*ofGetWidth(), attraktoren[4].y*ofGetHeight(), 7);
+                ofCircle(attraktoren[5].x*ofGetWidth(), attraktoren[5].y*ofGetHeight(), 7);
+                ofCircle(attraktoren[6].x*ofGetWidth(), attraktoren[6].y*ofGetHeight(), 7);
+                ofCircle(attraktoren[7].x*ofGetWidth(), attraktoren[7].y*ofGetHeight(), 7);
+            }
         }
     }
 
@@ -819,13 +751,15 @@ void testApp::exit()
 void testApp::mouseReleased(int x, int y, int button)
 {
     //Bei Linksklick wird Tracking de/aktiviert
-    if(!button){
+    if(!button)
+    {
         tracking = !tracking;
         cout << "tracking" << ofToString(tracking);
     }
 
     //Bei Rechtsklick wird zeichnen der Attraktorpunkte de/aktiviert
-    if(button){
+    if(button)
+    {
         enddraw = !enddraw;
         cout << "balldraw" << ofToString(enddraw);
     }
@@ -838,21 +772,22 @@ void testApp::keyPressed(int key)
     switch (key)
     {
 
-    case 'l' :
-        linien = !linien;
-        break;
-
-    case 's' :
-        setzen = !setzen;
-        break;
-
-
     case 'f' :
         //Fullcreen
         ofToggleFullscreen();
         break;
 
 //----------------------------------VÖGEL------------------------------------------------
+
+    case 'l' :
+
+        linien = !linien;
+        break;
+
+    case 's' :
+
+        setzen = !setzen;
+        break;
 
     case 'v':
 
@@ -929,7 +864,6 @@ void testApp::keyPressed(int key)
         kinect.setCameraTiltAngle(angle);
         kinect2.setCameraTiltAngle(angle);
         break;
-
 
     default:
         break;

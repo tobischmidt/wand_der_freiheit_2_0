@@ -7,8 +7,8 @@ void oscHelper::setup()
     cout << "listening for osc messages on port " << 1100 << "\n";
     receiver.setup(1100); // von Tablet
 
-    cout << "listening for osc messages on port " << 1919 << "\n";
-    herz.setup(1919); // von Antonio
+    cout << "listening for osc messages on port " << 4567 << "\n";
+    herz.setup(4567); // von Antonio
 
     /*---Vögel----*/
     settings[0] = 0; //Speed
@@ -55,11 +55,11 @@ void oscHelper::listen()
     {
         ofxOscMessage n;
         herz.getNextMessage(&n);
-
+        cout << "sers" << n.getAddress() << "\n";
         // Vogel ausgeben von Antonio
         if(n.getAddress() == "/generateBird")
         {
-            settings[19] = (n.getArgAsFloat(0));
+            settings[19] = 1;
             cout << n.getAddress() << "\n";
         }
     }

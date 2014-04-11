@@ -92,13 +92,13 @@ void Verfolger::draw(){
     ofSetColor(grauwert);
 
 
-    if(frameCounterX > 7)
+    if(frameCounterX > 3)
     {
         frameCounterY++;
         frameCounterX = 0;
     }
 
-    frame.x = frameCounterX * 213;
+    frame.x = frameCounterX * 426;
 
     if(frameCounterY > 7)
     {

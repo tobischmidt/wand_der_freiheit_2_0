@@ -92,16 +92,16 @@ void Chef::draw(){
         dir.y *= -1;
     }
 
-//    ofSetColor(ofColor(238,18,137));
-     ofSetColor(grauwert);
+    ofSetColor(ofColor(238,18,137));
+     //ofSetColor(grauwert);
 
-    if(frameCounterX > 7)
+    if(frameCounterX > 3)
     {
         frameCounterY++;
         frameCounterX = 0;
     }
 
-    frame.x = frameCounterX * 213;
+    frame.x = frameCounterX * 426;
 
     if(frameCounterY > 7)
     {

@@ -97,10 +97,6 @@ class testApp : public ofBaseApp{
 		ofPolyline curve2;
 		ofPolyline curve3;
 		ofPolyline curve4;
-		//vector<ofPolyline> fence;
-		//vector<ofPoint> fencePoints;
-
-		//ofPoint test;
 
 		vector<ofVec2f> zaun;
 		vector<ofVec2f> zaun2;
@@ -120,7 +116,7 @@ class testApp : public ofBaseApp{
         float timeOld;
         int nVerfolger;
         int nChef;
-        float createVerfolger; /*NEW*/
+        bool createVerfolger; /*NEW*/
         float texturWidth; /*NEW*/
         float texturHeight; /*NEW*/
         float speed; /*NEW*/
