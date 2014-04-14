@@ -29,6 +29,7 @@ class testApp : public ofBaseApp{
 
         void keyPressed(int);
         void mouseReleased(int x, int y, int button);
+        ofImage background;
 
 
 //-------------------------------VÖGEL------------------------------------
@@ -76,6 +77,7 @@ class testApp : public ofBaseApp{
 	    float startY;
 
         int blubb;
+        ofPolyline line;
 
 	    float adjustmentX;
 	    float adjustmentY;
@@ -93,15 +95,16 @@ class testApp : public ofBaseApp{
 
 		vector<ofPolyline> contours;
 
-		ofPolyline curve;
-		ofPolyline curve2;
-		ofPolyline curve3;
-		ofPolyline curve4;
+//		ofPolyline curve2;
+//		ofPolyline curve3;
+//		ofPolyline curve4;
+//
+//		vector<ofVec2f> zaun2;
+//		vector<ofVec2f> zaun3;
+//		vector<ofVec2f> zaun4;
 
-		vector<ofVec2f> zaun;
-		vector<ofVec2f> zaun2;
-		vector<ofVec2f> zaun3;
-		vector<ofVec2f> zaun4;
+		vector<vector<ofVec2f> > curveDefine;
+		vector<ofPolyline> curve;
 
 		int counter;
 
@@ -109,6 +112,8 @@ class testApp : public ofBaseApp{
 
 		bool setzen;
 		bool linien;
+
+		int runCounter;
 
     private:
 

@@ -8,14 +8,15 @@ void oscHelper::setup()
     receiver.setup(1100); // von Tablet
 
     cout << "listening for osc messages on port " << 4567 << "\n";
-    herz.setup(4567); // von Antonio
+    herz2.setup(4567); // von Antonio
 
     /*---Vögel----*/
     settings[0] = 0; //Speed
     settings[1] = 0; //texturWidth
     settings[16] = 0; //texturHight
     settings[2] = 0; //distance
-    settings[3] = 0; //ausgabe pos vögel
+    settings[3] = 0; //ausgabe pos vögel X
+    settings[15] = 0; //ausgabe pos vögel Y
     settings[4] = 0; //vogel ausgeben
     settings[5] = 0; //grauwert
     settings[19] = 0; // Vogel asugeben von Antonio
@@ -27,7 +28,7 @@ void oscHelper::setup()
     settings[7] = 0; //verschiebung 1 x
     settings[20] = 0; //verschiebung 1 y
     settings[18] = 0; //verschiebung 2 x
-    settings[21] = 0; // vershciebung 2 y
+    settings[21] = 0; // verschiebung 2 y
     settings[8] = 0; //Interaktion an/aus
 
     settings[9] = 0; //nearThreshold
@@ -35,14 +36,16 @@ void oscHelper::setup()
 
      /*---Animation----*/
     settings[12] = 0; //Grenze rechts
-    settings[13] = 0; //Lienen ausgeben
+    settings[13] = 0; //Linien ausgeben
 
-    settings[14] = 0; //osc herz
+    //settings[14] = 0; //osc herz
 
 }
 
 void oscHelper::listen()
 {
+    //cout << "bin da" << "\n";
+   // sendeLeben();
     // hide old messages
 //        for(int i = 0; i < NUM_MSG_STRINGS; i++){
 //            if(timers[i] < ofGetElapsedTimef()){
@@ -51,10 +54,10 @@ void oscHelper::listen()
 //        }
 
     // check for waiting messages
-    while(herz.hasWaitingMessages())
+    while(herz2.hasWaitingMessages())
     {
         ofxOscMessage n;
-        herz.getNextMessage(&n);
+        herz2.getNextMessage(&n);
         cout << "sers" << n.getAddress() << "\n";
         // Vogel ausgeben von Antonio
         if(n.getAddress() == "/generateBird")
@@ -75,7 +78,7 @@ void oscHelper::listen()
  /*----------------------------Vögel---------------------------*/
         // Speed
         if(m.getAddress() == "/1/fader1"){
-            settings[0] = (m.getArgAsFloat(0)) * 0.0003;
+            settings[0] = (m.getArgAsFloat(0)) * 0.00015;
         }
         // texturWidth
         if(m.getAddress() == "/1/fader2"){
@@ -91,7 +94,8 @@ void oscHelper::listen()
         }
         //ausgabe pos vögel
         if(m.getAddress() == "/1/xy1"){
-            settings[3] = (m.getArgAsFloat(0));
+            settings[3] = (m.getArgAsFloat(1));
+            settings[15] = (m.getArgAsFloat(0));
         }
         // Vogel ausgeben
         if(m.getAddress() == "/1/push1"){
@@ -168,6 +172,10 @@ void oscHelper::listen()
 /*
  * SETTING SPEICHERN
  */
+    void oscHelper::sendeLeben(){
+        cout << "sers \n";
+    }
+
     void oscHelper::save(){
 
         XML.popTag();

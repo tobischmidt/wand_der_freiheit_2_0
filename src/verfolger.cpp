@@ -11,6 +11,7 @@ Verfolger::Verfolger(ofPoint _pos, float _speed/*NEW*/,float _texturWidth/*NEW*/
     texturHeight = _texturHeight;
     frameCounterX = 0;
     frameCounterY = 0;
+    grauwert = 255;
 }
 
 void Verfolger::update(float dt, ofPoint move_to, float _speed/*NEW*/,float _texturWidth/*NEW*/, float _texturHeight/*NEW*/, float _par1/*NEW*/, float _rangeWidth/*new*/, float _grauwert/*new*/)
@@ -20,12 +21,12 @@ void Verfolger::update(float dt, ofPoint move_to, float _speed/*NEW*/,float _tex
 
     if(_texturWidth)
     {
-        texturWidth = _texturWidth * 0.8;/*NEW*/
+        texturWidth = _texturWidth / 3;/*NEW*/
     }
 
     if(_texturHeight)
     {
-        texturHeight = _texturHeight * 0.8;   /*NEW*/
+        texturHeight = _texturHeight / 3;   /*NEW*/
     }
 
     if(_speed)
@@ -36,8 +37,13 @@ void Verfolger::update(float dt, ofPoint move_to, float _speed/*NEW*/,float _tex
     if (_par1)
     {
         par1 = _par1;  /*NEW*/
-        par2 = 1- par1;
     }
+    else
+    {
+        par1 = 0.4;
+    }
+
+    par2 = 1 - par1;
 
     if (_rangeWidth)
     {
@@ -51,18 +57,21 @@ void Verfolger::update(float dt, ofPoint move_to, float _speed/*NEW*/,float _tex
     if (_grauwert)
     {
         grauwert = _grauwert ;
+
     }
-    else
+    /*else
     {
         grauwert = 255;
-    }
+    }*/
 
 
 
     // Wenn kein move_to mitgegeben wurde oder -1, dann dem letzten Punkt folgen, also kein Update durchführen.
     if(move_to.x >= 0){
-        saved_move_to = move_to;
+       saved_move_to = move_to;
     }
+
+    //cout << "moveTo - " << move_to << "\n";
 
     // steuert die bewegung vom Chef zur Maus - position= (aktuelle)position+richtung*geschwindigkeit*zeit
     dir = (saved_move_to - pos) * par1 + dir * par2;

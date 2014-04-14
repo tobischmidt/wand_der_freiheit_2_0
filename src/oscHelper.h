@@ -12,15 +12,16 @@ class oscHelper{
         void setup();
         void listen();
         float* getSettings(); /*NEW*/
-        float settings[22];    /*NEW*/
+        float settings[23];    /*NEW*/
         void save();
         void load();
+        void sendeLeben();
 
 
     private:
 
         ofxOscReceiver receiver;    /*NEW*/
-        ofxOscReceiver herz;
+        ofxOscReceiver herz2;
         ofxXmlSettings XML;
         int tagNum;
 

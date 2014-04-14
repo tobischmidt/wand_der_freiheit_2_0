@@ -13,6 +13,7 @@ void testApp::setup()
 //---------------------------VÖGEL------------------------------------------
 
     vogelTextur.loadImage("Vögel_weiß_Var3.png");
+    //background.loadImage("background_neu.jpg");
 
     nVerfolger = 8;
 
@@ -115,7 +116,7 @@ void testApp::setup()
     adjustment2X = ofGetScreenWidth() /2; /*NEW*/
     adjustment2Y = 0;   /*NEW*/
 
-    contourScaleWidth = ofGetScreenWidth();    /*NEW*/
+    contourScaleWidth = ofGetScreenWidth()/2;    /*NEW*/
     contourScaleHeight = ofGetScreenHeight();  /*NEW*/
 
     trace.allocate(ofGetScreenWidth(), ofGetScreenHeight(), GL_RGBA32F_ARB);
@@ -126,23 +127,33 @@ void testApp::setup()
 
     //--------------------------ABSCHLUSS-----------------------------------------------------
 
-    curve.addVertex(ofGetScreenWidth(), 500);
-
     counter = 0;
+
+    vector<ofVec2f> vec;
+    vec.push_back(ofVec2f(0, 0));
+
+    for(int i= 0; i<3; i++)
+    {
+        curveDefine.push_back(vec);
+    }
+    for(int i=0; i<curveDefine.size(); i++)
+    {
+        curveDefine[i].clear();
+    }
 
     for(float i=0; i<200; i++)
     {
         if(i <= 54)
         {
-            zaun2.push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/15) * 50 + 600));
+            curveDefine[0].push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/15) * 50 + 600));
         }
         else if(i > 54 && i <=  122)
         {
-            zaun2.push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/40 + M_PI*538/1000) * 140 + 564));
+            curveDefine[0].push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/40 + M_PI*538/1000) * 140 + 564));
         }
         else
         {
-            zaun2.push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/40 + M_PI*538/1000) * 70 + 494));
+            curveDefine[0].push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/40 + M_PI*538/1000) * 70 + 494));
         }
     }
 
@@ -150,15 +161,15 @@ void testApp::setup()
     {
         if(i <= 54)
         {
-            zaun3.push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/15 + M_PI) * 120 + 400));
+            curveDefine[1].push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/15 + M_PI) * 120 + 400));
         }
         else if(i > 54 && i <= 95)
         {
-            zaun3.push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/20 + M_PI) * 170 + 526));
+            curveDefine[1].push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/20 + M_PI) * 170 + 526));
         }
         else
         {
-            zaun3.push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/40 + M_PI*1738/1000) * 30 + 666));
+            curveDefine[1].push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/40 + M_PI*1738/1000) * 30 + 666));
         }
     }
 
@@ -166,21 +177,26 @@ void testApp::setup()
     {
         if(i <= 100)
         {
-            zaun4.push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/30 + M_PI*3/4) * 100 + 430));
+            curveDefine[2].push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/30 + M_PI*3/4) * 100 + 430));
         }
         else if(i > 100 && i <= 150)
         {
-            zaun4.push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/20 + M_PI*5/100) * 125 + 487));
+            curveDefine[2].push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/20 + M_PI*5/100) * 125 + 487));
         }
         else
         {
-            zaun4.push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/40 + M_PI*1738/1000 + M_PI*3/2) * 100 + 512));
+            curveDefine[2].push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/40 + M_PI*1738/1000 + M_PI*3/2) * 100 + 512));
         }
     }
 
     setzen = false;
     linien = false;
     createVerfolger = false;
+
+    runCounter = -1;
+
+    line.addVertex(ofPoint(vec[0]));
+    line.clear();
 }
 
 //--------------------------------------------------------------
@@ -190,6 +206,12 @@ void testApp::update()
     //Hintergrundfarbe schwarz
     ofBackground(0);
 
+    runCounter++;
+    if(runCounter > 150)
+    {
+        runCounter = 0;
+    }
+
 //-------------------------------------------------------OSC----------------------------------------------
 
     osc.listen();/*NEW*/
@@ -198,9 +220,10 @@ void testApp::update()
     {
         tracking = true;
     }
-    /*else{
-        tracking = false;
-    }*/
+//    else
+//    {
+//        tracking = false;
+//    }
     //cout << ofToString(tracking) << "\n" ;
 
 
@@ -237,7 +260,7 @@ void testApp::update()
 
     if(osc.settings[18] != 0)
     {
-        adjustment2X = osc.settings[18] * ofGetWidth(); /*NEW*/
+        adjustment2X = osc.settings[18] * ofGetScreenWidth(); /*NEW*/
     }
     else
     {
@@ -246,7 +269,7 @@ void testApp::update()
 
     if(osc.settings[21] != 0)
     {
-        adjustment2Y = osc.settings[21] * ofGetHeight(); /*NEW*/
+        adjustment2Y = osc.settings[21] * ofGetScreenHeight(); /*NEW*/
     }
     else
     {
@@ -255,7 +278,7 @@ void testApp::update()
 
     if(osc.settings[6] != 0)
     {
-        contourScaleWidth = osc.settings[6] * ofGetWidth();    /*NEW*/
+        contourScaleWidth = osc.settings[6] * ofGetScreenWidth();    /*NEW*/
     }
     else
     {
@@ -264,7 +287,7 @@ void testApp::update()
 
     if(osc.settings[17] != 0)
     {
-        contourScaleHeight = osc.settings[17] * ofGetHeight();  /*NEW*/
+        contourScaleHeight = osc.settings[17] * ofGetScreenHeight();  /*NEW*/
     }
     else
     {
@@ -273,7 +296,7 @@ void testApp::update()
 
     if(osc.settings[12] != 0)
     {
-        blubb = ofGetWidth() - (osc.settings[12] * ofGetWidth());  /*NEW*/
+        blubb = ofGetWidth() - (osc.settings[12] * ofGetScreenWidth());  /*NEW*/
     }
 
 //----------------------------------TRACKING------------------------------------------------------------
@@ -472,10 +495,12 @@ void testApp::update()
         }
         else
         {
-            if( !( ofGetSeconds()%3 ) )  // Alle 3 Sekunden
+            //if( !( (int)ofGetElapsedTimeMicros()%2000000 ) )  // Alle 3 Sekunden
+            if(!runCounter) // Alle 150 Durchläufe
             {
                 // Zufälliger Position folgen.
-                position = ofPoint( ofRandom(1), ofRandom(1) ); // Bei schnellen Prozessoren pendeln die Kugeln sich in der Mitte aus. Hier müsste ein Timer eingebaut werden, damit die Chefs erstmal eine Zeit lang in eine Richtung fliegen.
+                position = ofPoint(ofRandom(1), ofRandom(1)); // Bei schnellen Prozessoren pendeln die Kugeln sich in der Mitte aus. Hier müsste ein Timer eingebaut werden, damit die Chefs erstmal eine Zeit lang in eine Richtung fliegen.
+                //cout << "sers - ";
             }
             else  // Ansonsten
             {
@@ -487,23 +512,38 @@ void testApp::update()
     }
 
 
-    for (int i=0; i<nVerfolger; i++)
+    if(!setzen)
     {
-        // Die Verfolger werden nacheinander den n Chefs zugeordnet.
-        theVerfolger[i]->update(timeCur-timeOld, theChef[i%nChef]->getPos(), osc.getSettings()[0], osc.getSettings()[1], osc.getSettings()[16], osc.getSettings()[2], osc.getSettings()[12], osc.getSettings()[5]);
+        for (int i=0; i<nVerfolger; i++)
+        {
+            // Die Verfolger werden nacheinander den n Chefs zugeordnet.
+            theVerfolger[i]->update(timeCur-timeOld, theChef[i%nChef]->getPos(), osc.getSettings()[0], osc.getSettings()[1], osc.getSettings()[16], osc.getSettings()[2], osc.getSettings()[12], osc.getSettings()[5]);
+        }
+    }
+    else
+    {
+        for (int i=0; i<nVerfolger; i++)
+        {
+            // Die Verfolger werden nacheinander den n Chefs zugeordnet.
+            theVerfolger[i]->update(timeCur-timeOld, ofPoint(-1, -1), osc.getSettings()[0], osc.getSettings()[1], osc.getSettings()[16], osc.getSettings()[2], osc.getSettings()[12], osc.getSettings()[5]);
+        }
     }
 
 
     timeOld = timeCur;
 
-    if(osc.settings[4] == 1)
+    if(osc.settings[4] == 1 || osc.settings[19] == 1)
     {
         createVerfolger = true;
+        osc.settings[4] = 0;
+        osc.settings[19] = 0;
     }
 
     if(createVerfolger)
     {
-        theVerfolger[nVerfolger] = new Verfolger(ofPoint(osc.getSettings()[3]/*startX,startY*/), 0.0001/*speed*/, 70/*texturWidth*/, 40/*texturHeight*/, ofGetWidth()/*rangeWidth*/, osc.getSettings()[5]);
+        //theVerfolger[nVerfolger] = new Verfolger(ofPoint(osc.getSettings()[3], osc.getSettings()[15]/*startX,startY*/), 0.0001/*speed*/, osc.getSettings()[1]/*texturWidth*/, osc.getSettings()[16]/*texturHeight*/, ofGetWidth()/*rangeWidth*/, osc.getSettings()[5]);
+        theVerfolger[nVerfolger] = new Verfolger(ofPoint(ofRandom(1), ofRandom(1)), 0.00015/*NEW*/, 35/*NEW*/, 20/*NEW*/, ofGetWidth()/*rangeWidth*/, grauwert/*new*/);
+
         nVerfolger++;
 
         createVerfolger = false;
@@ -521,19 +561,27 @@ void testApp::update()
     {
         counter++;
 
-        if((counter%2) == 0 && counter/2 < zaun2.size())
+        for(int i=0; i<3; i++)
         {
-            curve2.curveTo(zaun2[counter/2].x, zaun2[counter/2].y);
+            curve.push_back(line);
         }
 
-        if((counter%2) == 0 && counter/2 < zaun2.size()+20 && counter > 20)
+        if((counter%2) == 0 && counter/2 < curveDefine[0].size())
         {
-            curve3.curveTo(zaun3[(counter-20)/2].x, zaun3[(counter-20)/2].y);
+            //curve[0].curveTo(ofPoint(curveDefine[0].at(counter/2).x, curveDefine[0].at(counter/2).y));
+            curve[0].curveTo(ofPoint(curveDefine[0].at(counter/2)));
         }
 
-        if((counter%2) == 0 && counter/2 < zaun2.size()+40 && counter > 40)
+        if((counter%2) == 0 && counter/2 < curveDefine[1].size() + 20 && counter > 20)
         {
-            curve4.curveTo(zaun4[(counter-40)/2].x, zaun4[(counter-40)/2].y);
+            //curve[1].curveTo(ofPoint(curveDefine[1].at((counter-20)/2).x, curveDefine[1].at((counter-20)/2).y));
+            curve[1].curveTo(ofPoint(curveDefine[1].at((counter - 20)/2)));
+        }
+
+        if((counter%2) == 0 && counter/2 < curveDefine[2].size() + 40 && counter > 40)
+        {
+            //curve[2].curveTo(ofPoint(curveDefine[2].at((counter-40)/2).x, curveDefine[2].at((counter-40)/2).y));
+            curve[2].curveTo(ofPoint(curveDefine[2].at((counter - 40)/2)));
         }
     }
 
@@ -541,8 +589,8 @@ void testApp::update()
     {
         for(int i=0; i<nVerfolger; i++)
         {
-            theChef[i]->update(timeCur-timeOld, ofPoint(zaun2[i*20].x/ofGetWidth(), zaun2[i*20].y/ofGetHeight()), osc.getSettings()[0], osc.getSettings()[1], osc.getSettings()[16], osc.getSettings()[2], osc.getSettings()[12], osc.getSettings()[5]);
-            //theVerfolger[i]->update(timeCur-timeOld, ofPoint(zaun2[i*20].x/ofGetWidth(), zaun2[i*20].y/ofGetHeight()), osc.getSettings()[0], osc.getSettings()[1], osc.getSettings()[16], osc.getSettings()[2], osc.getSettings()[12], osc.getSettings()[5]);
+            //theChef[i]->update(timeCur-timeOld, ofPoint(zaun2[i*20].x/ofGetWidth(), zaun2[i*20].y/ofGetHeight()), osc.getSettings()[0], osc.getSettings()[1], osc.getSettings()[16], osc.getSettings()[2], osc.getSettings()[12], osc.getSettings()[5]);
+            theVerfolger[i]->update(timeCur-timeOld, ofPoint(curveDefine[0].at(i*20).x/ofGetWidth(), curveDefine[0].at(i*20).y/ofGetHeight()), osc.getSettings()[0], osc.getSettings()[1], osc.getSettings()[16], osc.getSettings()[2], osc.getSettings()[12], osc.getSettings()[5]);
         }
     }
 }
@@ -554,14 +602,19 @@ void testApp::drawContours()
 {
     ofFill();
     ofSetColor(0,0,0,30);
-    ofRect(0, 0, ofGetWidth(), ofGetHeight());
+    ofRect(0, 0, ofGetScreenWidth(), ofGetScreenHeight());
 
     ofPushStyle();
+    ofSetLineWidth(3);
 
     // ---------------------------- draw the contours
 
     ofFill();
     ofSetColor(255, 255, 255);
+    //grayImage.draw(adjustmentX, adjustmentY, contourScaleWidth, contourScaleHeight);
+    //grayImage2.draw(adjustment2X, adjustment2Y, contourScaleWidth, contourScaleHeight);
+    //grayImage.draw(0, 0, ofGetScreenWidth()/2, ofGetScreenHeight());
+    //grayImage2.draw(ofGetScreenWidth()/2, 0, ofGetScreenWidth()/2, ofGetScreenHeight());
 
     for( int i=0; i<(int)contourFinder.blobs.size(); i++ )
     {
@@ -599,6 +652,8 @@ void testApp::drawContours()
 
 void testApp::draw()
 {
+    //ofSetColor(255);
+    //background.draw(0, 0, ofGetScreenWidth(), ofGetScreenHeight());
     ofSetColor(120);
 
     if(linien)
@@ -606,9 +661,10 @@ void testApp::draw()
         ofPushStyle();
         ofSetLineWidth(3);
 
-        curve2.draw();
-        curve3.draw();
-        curve4.draw();
+        for(int i=0; i<curve.size(); i++)
+        {
+            curve[i].draw();
+        }
 
         ofPopStyle();
     }
@@ -618,7 +674,7 @@ void testApp::draw()
         for(int i=0; i<nVerfolger; i++)
         {
             ofSetHexColor(0x00FF00);
-            ofCircle(zaun2[i*20].x, zaun2[i*20].y, 5);
+            ofCircle(curveDefine[0].at(i*20).x, curveDefine[0].at(i*20).y, 5);
         }
     }
 
@@ -792,15 +848,17 @@ void testApp::keyPressed(int key)
     case 'v':
 
         //neuer verfolger wird erstellt
-        theVerfolger[nVerfolger] = new Verfolger(ofPoint(startX, startY), 0.00015/*NEW*/, texturWidth/*NEW*/, texturHeight/*NEW*/, ofGetWidth()/*rangeWidth*/, grauwert/*new*/);
+        theVerfolger[nVerfolger] = new Verfolger(ofPoint(ofRandom(1), ofRandom(1)), 0.00015/*NEW*/, 35/*NEW*/, 20/*NEW*/, ofGetWidth()/*rangeWidth*/, grauwert/*new*/);
         nVerfolger++;
+        cout << "Verfolger \n";
         break;
 
     case 'b':
 
         //neuer chef wird erstellt
-        theChef[nChef] = new Chef(ofPoint(startX, startY), 0.00015/*NEW*/, texturWidth/*NEW*/, texturHeight/*NEW*/, ofGetWidth()/*rangeWidth*/, grauwert/*new*/);
+        theChef[nChef] = new Chef(ofPoint(ofRandom(1), ofRandom(1)), 0.00015/*NEW*/, 35/*NEW*/, 20/*NEW*/, ofGetWidth()/*rangeWidth*/, grauwert/*new*/);
         nChef++;
+        cout << "Chef \n";
         break;
 
 

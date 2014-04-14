@@ -4,6 +4,7 @@
 Chef::Chef(ofPoint _pos, float _speed/*NEW*/,float _texturWidth/*NEW*/, float _texturHeight/*NEW*/, float _rangeWidth/*NEW*/, float _grauwert/*new*/){
 
     pos = _pos;
+    cout << "posX: " << pos.x << " - pos.Y: " << pos.y << "\n";
     speed = _speed; /*NEW*/
     saved_move_to = ofPoint(0,0);
     rangeWidth = ofGetScreenWidth();
@@ -22,12 +23,12 @@ void Chef::update(float dt, ofPoint move_to, float _speed/*NEW*/,float _texturWi
 
     if(_texturWidth)
     {
-        texturWidth = _texturWidth;/*NEW*/
+        texturWidth = _texturWidth / 3;/*NEW*/
     }
 
     if(_texturHeight)
     {
-        texturHeight = _texturHeight; /*NEW*/
+        texturHeight = _texturHeight / 3; /*NEW*/
     }
 
     if(_speed)
@@ -54,10 +55,10 @@ void Chef::update(float dt, ofPoint move_to, float _speed/*NEW*/,float _texturWi
     {
         grauwert = _grauwert ;
     }
-    else
+    /*else
     {
         grauwert = 255;
-    }
+    }*/
 
 
 
@@ -66,6 +67,8 @@ void Chef::update(float dt, ofPoint move_to, float _speed/*NEW*/,float _texturWi
     {
         saved_move_to = move_to;
     }
+
+    //cout << "moveTo - " << move_to << "\n";
 
     // steuert die bewegung vom Chef zur Maus - position= (aktuelle)position+richtung*geschwindigkeit*zeit
     dir = (saved_move_to - pos) * par1 + dir * par2;
