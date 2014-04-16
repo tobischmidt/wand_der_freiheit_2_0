@@ -13,11 +13,14 @@ void testApp::setup()
 //---------------------------VÖGEL------------------------------------------
 
     vogelTextur.loadImage("Vögel_weiß_Var3.png");
-    //background.loadImage("background_neu.jpg");
+    drahtTextur.loadImage("Stacheldraht_weiß.png");
 
-    nVerfolger = 8;
+    background.loadImage("left_wall_2.jpg");
+    zitat.loadImage("Zitat3.png");
 
-    nChef = 8;
+    nVerfolger = 12;
+
+    nChef = 4;
 
     ofSetWindowTitle("Wand der Freiheit");
 
@@ -28,7 +31,7 @@ void testApp::setup()
     for (int i = 0; i < nChef; i++)
     {
         ofPoint pos = ofPoint(ofRandom(1), ofRandom(1));
-        float speed = 0.00015;/*NEW*/
+        speed = 0.00015;/*NEW*/
         float texturWidth =  35; /*NEW*/
         float texturHeight =  20; /*NEW*/
         float grauwert = 255; /*new*/
@@ -42,7 +45,7 @@ void testApp::setup()
     for (int i = 0; i < nVerfolger; i++)
     {
         ofPoint pos = ofPoint(ofRandom(1), ofRandom(1));
-        float speed = 0.00015;/*NEW*/
+        speed = 0.00015;/*NEW*/
         float createVerfolger = 0; /*NEW*/
         float texturWidth =  35; /*NEW*/
         float texturHeight =  20; /*NEW*/
@@ -132,7 +135,7 @@ void testApp::setup()
     vector<ofVec2f> vec;
     vec.push_back(ofVec2f(0, 0));
 
-    for(int i= 0; i<3; i++)
+    for(int i= 0; i<4; i++)
     {
         curveDefine.push_back(vec);
     }
@@ -141,23 +144,19 @@ void testApp::setup()
         curveDefine[i].clear();
     }
 
-    for(float i=0; i<200; i++)
+    for(float i=0; i<220; i++)
     {
-        if(i <= 54)
+        if(i <= 70)
         {
-            curveDefine[0].push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/15) * 50 + 600));
-        }
-        else if(i > 54 && i <=  122)
-        {
-            curveDefine[0].push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/40 + M_PI*538/1000) * 140 + 564));
+            curveDefine[0].push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/15) * 50 + 400));
         }
         else
         {
-            curveDefine[0].push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/40 + M_PI*538/1000) * 70 + 494));
+            curveDefine[0].push_back(ofVec2f(ofGetScreenWidth() - (i*10), 350));
         }
     }
 
-    for(float i=0; i<200; i++)
+    for(float i=0; i<220; i++)
     {
         if(i <= 54)
         {
@@ -169,31 +168,47 @@ void testApp::setup()
         }
         else
         {
-            curveDefine[1].push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/40 + M_PI*1738/1000) * 30 + 666));
+            //curveDefine[1].push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/40 + M_PI*1738/1000) * 30 + 666));
+            curveDefine[1].push_back(ofVec2f(ofGetScreenWidth() - (i*10), 696));
         }
     }
 
-    for(float i=0; i<200; i++)
+    for(float i=0; i<220; i++)
     {
-        if(i <= 100)
+        if(i <= 63)
         {
-            curveDefine[2].push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/30 + M_PI*3/4) * 100 + 430));
-        }
-        else if(i > 100 && i <= 150)
-        {
-            curveDefine[2].push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/20 + M_PI*5/100) * 125 + 487));
+            curveDefine[2].push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/20 + M_PI*3/2) * 125 + 470));
         }
         else
         {
-            curveDefine[2].push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/40 + M_PI*1738/1000 + M_PI*3/2) * 100 + 512));
+            curveDefine[2].push_back(ofVec2f(ofGetScreenWidth() - (i*10), 595));
         }
     }
+
+    for(float i=0; i<220; i++)
+    {
+        if(i <= 27)
+        {
+            curveDefine[3].push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/10 + M_PI*3200/2000) * 150 + 500));
+        }
+        else if(i > 27 && i <= 80)
+        {
+            curveDefine[3].push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/15 + M_PI*3620/2000) * 110 + 546));
+        }
+        else
+        {
+            curveDefine[3].push_back(ofVec2f(ofGetScreenWidth() - (i*10), 436));
+        }
+    }
+
 
     setzen = false;
     linien = false;
     createVerfolger = false;
+    transformation = false;
 
     runCounter = -1;
+    distanceCounter = 0.5;
 
     line.addVertex(ofPoint(vec[0]));
     line.clear();
@@ -220,10 +235,10 @@ void testApp::update()
     {
         tracking = true;
     }
-//    else
-//    {
-//        tracking = false;
-//    }
+    //else
+    //{
+     //   tracking = false;
+    //}
     //cout << ofToString(tracking) << "\n" ;
 
 
@@ -231,12 +246,15 @@ void testApp::update()
     {
         nearThreshold = osc.settings[9];
     }
-    else
+    /*else
     {
         nearThreshold = 255;
-    }
+    }*/
 
-    farThreshold = osc.settings[10];
+    if(osc.settings[10] != 0)
+    {
+        farThreshold = osc.settings[10];
+    }
 
     // verschiebung 1 x
     if(osc.settings[7] != 0)
@@ -461,6 +479,15 @@ void testApp::update()
 
 //-----------------------------------VÖGEL-----------------------------------------------------------
 
+    if(!runCounter)
+    {
+        for(int i=0; i<nVerfolger; i++)
+        {
+            theVerfolger[i]->setSpeed(ofRandom(0.0001, 0.0002));
+            theVerfolger[i]->newAbweichung();
+        }
+    }
+
     timeCur = ofGetElapsedTimeMillis();
     ofPoint position = ofPoint(0,0);
 
@@ -490,13 +517,13 @@ void testApp::update()
                 attraktoren[j].y = (attraktoren[j].y/kinect.height + adjustment2Y/ofGetHeight()) * contourScaleHeight/ofGetHeight();
             }
 
-            theChef[i]->update(timeCur-timeOld, attraktoren[i], osc.getSettings()[0], osc.getSettings()[1], osc.getSettings()[16], osc.getSettings()[2], osc.getSettings()[12], osc.getSettings()[5]);
+            theChef[i]->update(timeCur-timeOld, attraktoren[i], osc.getSettings()[1], osc.getSettings()[16], osc.getSettings()[2], osc.getSettings()[12], osc.getSettings()[5]);
 
         }
         else
         {
             //if( !( (int)ofGetElapsedTimeMicros()%2000000 ) )  // Alle 3 Sekunden
-            if(!runCounter) // Alle 150 Durchläufe
+            if(!runCounter && !setzen) // Alle 150 Durchläufe
             {
                 // Zufälliger Position folgen.
                 position = ofPoint(ofRandom(1), ofRandom(1)); // Bei schnellen Prozessoren pendeln die Kugeln sich in der Mitte aus. Hier müsste ein Timer eingebaut werden, damit die Chefs erstmal eine Zeit lang in eine Richtung fliegen.
@@ -507,26 +534,35 @@ void testApp::update()
                 // Dem letzten Punkt folgen.
                 position = ofPoint(-1, -1);
             }
-            theChef[i]->update(timeCur-timeOld, position, osc.getSettings()[0], osc.getSettings()[1], osc.getSettings()[16], osc.getSettings()[2], osc.getSettings()[12],osc.getSettings()[5]);
+            theChef[i]->update(timeCur-timeOld, position, osc.getSettings()[1], osc.getSettings()[16], osc.getSettings()[2], osc.getSettings()[12],osc.getSettings()[5]);
         }
     }
-
 
     if(!setzen)
     {
         for (int i=0; i<nVerfolger; i++)
         {
             // Die Verfolger werden nacheinander den n Chefs zugeordnet.
-            theVerfolger[i]->update(timeCur-timeOld, theChef[i%nChef]->getPos(), osc.getSettings()[0], osc.getSettings()[1], osc.getSettings()[16], osc.getSettings()[2], osc.getSettings()[12], osc.getSettings()[5]);
+            theVerfolger[i]->update(timeCur-timeOld, theChef[i%nChef]->getPos(), osc.getSettings()[1], osc.getSettings()[16], osc.getSettings()[2], osc.getSettings()[12], osc.getSettings()[5]);
         }
     }
+
     else
     {
         for (int i=0; i<nVerfolger; i++)
         {
-            // Die Verfolger werden nacheinander den n Chefs zugeordnet.
-            theVerfolger[i]->update(timeCur-timeOld, ofPoint(-1, -1), osc.getSettings()[0], osc.getSettings()[1], osc.getSettings()[16], osc.getSettings()[2], osc.getSettings()[12], osc.getSettings()[5]);
+            if(theVerfolger[i]->getPos() != ofPoint(curveDefine[0].at(i*10).x/ofGetWidth(), curveDefine[0].at(i*10).y/ofGetHeight()))
+            {
+                theVerfolger[i]->update(timeCur-timeOld, ofPoint(-1, -1), osc.getSettings()[1], osc.getSettings()[16], distanceCounter, osc.getSettings()[12], osc.getSettings()[5]);
+            }
         }
+
+        distanceCounter += 0.05;
+    }
+
+    if(distanceCounter > 1)
+    {
+        distanceCounter = 1;
     }
 
 
@@ -542,7 +578,7 @@ void testApp::update()
     if(createVerfolger)
     {
         //theVerfolger[nVerfolger] = new Verfolger(ofPoint(osc.getSettings()[3], osc.getSettings()[15]/*startX,startY*/), 0.0001/*speed*/, osc.getSettings()[1]/*texturWidth*/, osc.getSettings()[16]/*texturHeight*/, ofGetWidth()/*rangeWidth*/, osc.getSettings()[5]);
-        theVerfolger[nVerfolger] = new Verfolger(ofPoint(ofRandom(1), ofRandom(1)), 0.00015/*NEW*/, 35/*NEW*/, 20/*NEW*/, ofGetWidth()/*rangeWidth*/, grauwert/*new*/);
+        theVerfolger[nVerfolger] = new Verfolger(ofPoint(0.99, 0.4), 0.00015/*NEW*/, 35/*NEW*/, 20/*NEW*/, ofGetWidth()/*rangeWidth*/, grauwert/*new*/);
 
         nVerfolger++;
 
@@ -561,27 +597,29 @@ void testApp::update()
     {
         counter++;
 
-        for(int i=0; i<3; i++)
+        for(int i=0; i<4; i++)
         {
             curve.push_back(line);
         }
 
         if((counter%2) == 0 && counter/2 < curveDefine[0].size())
         {
-            //curve[0].curveTo(ofPoint(curveDefine[0].at(counter/2).x, curveDefine[0].at(counter/2).y));
-            curve[0].curveTo(ofPoint(curveDefine[0].at(counter/2)));
+            curve[0].curveTo(ofPoint(curveDefine[0].at((counter - 2)/2)));
         }
 
-        if((counter%2) == 0 && counter/2 < curveDefine[1].size() + 20 && counter > 20)
+        if((counter%2) == 0 && counter/2 < curveDefine[1].size() && counter > 20)
         {
-            //curve[1].curveTo(ofPoint(curveDefine[1].at((counter-20)/2).x, curveDefine[1].at((counter-20)/2).y));
-            curve[1].curveTo(ofPoint(curveDefine[1].at((counter - 20)/2)));
+            curve[1].curveTo(ofPoint(curveDefine[1].at((counter/2) - 10)));
         }
 
-        if((counter%2) == 0 && counter/2 < curveDefine[2].size() + 40 && counter > 40)
+        if((counter%2) == 0 && counter/2 < curveDefine[2].size() && counter > 40)
         {
-            //curve[2].curveTo(ofPoint(curveDefine[2].at((counter-40)/2).x, curveDefine[2].at((counter-40)/2).y));
-            curve[2].curveTo(ofPoint(curveDefine[2].at((counter - 40)/2)));
+            curve[2].curveTo(ofPoint(curveDefine[2].at((counter/2) - 20)));
+        }
+
+        if((counter%2) == 0 && counter/2 < curveDefine[3].size() && counter > 30)
+        {
+            curve[3].curveTo(ofPoint(curveDefine[3].at((counter/2) - 15)));
         }
     }
 
@@ -589,10 +627,19 @@ void testApp::update()
     {
         for(int i=0; i<nVerfolger; i++)
         {
-            //theChef[i]->update(timeCur-timeOld, ofPoint(zaun2[i*20].x/ofGetWidth(), zaun2[i*20].y/ofGetHeight()), osc.getSettings()[0], osc.getSettings()[1], osc.getSettings()[16], osc.getSettings()[2], osc.getSettings()[12], osc.getSettings()[5]);
-            theVerfolger[i]->update(timeCur-timeOld, ofPoint(curveDefine[0].at(i*20).x/ofGetWidth(), curveDefine[0].at(i*20).y/ofGetHeight()), osc.getSettings()[0], osc.getSettings()[1], osc.getSettings()[16], osc.getSettings()[2], osc.getSettings()[12], osc.getSettings()[5]);
+            if(theVerfolger[i]->getPos() != ofPoint(curveDefine[0].at(i*10).x/ofGetWidth(), curveDefine[0].at(i*10).y/ofGetHeight()))
+            {
+                theVerfolger[i]->update(timeCur-timeOld, ofPoint(curveDefine[0].at(i*10).x/ofGetWidth(), curveDefine[0].at(i*10).y/ofGetHeight()), osc.getSettings()[1], osc.getSettings()[16], osc.getSettings()[2], osc.getSettings()[12], osc.getSettings()[5]);
+            }
+        }
+
+        for(int i=0; i<nChef; i++)
+        {
+            theChef[i]->update(timeCur-timeOld, ofPoint(-500, -500), osc.getSettings()[1], osc.getSettings()[16], osc.getSettings()[2], osc.getSettings()[12], osc.getSettings()[5]);
         }
     }
+
+    //cout << "Verfolger: " << nVerfolger << "\n";
 }
 
 //--------------------------------------------------------------
@@ -652,9 +699,11 @@ void testApp::drawContours()
 
 void testApp::draw()
 {
-    //ofSetColor(255);
+    ofSetColor(255);
     //background.draw(0, 0, ofGetScreenWidth(), ofGetScreenHeight());
     ofSetColor(120);
+
+    //ofRect(0, ofGetScreenHeight()/2, ofGetScreenWidth(), 3);
 
     if(linien)
     {
@@ -674,7 +723,7 @@ void testApp::draw()
         for(int i=0; i<nVerfolger; i++)
         {
             ofSetHexColor(0x00FF00);
-            ofCircle(curveDefine[0].at(i*20).x, curveDefine[0].at(i*20).y, 5);
+            ofCircle(curveDefine[0].at(i*10).x, curveDefine[0].at(i*10).y, 5);
         }
     }
 
@@ -734,24 +783,56 @@ void testApp::draw()
 //----------------------------VÖGEL--------------------------------------------------------
 
     //Bindet die Textur auf die Festplatte
-    vogelTextur.getTextureReference().bind();
-
-    //Zeichnet alle Chefs
-    for (int i=0; i<nChef; i++)
+    if(setzen)
     {
-        theChef[i]->draw();
+       vogelTextur.getTextureReference().bind();
+
+           //Zeichnet alle Chefs
+        for (int i=0; i<nChef; i++)
+        {
+            theChef[i]->draw();
+        }
+
+        vogelTextur.getTextureReference().unbind();
+
+        drahtTextur.getTextureReference().bind();
+        //Zeichnet alle Verfolger
+        for (int i=0; i<nVerfolger; i++)
+        {
+            theVerfolger[i]->drawEnd();
+        }
+
+        drahtTextur.getTextureReference().unbind();
     }
 
-    //Zeichnet alle Verfolger
-    for (int i=0; i<nVerfolger; i++)
+    else
     {
-        theVerfolger[i]->draw();
+        vogelTextur.getTextureReference().bind();
+
+        //Zeichnet alle Chefs
+        for (int i=0; i<nChef; i++)
+        {
+            theChef[i]->draw();
+        }
+
+        //Zeichnet alle Verfolger
+        for (int i=0; i<nVerfolger; i++)
+        {
+            theVerfolger[i]->draw();
+        }
+
+        vogelTextur.getTextureReference().unbind();
     }
 
-    vogelTextur.getTextureReference().unbind();
 
     // Gibt Framerate in linker oberer Ecke aus
     ofDrawBitmapString(ofToString(ofGetFrameRate()),10,10);
+
+    if(setzen)
+    {
+        ofSetColor(120);
+        zitat.draw(300, 800, 800, 200);
+    }
 
     //Linie, um Fluggrenze rechts zu zeigen
     //ofSetColor(255);
@@ -848,7 +929,7 @@ void testApp::keyPressed(int key)
     case 'v':
 
         //neuer verfolger wird erstellt
-        theVerfolger[nVerfolger] = new Verfolger(ofPoint(ofRandom(1), ofRandom(1)), 0.00015/*NEW*/, 35/*NEW*/, 20/*NEW*/, ofGetWidth()/*rangeWidth*/, grauwert/*new*/);
+        theVerfolger[nVerfolger] = new Verfolger(ofPoint(0.99, 0.4), 0.00015/*NEW*/, 35/*NEW*/, 20/*NEW*/, ofGetWidth()/*rangeWidth*/, grauwert/*new*/);
         nVerfolger++;
         cout << "Verfolger \n";
         break;
@@ -856,7 +937,7 @@ void testApp::keyPressed(int key)
     case 'b':
 
         //neuer chef wird erstellt
-        theChef[nChef] = new Chef(ofPoint(ofRandom(1), ofRandom(1)), 0.00015/*NEW*/, 35/*NEW*/, 20/*NEW*/, ofGetWidth()/*rangeWidth*/, grauwert/*new*/);
+        theChef[nChef] = new Chef(ofPoint(0.99, 0.4), 0.00015/*NEW*/, 35/*NEW*/, 20/*NEW*/, ofGetWidth()/*rangeWidth*/, grauwert/*new*/);
         nChef++;
         cout << "Chef \n";
         break;

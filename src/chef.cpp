@@ -11,15 +11,15 @@ Chef::Chef(ofPoint _pos, float _speed/*NEW*/,float _texturWidth/*NEW*/, float _t
     flightAngle = 0;
     texturWidth = _texturWidth;
     texturHeight = _texturHeight;
-    frameCounterX = 0;
-    frameCounterY = 0;
+    frameCounterX = ofRandom(3);
+    frameCounterY = ofRandom(7);
     grauwert = _grauwert;
 }
 
-void Chef::update(float dt, ofPoint move_to, float _speed/*NEW*/,float _texturWidth/*NEW*/, float _texturHeight/*NEW*/, float _par1/*NEW*/, float _rangeWidth/*new*/, float _grauwert/*NEW*/)
+void Chef::update(float dt, ofPoint move_to,float _texturWidth/*NEW*/, float _texturHeight/*NEW*/, float _par1/*NEW*/, float _rangeWidth/*new*/, float _grauwert/*NEW*/)
 {
-    par1= 0.4;
-    par2= 1- par1;
+    //par1= 0.4;
+    //par2= 1- par1;
 
     if(_texturWidth)
     {
@@ -31,16 +31,15 @@ void Chef::update(float dt, ofPoint move_to, float _speed/*NEW*/,float _texturWi
         texturHeight = _texturHeight / 3; /*NEW*/
     }
 
-    if(_speed)
-    {
-        speed = _speed; /*NEW*/
-    }
-
     if (_par1)
     {
         par1 = _par1;  /*NEW*/
-        par2= 1- par1; /*NEW*/
     }
+    else
+    {
+        par1 = 0.4;
+    }
+    par2= 1- par1; /*NEW*/
 
     if (_rangeWidth)
     {
@@ -85,7 +84,7 @@ void Chef::draw(){
     int drawPosY = pos.y * ofGetHeight();
 
     // Bälle sollen den Bildschirm nicht verlassen
-    if ((drawPosX > ofGetWidth() - rangeWidth)||(drawPosX < 0))
+    /*if ((drawPosX > ofGetWidth() - rangeWidth)||(drawPosX < 0))
     {
         dir.x *= -1;
     }
@@ -93,9 +92,9 @@ void Chef::draw(){
     if ((drawPosY > ofGetHeight())||(drawPosY < 0))
     {
         dir.y *= -1;
-    }
+    }*/
 
-    ofSetColor(ofColor(238,18,137));
+    ofSetColor(ofColor(0,0,255));
      //ofSetColor(grauwert);
 
     if(frameCounterX > 3)

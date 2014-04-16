@@ -9,8 +9,12 @@ class Verfolger : public Ball{
     public:
 
         Verfolger(ofPoint, float/*speed*/, float /*texturWidth*/, float /*texturHeight*/, float /*rangewidth*/, float /*grauwert*/);
-        void update(float, ofPoint, float/*speed*/, float /*texturWidth*/, float /*texturHeight*/, float /*distance*/, float /*rangewidth*/, float /*grauwert*/);
+        void update(float, vector<ofPoint>, float /*texturWidth*/, float /*texturHeight*/, float /*distance*/, float /*rangewidth*/, float /*grauwert*/);
+        void update(float, ofPoint, float /*texturWidth*/, float /*texturHeight*/, float /*distance*/, float /*rangewidth*/, float /*grauwert*/);
         void draw();
+        void drawEnd();
+        void setSpeed(float);
+        void newAbweichung();
 
     private:
 
@@ -28,6 +32,11 @@ class Verfolger : public Ball{
 
         int frameCounterX;
         int frameCounterY;
+
+        int drawPosX;
+        int drawPosY;
+
+        ofPoint abweichung;
 };
 
 #endif

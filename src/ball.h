@@ -7,9 +7,10 @@ class Ball{
 
     public:
 
-        virtual void update(float, ofPoint, float/*speed*/, float/*texturWidth*/, float/*texturHeight*/, float /*distance*/, float, float/*grauwert*/) = 0;
+        virtual void update(float, ofPoint, float/*texturWidth*/, float/*texturHeight*/, float /*distance*/, float, float/*grauwert*/) = 0;
         virtual void draw();
         ofPoint getPos();
+        void setSpeed(float);
 
     protected:
 

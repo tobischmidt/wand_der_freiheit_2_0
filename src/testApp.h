@@ -29,7 +29,9 @@ class testApp : public ofBaseApp{
 
         void keyPressed(int);
         void mouseReleased(int x, int y, int button);
+
         ofImage background;
+        ofImage zitat;
 
 
 //-------------------------------VÖGEL------------------------------------
@@ -92,6 +94,7 @@ class testApp : public ofBaseApp{
 		float timers[NUM_MSG_STRINGS];  /*NEW*/
 
 		ofImage vogelTextur;
+		ofImage drahtTextur;
 
 		vector<ofPolyline> contours;
 
@@ -112,8 +115,10 @@ class testApp : public ofBaseApp{
 
 		bool setzen;
 		bool linien;
+		bool transformation;
 
 		int runCounter;
+		float distanceCounter;
 
     private:
 

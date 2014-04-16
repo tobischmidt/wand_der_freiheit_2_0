@@ -10,7 +10,7 @@ class Chef : public Ball{
     public:
 
         Chef(ofPoint, float/*NEW*/, float/*texturWidth*/, float /*texturHeight*/, float /*rangeWidth*/, float /*grauwert*/);
-        void update(float, ofPoint, float/*NEW*/, float/*texturWidth*/, float/*texturHeight*/, float /*distance*/, float /*rangeWidth*/, float /*grauwert*/);
+        void update(float, ofPoint, float/*texturWidth*/, float/*texturHeight*/, float /*distance*/, float /*rangeWidth*/, float /*grauwert*/);
         void draw();
 
     private:
