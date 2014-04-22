@@ -22,6 +22,7 @@ class testApp : public ofBaseApp{
 
         void setup();
         void update();
+        void updateOsc();
         void draw();
 	    void exit();
 
@@ -44,6 +45,7 @@ class testApp : public ofBaseApp{
 
 	    bool tracking;
 	    bool enddraw;
+	    bool hasContours;
 
 	    ofxKinect kinect;
 
@@ -63,8 +65,6 @@ class testApp : public ofBaseApp{
 	    ofxCvGrayscaleImage grayThreshFar; // the far thresholded image
 
     	ofxCvContourFinder contourFinder;
-
-	    bool bThreshWithOpenCV;
 
 	    float nearThreshold;
 	    float farThreshold;
@@ -111,13 +111,16 @@ class testApp : public ofBaseApp{
 		bool linien;
 		bool transformation;
 
+		bool doOscUpdate;
+
 		int runCounter;
-		float distanceCounter;
 
     private:
 
         float timeCur;
         float timeOld;
+        float timeDiff;
+
         int nVerfolger;
         int nChef;
         bool createVerfolger; /*NEW*/
@@ -130,6 +133,10 @@ class testApp : public ofBaseApp{
 
         oscHelper osc; /*NEW*/
         ofPoint position;
+
+        //Fenstergröße
+        int windowWidth;
+        int windowHeight;
 
 };
 

@@ -63,12 +63,11 @@ void Chef::update(float dt, ofPoint move_to)
 
     // errechnet aus dem Richtungsvektor den Drehwinkel für die Flugrichtung
     flightAngle = ofVec2f(0, 1).angle(dir);
-}
 
-void Chef::draw(){
+    //--------------------Darstellung
 
-    int drawPosX = pos.x * ofGetWidth();
-    int drawPosY = pos.y * ofGetHeight();
+    drawPosX = pos.x * ofGetWidth();
+    drawPosY = pos.y * ofGetHeight();
 
     // Bälle sollen den Bildschirm nicht verlassen
     /*if ((drawPosX > ofGetWidth() - rangeWidth)||(drawPosX < 0))
@@ -81,16 +80,13 @@ void Chef::draw(){
         dir.y *= -1;
     }*/
 
-    //ofSetColor(ofColor(0,0,255));
-    ofSetColor(grauwert);
-
-    if(frameCounterX > 3)
+    if(frameCounterX > 7)
     {
         frameCounterY++;
         frameCounterX = 0;
     }
 
-    frame.x = frameCounterX * 426;
+    frame.x = frameCounterX * 213;
 
     if(frameCounterY > 7)
     {
@@ -100,6 +96,13 @@ void Chef::draw(){
     frame.y = frameCounterY * 104;
 
     frameCounterX++;
+}
+
+void Chef::draw()
+{
+
+    //ofSetColor(ofColor(0,0,255));
+    ofSetColor(grauwert);
 
     glPushMatrix();
 

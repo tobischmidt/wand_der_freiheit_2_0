@@ -15,6 +15,11 @@ Verfolger::Verfolger(ofPoint _pos, float _texturWidth/*NEW*/, float _texturHeigh
     abweichung = ofPoint(1, 1);
 }
 
+void Verfolger::setPos(ofPoint _pos)
+{
+    pos = _pos;
+}
+
 void Verfolger::setSpeed(float _speed)
 {
     speed  =_speed;
@@ -65,10 +70,8 @@ void Verfolger::update(float dt, ofPoint move_to)
 
     // errechnet aus dem Richtungsvektor den Drehwinkel für die Flugrichtung
     flightAngle = ofVec2f(0, 1).angle(dir);
-}
 
-void Verfolger::draw(){
-
+    //---------------------Darstellung
     drawPosX = pos.x*ofGetWidth();
     drawPosY = pos.y*ofGetHeight();
 
@@ -82,10 +85,6 @@ void Verfolger::draw(){
     {
         dir.y *= -1;
     }*/
-
-    ofSetColor(grauwert);
-    //ofSetColor(0, 255, 0);
-
 
     if(frameCounterX > 7)
     {
@@ -103,6 +102,29 @@ void Verfolger::draw(){
     frame.y = frameCounterY * 104;
 
     frameCounterX++;
+}
+
+void Verfolger::draw()
+{
+    if(frameCounterX > 7)
+    {
+        frameCounterY++;
+        frameCounterX = 0;
+    }
+
+    frame.x = frameCounterX * 213;
+
+    if(frameCounterY > 7)
+    {
+        frameCounterY = 0;
+    }
+
+    frame.y = frameCounterY * 104;
+
+    frameCounterX++;
+
+    ofSetColor(grauwert);
+    //ofSetColor(0, 255, 0);
 
     glPushMatrix();
 
@@ -133,8 +155,8 @@ void Verfolger::drawEnd(){
     drawPosX = pos.x*ofGetWidth();
     drawPosY = pos.y*ofGetHeight();
 
-    ofSetColor(grauwert);
-    //ofSetColor(0, 255, 0);
+    //ofSetColor(grauwert);
+    ofSetColor(120);
 
     if(frameCounterX/3 > 7)
     {
@@ -142,9 +164,9 @@ void Verfolger::drawEnd(){
         frameCounterX = 0;
     }
 
-    if(frameCounterX/3 > 7 && frameCounterY == 1)
+    if(frameCounterX/3 > 7 && frameCounterY >= 1)
     {
-        frameCounterX = 7;
+        frameCounterX = 21;
     }
 
     frame.x = (frameCounterX/3) * 213;
@@ -161,7 +183,7 @@ void Verfolger::drawEnd(){
     glPushMatrix();
 
         glTranslated(drawPosX, drawPosY, 0);
-        //glRotatef(180, 0, 0, 1);
+        glRotatef(flightAngle + 180, 0, 0, 1);
         glBegin(GL_QUADS);
 
             glTexCoord2f(frame.x, frame.y);

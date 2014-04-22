@@ -20,6 +20,10 @@ void testApp::setup()
 
     ofSetFrameRate(60);
 
+    //Fenstergröße
+    windowWidth = ofGetScreenWidth();
+    windowHeight = ofGetScreenHeight();
+
 
 //-------------------------TRACKING-----------------------------------------------
 
@@ -27,6 +31,7 @@ void testApp::setup()
     //Tracking & Zeichnen der Endpunkte zunächst ausgeschalten
     tracking = false;
     enddraw = false;
+    hasContours = false;
 
     ofSetLogLevel(OF_LOG_VERBOSE);
 
@@ -59,7 +64,7 @@ void testApp::setup()
     nearThreshold = 255;
     farThreshold = 0;
 
-    bThreshWithOpenCV = true;
+
 
     // set the tilt to 0 on startup
 
@@ -78,14 +83,25 @@ void testApp::setup()
 #endif
 
     //Fbo für Spur der Silhouette
-    trace.allocate(ofGetScreenWidth(), ofGetScreenHeight(), GL_RGBA32F_ARB);
+    trace.allocate(windowWidth, windowHeight, GL_RGBA32F_ARB);
 
     trace.begin();
     ofClear(255,255,255, 0);
     trace.end();
 
+    leftEnd[0].set(2000, 500);
+    rightEnd[0].set(0, 500);
+    leftEnd[1].set(2000, 500);
+    rightEnd[1].set(0, 500);
+    leftEnd[2].set(2000, 500);
+    rightEnd[2].set(0, 500);
+    leftEnd[3].set(2000, 500);
+    rightEnd[3].set(0, 500);
+
 
 //-------------------------OSC Variablen-----------------------------------
+
+    doOscUpdate = false;
 
     osc.setup(); /*NEW*/
 
@@ -99,13 +115,13 @@ void testApp::setup()
 
     adjustmentX = 0;
     adjustmentY = 0;
-    adjustment2X = ofGetScreenWidth()/2;
+    adjustment2X = windowWidth/2;
     adjustment2Y = 0;
 
-    contourScaleWidth = ofGetScreenWidth()/2;
-    contourScaleHeight = ofGetScreenHeight();
+    contourScaleWidth = windowWidth/2;
+    contourScaleHeight = windowHeight;
 
-    rangeWidth = ofGetScreenWidth();
+    rangeWidth = windowWidth;
 
 
 //---------------------------VÖGEL------------------------------------------
@@ -159,11 +175,11 @@ void testApp::setup()
     {
         if(i <= 70)
         {
-            curveDefine[0].push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/15) * 50 + 400));
+            curveDefine[0].push_back(ofVec2f(windowWidth - (i*10), sin(i/15) * 50 + 400));
         }
         else
         {
-            curveDefine[0].push_back(ofVec2f(ofGetScreenWidth() - (i*10), 350));
+            curveDefine[0].push_back(ofVec2f(windowWidth - (i*10), 350));
         }
     }
 
@@ -171,15 +187,15 @@ void testApp::setup()
     {
         if(i <= 54)
         {
-            curveDefine[1].push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/15 + M_PI) * 120 + 400));
+            curveDefine[1].push_back(ofVec2f(windowWidth - (i*10), sin(i/15 + M_PI) * 120 + 400));
         }
         else if(i > 54 && i <= 95)
         {
-            curveDefine[1].push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/20 + M_PI) * 170 + 526));
+            curveDefine[1].push_back(ofVec2f(windowWidth - (i*10), sin(i/20 + M_PI) * 170 + 526));
         }
         else
         {
-            curveDefine[1].push_back(ofVec2f(ofGetScreenWidth() - (i*10), 696));
+            curveDefine[1].push_back(ofVec2f(windowWidth - (i*10), 696));
         }
     }
 
@@ -187,11 +203,11 @@ void testApp::setup()
     {
         if(i <= 63)
         {
-            curveDefine[2].push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/20 + M_PI*3/2) * 125 + 470));
+            curveDefine[2].push_back(ofVec2f(windowWidth - (i*10), sin(i/20 + M_PI*3/2) * 125 + 470));
         }
         else
         {
-            curveDefine[2].push_back(ofVec2f(ofGetScreenWidth() - (i*10), 595));
+            curveDefine[2].push_back(ofVec2f(windowWidth - (i*10), 595));
         }
     }
 
@@ -199,15 +215,15 @@ void testApp::setup()
     {
         if(i <= 27)
         {
-            curveDefine[3].push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/10 + M_PI*3200/2000) * 150 + 500));
+            curveDefine[3].push_back(ofVec2f(windowWidth - (i*10), sin(i/10 + M_PI*3200/2000) * 150 + 500));
         }
         else if(i > 27 && i <= 80)
         {
-            curveDefine[3].push_back(ofVec2f(ofGetScreenWidth() - (i*10), sin(i/15 + M_PI*3620/2000) * 110 + 546));
+            curveDefine[3].push_back(ofVec2f(windowWidth - (i*10), sin(i/15 + M_PI*3620/2000) * 110 + 546));
         }
         else
         {
-            curveDefine[3].push_back(ofVec2f(ofGetScreenWidth() - (i*10), 436));
+            curveDefine[3].push_back(ofVec2f(windowWidth - (i*10), 436));
         }
     }
 
@@ -218,7 +234,6 @@ void testApp::setup()
     transformation = false;
 
     runCounter = -1;
-    distanceCounter = 0.5;
     endCounter = 0;
 
     line.addVertex(ofPoint(vec[0]));
@@ -231,6 +246,8 @@ void testApp::setup()
 
     //Hintergrundfarbe schwarz
     ofBackground(0);
+
+    ofSleepMillis(2000);
 }
 
 //--------------------------------------------------------------
@@ -248,6 +265,320 @@ void testApp::update()
 
     osc.listen();/*NEW*/
 
+    for(int i=0; i<23; i++)
+    {
+        if(osc.settingsUpdate[i])
+        {
+            doOscUpdate = true;
+            break;
+        }
+    }
+
+    if(doOscUpdate)
+    {
+        updateOsc();
+        doOscUpdate = false;
+    }
+
+//----------------------------------TRACKING------------------------------------------------------------
+
+    if(kinect.isConnected())
+    {
+        kinect.update();
+
+        // there is a new frame and we are connected
+        if(kinect.isFrameNew())
+        {
+            // load grayscale depth image from the kinect source
+            grayImage.setFromPixels(kinect.getDepthPixels(), kinect.width, kinect.height);
+            // spiegelt das Bild
+            grayImage.mirror(false,true);
+            // we do two thresholds - one for the far plane and one for the near plane
+            // we then do a cvAnd to get the pixels which are a union of the two thresholds
+
+            grayThreshNear = grayImage;
+            grayThreshFar = grayImage;
+            grayThreshNear.threshold(nearThreshold, true);
+            grayThreshFar.threshold(farThreshold);
+            cvAnd(grayThreshNear.getCvImage(), grayThreshFar.getCvImage(), grayImage.getCvImage(), NULL);
+
+            // update the cv images
+            grayImage.flagImageChanged();
+
+            // Wenn Tracking aktiviert wird
+            // find contours which are between the size of 10 pixels and 1/2 the w*h pixels.
+            // also, find holes is set to true so we will get interior contours as well....
+            if (tracking)
+            {
+                contourFinder.findContours(grayImage, 10, (kinect.width*kinect.height)/2, 2, false);
+            }
+        }
+
+        if(contourFinder.blobs.size() > 0)//Wenn mindestens ein Objekt erkannt wird
+        {
+            for (int j=0; j< 2; j++)
+            {
+                for( int i=0; i<contourFinder.blobs[j].nPts; i+=10 )//Iteriert durch die Punkte der Kontur, nimmt nur jeden dritten wegen Laufzeit
+                {
+                    if(contourFinder.blobs[j].pts[i].x/2 < leftEnd[j].x)
+                    {
+                        //Wenn aktueller Punkt weiter links als gespeicherter Punkt wird dieser neu gespeichert
+                        //x-Wert durch 2 geteilt, da nur auf linker Bidlschirmhälfte
+                        leftEnd[j].set(contourFinder.blobs[j].pts[i].x/2, contourFinder.blobs[j].pts[i].y);
+                    }
+
+                    if(contourFinder.blobs[j].pts[i].x/2 > rightEnd[j].x)
+                    {
+                        //Wenn aktueller Punkt weiter rechts als gespeicherter Punkt wird dieser neu gespeichert
+                        rightEnd[j].set(contourFinder.blobs[j].pts[i].x/2, contourFinder.blobs[j].pts[i].y);
+                    }
+                }
+            }
+        }
+    }
+
+//selbe Funktionen wie für die erste Kinect, nur auf rechte Bildschirmhälfte bezogen
+#ifdef USE_TWO_KINECTS
+
+    if(kinect2.isConnected())
+    {
+        kinect2.update();
+
+        // there is a new frame and we are connected
+        if(kinect2.isFrameNew())
+        {
+            // load grayscale depth image from the kinect source
+            grayImage2.setFromPixels(kinect2.getDepthPixels(), kinect2.width, kinect2.height);
+            grayImage2.mirror(false,true);
+            // we do two thresholds - one for the far plane and one for the near plane
+            // we then do a cvAnd to get the pixels which are a union of the two thresholds
+
+            grayThreshNear = grayImage2;
+            grayThreshFar = grayImage2;
+            grayThreshNear.threshold(nearThreshold, true);
+            grayThreshFar.threshold(farThreshold);
+            cvAnd(grayThreshNear.getCvImage(), grayThreshFar.getCvImage(), grayImage2.getCvImage(), NULL);
+
+
+            // update the cv images
+            grayImage2.flagImageChanged();
+
+            // find contours which are between the size of 10 pixels and 1/2 the w*h pixels.
+            // also, find holes is set to true so we will get interior contours as well....
+            if (tracking)
+            {
+                contourFinder2.findContours(grayImage2, 10, (kinect2.width*kinect2.height)/2, 2, false);
+            }
+        }
+
+        if(contourFinder2.blobs.size() > 0)
+        {
+            for (int j=0; j< 2; j++)
+            {
+                for( int i=0; i<contourFinder2.blobs[j].nPts; i+=10 )//Iteriert durch die Punkte der Kontur, nimmt nur jeden dritten wegen Laufzeit
+                {
+                    if(contourFinder2.blobs[j].pts[i].x/2 < leftEnd[j+2].x)
+                    {
+                        //Wenn aktueller Punkt weiter links als gespeicherter Punkt wird dieser neu gespeichert
+                        //x-Wert durch 2 geteilt, da nur auf linker Bidlschirmhälfte
+                        leftEnd[j+2].set(contourFinder2.blobs[j].pts[i].x/2, contourFinder2.blobs[j].pts[i].y);
+                    }
+
+                    if(contourFinder2.blobs[j].pts[i].x/2 > rightEnd[j+2].x)
+                    {
+                        //Wenn aktueller Punkt weiter rechts als gespeicherter Punkt wird dieser neu gespeichert
+                        rightEnd[j+2].set(contourFinder2.blobs[j].pts[i].x/2, contourFinder2.blobs[j].pts[i].y);
+                    }
+                }
+            }
+        }
+    }
+
+#endif
+
+
+//-----------------------------------VÖGEL-----------------------------------------------------------
+
+    //alle 150 Durchläufe
+    if(!runCounter)
+    {
+        for(int i=0; i<nVerfolger; i++)
+        {
+            theVerfolger[i]->setSpeed(ofRandom(0.00005, 0.00008));
+            theVerfolger[i]->newAbweichung();
+        }
+    }
+
+    timeCur = ofGetElapsedTimeMillis();
+    timeDiff = timeCur - timeOld;
+    position = ofPoint(0,0);
+
+    hasContours = contourFinder.blobs.size();
+
+    for (int i=0; i<nChef; i++)
+    {
+        // Wenn ein Körper von der Kinect getrackt wird
+        if(!setzen)
+        {
+            if(hasContours)
+            {
+                attraktoren[0] = rightEnd[0];
+                attraktoren[1] = leftEnd[0];
+                attraktoren[2] = rightEnd[1];
+                attraktoren[3] = leftEnd[1];
+                attraktoren[4] = rightEnd[2];
+                attraktoren[5] = leftEnd[2];
+                attraktoren[6] = rightEnd[3];
+                attraktoren[7] = leftEnd[3];
+
+                for(int j=0; j<4; j++)
+                {
+                    attraktoren[j].x = (attraktoren[j].x/kinect.width + adjustmentX/windowWidth) * contourScaleWidth/windowWidth;
+                    attraktoren[j].y = (attraktoren[j].y/kinect.height + adjustmentY/windowHeight) * contourScaleHeight/windowHeight;
+                }
+
+                for(int j=4; j<8; j++)
+                {
+                    attraktoren[j].x = (attraktoren[j].x/kinect.width + adjustment2X/windowWidth) * contourScaleWidth/windowWidth + 0.5;
+                    attraktoren[j].y = (attraktoren[j].y/kinect.height + adjustment2Y/windowHeight) * contourScaleHeight/windowHeight;
+                }
+
+                theChef[i]->update(timeDiff, attraktoren[i]);
+
+            }
+            else if(!hasContours)
+            {
+                if(!runCounter && !setzen) // Alle 150 Durchläufe
+                {
+                    // Zufälliger Position folgen.
+                    position.set(ofRandom(1), ofRandom(1)); // Bei schnellen Prozessoren pendeln die Kugeln sich in der Mitte aus. Hier müsste ein Timer eingebaut werden, damit die Chefs erstmal eine Zeit lang in eine Richtung fliegen.
+                }
+                else  // Ansonsten
+                {
+                    // Dem letzten Punkt folgen.
+                    position.set(-1, -1);
+                }
+                theChef[i]->update(timeDiff, position);
+            }
+        }
+
+        else
+        {
+            theChef[i]->update(timeDiff, ofPoint(-500, -500));
+        }
+    }
+
+    if(!setzen)
+    {
+        for (int i=0; i<nVerfolger; i++)
+        {
+            // Die Verfolger werden nacheinander den n Chefs zugeordnet.
+            theVerfolger[i]->update(timeDiff, theChef[i%nChef]->getPos());
+            cout << sqrt(pow(theVerfolger[i]->getPos().x - curveDefine[0].at(i*10 + 70).x/windowWidth, 2) + pow(theVerfolger[i]->getPos().y - curveDefine[0].at(i*10 + 70).y/windowHeight, 2)) << "\n";
+        }
+    }
+
+    else
+    {
+        endCounter++;
+
+        for(int i=0; i<nVerfolger; i++)
+        {
+            //if(theVerfolger[i]->getPos() != ofPoint(curveDefine[0].at(i*10).x/windowWidth, curveDefine[0].at(i*10).y/windowHeight))
+            //{
+            if(i<12)
+            {
+
+                if(sqrt(pow(theVerfolger[i]->getPos().x - curveDefine[0].at(i*10 + 70).x/windowWidth, 2) + pow(theVerfolger[i]->getPos().y - curveDefine[0].at(i*10 + 70).y/windowHeight, 2)) < 0.01)
+                {
+                    theVerfolger[i]->setPos(ofPoint(curveDefine[0].at(i*10 + 70).x/windowWidth, (curveDefine[0].at(i*10 + 70).y + 2)/windowHeight));
+                }
+                else
+                {
+                   theVerfolger[i]->update(timeDiff, ofPoint(curveDefine[0].at(i*10 + 70).x/windowWidth, curveDefine[0].at(i*10 + 70).y/windowHeight));
+                }
+            }
+            else if(i>=12 && i<22)
+            {
+                if(theVerfolger[i]->getPos() != ofPoint(curveDefine[0].at(i*10).x/windowWidth, curveDefine[0].at(i*10).y/windowHeight))
+                {
+                    theVerfolger[i]->update(timeDiff, ofPoint(curveDefine[1].at((i-12)*10 + 90).x/windowWidth, curveDefine[1].at((i-12)*10 + 90).y/windowHeight));
+                }
+
+            }
+            else
+            {
+                if(theVerfolger[i]->getPos() != ofPoint(curveDefine[0].at(i*10).x/windowWidth, curveDefine[0].at(i*10).y/windowHeight))
+                {
+                    theVerfolger[i]->update(timeDiff, ofPoint(curveDefine[2].at((i-22)*10 + 90).x/windowWidth, curveDefine[2].at((i-22)*10 + 90).y/windowHeight));
+                }
+
+            }
+
+            theVerfolger[i]->setPar1(1);
+        }
+    }
+
+
+    timeOld = timeCur;
+
+    if(osc.settings[4] == 1 || osc.settings[19] == 1)
+    {
+        createVerfolger = true;
+        osc.settings[4] = 0;
+        osc.settings[19] = 0;
+    }
+
+    if(createVerfolger)
+    {
+        theVerfolger[nVerfolger] = new Verfolger(ofPoint(startX, startY), texturWidth, texturHeight, rangeWidth, grauwert);
+        theVerfolger[nVerfolger]->setSpeed(speed);
+        theVerfolger[nVerfolger]->setPar1(par1);
+
+        nVerfolger++;
+
+        createVerfolger = false;
+    }
+
+    ofEnableAlphaBlending();
+
+    trace.begin();
+    drawContours();
+    trace.end();
+
+//-------------------------------------------Abschluss--------------------------------------------------------------------
+
+    if(linien)
+    {
+        counter++;
+
+        //Über die Laufzeit den Polylines die Punkte übergeben, sodass sie "ins Bild laufen"
+        if((counter%2) == 0 && counter/2 < curveDefine[0].size())
+        {
+            curve[0].curveTo(ofPoint(curveDefine[0].at((counter)/2)));
+        }
+
+        if((counter%2) == 0 && counter/2 < curveDefine[1].size() && counter > 20)
+        {
+            curve[1].curveTo(ofPoint(curveDefine[1].at((counter/2) - 10)));
+        }
+
+        if((counter%2) == 0 && counter/2 < curveDefine[2].size() && counter > 40)
+        {
+            curve[2].curveTo(ofPoint(curveDefine[2].at((counter/2) - 20)));
+        }
+
+        if((counter%2) == 0 && counter/2 < curveDefine[3].size() && counter > 30)
+        {
+            curve[3].curveTo(ofPoint(curveDefine[3].at((counter/2) - 15)));
+        }
+    }
+}
+
+//--------------------------------------------------------------
+
+void testApp::updateOsc()
+{
     if(osc.settingsUpdate[8] && osc.settings[8] == 1)
     {
         tracking = true;
@@ -284,40 +615,40 @@ void testApp::update()
     }
 
     // verschiebung 1 x
-    if(osc.settingsUpdate[7] && osc.settings[7] * ofGetWidth() != adjustmentX)
+    if(osc.settingsUpdate[7] && osc.settings[7] * windowWidth != adjustmentX)
     {
-        adjustmentX = osc.settings[7] * ofGetScreenWidth();
+        adjustmentX = osc.settings[7] * windowWidth;
         osc.settingsUpdate[7] = false;
     }
 
     // verschiebung 1 y
-    if(osc.settingsUpdate[20] && osc.settings[20] * ofGetHeight() != adjustmentY)
+    if(osc.settingsUpdate[20] && osc.settings[20] * windowHeight != adjustmentY)
     {
-        adjustmentY = osc.settings[20] * ofGetScreenHeight();
+        adjustmentY = osc.settings[20] * windowHeight;
         osc.settingsUpdate[20] = false;
     }
 
-    if(osc.settingsUpdate[18] && osc.settings[18] * ofGetScreenWidth() != adjustment2X)
+    if(osc.settingsUpdate[18] && osc.settings[18] * windowWidth != adjustment2X)
     {
-        adjustment2X = osc.settings[18] * ofGetScreenWidth();
+        adjustment2X = osc.settings[18] * windowWidth;
         osc.settingsUpdate[18] = false;
     }
 
-    if(osc.settingsUpdate[21] && osc.settings[21] * ofGetScreenHeight() != adjustment2Y)
+    if(osc.settingsUpdate[21] && osc.settings[21] * windowHeight != adjustment2Y)
     {
-        adjustment2Y = osc.settings[21] * ofGetScreenHeight();
+        adjustment2Y = osc.settings[21] * windowHeight;
         osc.settingsUpdate[21] = false;
     }
 
-    if(osc.settingsUpdate[6] && osc.settings[6] * ofGetScreenWidth() != contourScaleWidth)
+    if(osc.settingsUpdate[6] && osc.settings[6] * windowWidth != contourScaleWidth)
     {
-        contourScaleWidth = osc.settings[6] * ofGetScreenWidth();
+        contourScaleWidth = osc.settings[6] * windowWidth;
         osc.settingsUpdate[6] = false;
     }
 
-    if(osc.settingsUpdate[17] && osc.settings[17] * ofGetScreenHeight() != contourScaleHeight)
+    if(osc.settingsUpdate[17] && osc.settings[17] * windowHeight != contourScaleHeight)
     {
-        contourScaleHeight = osc.settings[17] * ofGetScreenHeight();
+        contourScaleHeight = osc.settings[17] * windowHeight;
         osc.settingsUpdate[17] = false;
     }
 
@@ -368,359 +699,17 @@ void testApp::update()
 
     if(osc.settingsUpdate[12] && osc.settings[12] != 0)
     {
-        blubb = ofGetWidth() - (osc.settings[12] * ofGetScreenWidth());
+        blubb = windowWidth - (osc.settings[12] * windowWidth);
         osc.settingsUpdate[12] = false;
     }
-
-//----------------------------------TRACKING------------------------------------------------------------
-
-    if(kinect.isConnected())
-    {
-        kinect.update();
-
-        // there is a new frame and we are connected
-        if(kinect.isFrameNew())
-        {
-            // load grayscale depth image from the kinect source
-            grayImage.setFromPixels(kinect.getDepthPixels(), kinect.width, kinect.height);
-            // spiegelt das Bild
-            grayImage.mirror(false,true);
-            // we do two thresholds - one for the far plane and one for the near plane
-            // we then do a cvAnd to get the pixels which are a union of the two thresholds
-            if(bThreshWithOpenCV)
-            {
-                grayThreshNear = grayImage;
-                grayThreshFar = grayImage;
-                grayThreshNear.threshold(nearThreshold, true);
-                grayThreshFar.threshold(farThreshold);
-                cvAnd(grayThreshNear.getCvImage(), grayThreshFar.getCvImage(), grayImage.getCvImage(), NULL);
-            }
-            else
-            {
-                // or we do it ourselves - show people how they can work with the pixels
-                unsigned char * pix = grayImage.getPixels();
-
-                int numPixels = grayImage.getWidth() * grayImage.getHeight();
-                for(int i = 0; i < numPixels; i++)
-                {
-                    if(pix[i] < nearThreshold && pix[i] > farThreshold)
-                    {
-                        pix[i] = 255;
-                    }
-                    else
-                    {
-                        pix[i] = 0;
-                    }
-                }
-            }
-
-            // update the cv images
-            grayImage.flagImageChanged();
-
-            // Wenn Tracking aktiviert wird
-            // find contours which are between the size of 10 pixels and 1/2 the w*h pixels.
-            // also, find holes is set to true so we will get interior contours as well....
-            if (tracking)
-            {
-                contourFinder.findContours(grayImage, 10, (kinect.width*kinect.height)/2, 2, false);
-            }
-        }
-
-
-        leftEnd[0].set(2000, 500); //linkes/rechtes Ende der von der ersten Kinect erkannten Person
-        rightEnd[0].set(0, 500);
-        leftEnd[1].set(2000, 500); //linkes/rechtes Ende der von der ersten Kinect erkannten Person
-        rightEnd[1].set(0, 500);
-
-        if(contourFinder.blobs.size() > 0)//Wenn mindestens ein Objekt erkannt wird
-        {
-            for (int j=0; j< 2; j++)
-            {
-                for( int i=0; i<contourFinder.blobs[j].nPts; i+=10 )//Iteriert durch die Punkte der Kontur, nimmt nur jeden dritten wegen Laufzeit
-                {
-                    if(contourFinder.blobs[j].pts[i].x/2 < leftEnd[j].x)
-                    {
-                        //Wenn aktueller Punkt weiter links als gespeicherter Punkt wird dieser neu gespeichert
-                        //x-Wert durch 2 geteilt, da nur auf linker Bidlschirmhälfte
-                        leftEnd[j].set(contourFinder.blobs[j].pts[i].x/2, contourFinder.blobs[j].pts[i].y);
-                    }
-
-                    if(contourFinder.blobs[j].pts[i].x/2 > rightEnd[j].x)
-                    {
-                        //Wenn aktueller Punkt weiter rechts als gespeicherter Punkt wird dieser neu gespeichert
-                        rightEnd[j].set(contourFinder.blobs[j].pts[i].x/2, contourFinder.blobs[j].pts[i].y);
-                    }
-                }
-            }
-        }
-    }
-
-//selbe Funktionen wie für die erste Kinect, nur auf rechte Bildschirmhälfte bezogen
-#ifdef USE_TWO_KINECTS
-
-    if(kinect2.isConnected())
-    {
-        kinect2.update();
-
-        // there is a new frame and we are connected
-        if(kinect2.isFrameNew())
-        {
-            // load grayscale depth image from the kinect source
-            grayImage2.setFromPixels(kinect2.getDepthPixels(), kinect2.width, kinect2.height);
-            grayImage2.mirror(false,true);
-            // we do two thresholds - one for the far plane and one for the near plane
-            // we then do a cvAnd to get the pixels which are a union of the two thresholds
-            if(bThreshWithOpenCV)
-            {
-                grayThreshNear = grayImage2;
-                grayThreshFar = grayImage2;
-                grayThreshNear.threshold(nearThreshold, true);
-                grayThreshFar.threshold(farThreshold);
-                cvAnd(grayThreshNear.getCvImage(), grayThreshFar.getCvImage(), grayImage2.getCvImage(), NULL);
-            }
-            else
-            {
-                // or we do it ourselves - show people how they can work with the pixels
-                unsigned char * pix = grayImage2.getPixels();
-
-                int numPixels = grayImage2.getWidth() * grayImage2.getHeight();
-                for(int i = 0; i < numPixels; i++)
-                {
-                    if(pix[i] < nearThreshold && pix[i] > farThreshold)
-                    {
-                        pix[i] = 255;
-                    }
-                    else
-                    {
-                        pix[i] = 0;
-                    }
-                }
-            }
-
-            // update the cv images
-            grayImage2.flagImageChanged();
-
-            // find contours which are between the size of 10 pixels and 1/2 the w*h pixels.
-            // also, find holes is set to true so we will get interior contours as well....
-            if (tracking)
-            {
-                contourFinder2.findContours(grayImage2, 10, (kinect2.width*kinect2.height)/2, 2, false);
-            }
-        }
-
-        leftEnd[2].set(5000, 500);
-        rightEnd[2].set(0, 500);
-        leftEnd[3].set(5000, 500);
-        rightEnd[3].set(0, 500);
-
-        if(contourFinder2.blobs.size() > 0)
-        {
-            for (int j=0; j< 2; j++)
-            {
-                for( int i=0; i<contourFinder2.blobs[j].nPts; i+=10 )//Iteriert durch die Punkte der Kontur, nimmt nur jeden dritten wegen Laufzeit
-                {
-                    if(contourFinder2.blobs[j].pts[i].x/2 < leftEnd[j+2].x)
-                    {
-                        //Wenn aktueller Punkt weiter links als gespeicherter Punkt wird dieser neu gespeichert
-                        //x-Wert durch 2 geteilt, da nur auf linker Bidlschirmhälfte
-                        leftEnd[j+2].set(contourFinder2.blobs[j].pts[i].x/2, contourFinder2.blobs[j].pts[i].y);
-                    }
-
-                    if(contourFinder2.blobs[j].pts[i].x/2 > rightEnd[j+2].x)
-                    {
-                        //Wenn aktueller Punkt weiter rechts als gespeicherter Punkt wird dieser neu gespeichert
-                        rightEnd[j+2].set(contourFinder2.blobs[j].pts[i].x/2, contourFinder2.blobs[j].pts[i].y);
-                    }
-                }
-            }
-        }
-    }
-
-#endif
-
-
-//-----------------------------------VÖGEL-----------------------------------------------------------
-
-    //alle 150 Durchläufe
-    if(!runCounter)
-    {
-        for(int i=0; i<nVerfolger; i++)
-        {
-            theVerfolger[i]->setSpeed(ofRandom(0.00005, 0.00008));
-            theVerfolger[i]->newAbweichung();
-        }
-    }
-
-    timeCur = ofGetElapsedTimeMillis();
-    position = ofPoint(0,0);
-
-    for (int i=0; i<nChef; i++)
-    {
-        // Wenn ein Körper von der Kinect getrackt wird
-        if(contourFinder.blobs.size() > 0)
-        {
-            attraktoren[0] = rightEnd[0];
-            attraktoren[1] = leftEnd[0];
-            attraktoren[2] = rightEnd[1];
-            attraktoren[3] = leftEnd[1];
-            attraktoren[4] = rightEnd[2];
-            attraktoren[5] = leftEnd[2];
-            attraktoren[6] = rightEnd[3];
-            attraktoren[7] = leftEnd[3];
-
-            for(int j=0; j<4; j++)
-            {
-                attraktoren[j].x = (attraktoren[j].x/kinect.width + adjustmentX/ofGetWidth()) * contourScaleWidth/ofGetWidth();
-                attraktoren[j].y = (attraktoren[j].y/kinect.height + adjustmentY/ofGetHeight()) * contourScaleHeight/ofGetHeight();
-            }
-
-            for(int j=4; j<8; j++)
-            {
-                attraktoren[j].x = (attraktoren[j].x/kinect.width + adjustment2X/ofGetWidth()) * contourScaleWidth/ofGetWidth() + 0.5;
-                attraktoren[j].y = (attraktoren[j].y/kinect.height + adjustment2Y/ofGetHeight()) * contourScaleHeight/ofGetHeight();
-            }
-
-            theChef[i]->update(timeCur-timeOld, attraktoren[i]);
-
-        }
-        else
-        {
-            if(!runCounter && !setzen) // Alle 150 Durchläufe
-            {
-                // Zufälliger Position folgen.
-                position = ofPoint(ofRandom(1), ofRandom(1)); // Bei schnellen Prozessoren pendeln die Kugeln sich in der Mitte aus. Hier müsste ein Timer eingebaut werden, damit die Chefs erstmal eine Zeit lang in eine Richtung fliegen.
-            }
-            else  // Ansonsten
-            {
-                // Dem letzten Punkt folgen.
-                position = ofPoint(-1, -1);
-            }
-            theChef[i]->update(timeCur-timeOld, position);
-        }
-    }
-
-    if(!setzen)
-    {
-        for (int i=0; i<nVerfolger; i++)
-        {
-            // Die Verfolger werden nacheinander den n Chefs zugeordnet.
-            theVerfolger[i]->update(timeCur-timeOld, theChef[i%nChef]->getPos());
-        }
-    }
-
-    else
-    {
-        for (int i=0; i<nVerfolger; i++)
-        {
-            if(theVerfolger[i]->getPos() != ofPoint(curveDefine[0].at(i*10).x/ofGetWidth(), curveDefine[0].at(i*10).y/ofGetHeight()))
-            {
-                theVerfolger[i]->update(timeCur-timeOld, ofPoint(-1, -1));
-            }
-        }
-
-        distanceCounter += 0.05;
-    }
-
-    if(distanceCounter > 1)
-    {
-        distanceCounter = 1;
-    }
-
-
-    timeOld = timeCur;
-
-    if(osc.settings[4] == 1 || osc.settings[19] == 1)
-    {
-        createVerfolger = true;
-        osc.settings[4] = 0;
-        osc.settings[19] = 0;
-    }
-
-    if(createVerfolger)
-    {
-        theVerfolger[nVerfolger] = new Verfolger(ofPoint(startX, startY), texturWidth, texturHeight, rangeWidth, grauwert);
-        theVerfolger[nVerfolger]->setSpeed(speed);
-        theVerfolger[nVerfolger]->setPar1(par1);
-
-        nVerfolger++;
-
-        createVerfolger = false;
-    }
-
-    ofEnableAlphaBlending();
-
-    trace.begin();
-    drawContours();
-    trace.end();
-
-//-------------------------------------------Abschluss--------------------------------------------------------------------
-
-    if(linien)
-    {
-        counter++;
-
-        //Über die Laufzeit den Polylines die Punkte übergeben, sodass sie "ins Bild laufen"
-        if((counter%2) == 0 && counter/2 < curveDefine[0].size())
-        {
-            curve[0].curveTo(ofPoint(curveDefine[0].at((counter - 2)/2)));
-        }
-
-        if((counter%2) == 0 && counter/2 < curveDefine[1].size() && counter > 20)
-        {
-            curve[1].curveTo(ofPoint(curveDefine[1].at((counter/2) - 10)));
-        }
-
-        if((counter%2) == 0 && counter/2 < curveDefine[2].size() && counter > 40)
-        {
-            curve[2].curveTo(ofPoint(curveDefine[2].at((counter/2) - 20)));
-        }
-
-        if((counter%2) == 0 && counter/2 < curveDefine[3].size() && counter > 30)
-        {
-            curve[3].curveTo(ofPoint(curveDefine[3].at((counter/2) - 15)));
-        }
-    }
-
-    if(setzen)
-    {
-        endCounter++;
-
-        for(int i=0; i<nVerfolger; i++)
-        {
-            //if(theVerfolger[i]->getPos() != ofPoint(curveDefine[0].at(i*10).x/ofGetWidth(), curveDefine[0].at(i*10).y/ofGetHeight()))
-            //{
-            if(i<12)
-            {
-                theVerfolger[i]->update(timeCur-timeOld, ofPoint(curveDefine[0].at(i*10 + 70).x/ofGetWidth(), curveDefine[0].at(i*10 + 70).y/ofGetHeight()));
-            }
-            else if(i>=12 && i<22)
-            {
-                theVerfolger[i]->update(timeCur-timeOld, ofPoint(curveDefine[1].at((i-12)*10 + 90).x/ofGetWidth(), curveDefine[1].at((i-12)*10 + 90).y/ofGetHeight()));
-            }
-            else
-            {
-                theVerfolger[i]->update(timeCur-timeOld, ofPoint(curveDefine[2].at((i-22)*10 + 90).x/ofGetWidth(), curveDefine[2].at((i-22)*10 + 90).y/ofGetHeight()));
-            }
-            //}
-        }
-
-        for(int i=0; i<nChef; i++)
-        {
-            theChef[i]->update(timeCur-timeOld, ofPoint(-500, -500));
-        }
-    }
-
-    //cout << "Verfolger: " << nVerfolger << "\n";
 }
-
-//--------------------------------------------------------------
 
 
 void testApp::drawContours()
 {
     ofFill();
     ofSetColor(0,0,0,30);
-    ofRect(0, 0, ofGetScreenWidth(), ofGetScreenHeight());
+    ofRect(0, 0, windowWidth, windowHeight);
 
     ofPushStyle();
     //ofSetLineWidth(3);
@@ -738,7 +727,7 @@ void testApp::drawContours()
 
         for(int j=0; j<contourFinder.blobs[i].nPts; j++)
         {
-            contours[i].addVertex((contourFinder.blobs[i].pts[j].x*ofGetWidth()/640/2 + adjustmentX) * contourScaleWidth/ofGetWidth(), (contourFinder.blobs[i].pts[j].y*ofGetHeight()/480 + adjustmentY) * contourScaleHeight/ofGetHeight());
+            contours[i].addVertex((contourFinder.blobs[i].pts[j].x*windowWidth/640/2 + adjustmentX) * contourScaleWidth/windowWidth, (contourFinder.blobs[i].pts[j].y*windowHeight/480 + adjustmentY) * contourScaleHeight/windowHeight);
         }
 
         contours[i].draw();
@@ -753,7 +742,7 @@ void testApp::drawContours()
 
         for(int j=0; j<contourFinder2.blobs[i].nPts; j++)
         {
-            contours[i].addVertex((contourFinder2.blobs[i].pts[j].x*ofGetWidth()/640/2 + adjustment2X) * contourScaleWidth/ofGetWidth() + ofGetWidth()/2, (contourFinder2.blobs[i].pts[j].y*ofGetHeight()/480 + adjustment2Y) * contourScaleHeight/ofGetHeight());
+            contours[i].addVertex((contourFinder2.blobs[i].pts[j].x*windowWidth/640/2 + adjustment2X) * contourScaleWidth/windowWidth, (contourFinder2.blobs[i].pts[j].y*windowHeight/480 + adjustment2Y) * contourScaleHeight/windowHeight);
         }
 
         contours[i].draw();
@@ -767,10 +756,10 @@ void testApp::drawContours()
 void testApp::draw()
 {
     ofSetColor(255);
-    //background.draw(0, 0, ofGetScreenWidth(), ofGetScreenHeight());
+    //background.draw(0, 0, windowWidth, windowHeight);
     ofSetColor(120);
 
-    //ofRect(0, ofGetScreenHeight()/2, ofGetScreenWidth(), 3);
+    //ofRect(0, windowHeight/2, windowWidth, 3);
 
     if(linien)
     {
@@ -790,7 +779,7 @@ void testApp::draw()
 
     ofSetColor(255, 255, 255);
 
-    //grayImage.draw(0, 0, ofGetWidth()/2, ofGetHeight());
+    //grayImage.draw(0, 0, windowWidth, windowHeight);
 
     if(tracking)
     {
@@ -804,10 +793,10 @@ void testApp::draw()
             {
                 //zeichnet 4 Punkte an äußersten Punkten der beiden erkannten Körper
                 ofSetHexColor(0xFF0000);
-                ofCircle(attraktoren[0].x*ofGetWidth(), attraktoren[0].y*ofGetHeight(), 7);
-                ofCircle(attraktoren[1].x*ofGetWidth(), attraktoren[1].y*ofGetHeight(), 7);
-                ofCircle(attraktoren[2].x*ofGetWidth(), attraktoren[2].y*ofGetHeight(), 7);
-                ofCircle(attraktoren[3].x*ofGetWidth(), attraktoren[3].y*ofGetHeight(), 7);
+                ofCircle(attraktoren[0].x*windowWidth, attraktoren[0].y*windowHeight, 7);
+                ofCircle(attraktoren[1].x*windowWidth, attraktoren[1].y*windowHeight, 7);
+                ofCircle(attraktoren[2].x*windowWidth, attraktoren[2].y*windowHeight, 7);
+                ofCircle(attraktoren[3].x*windowWidth, attraktoren[3].y*windowHeight, 7);
 
             }
         }
@@ -817,7 +806,7 @@ void testApp::draw()
 
     ofSetHexColor(0xFFFFFF);
 
-    //grayImage2.draw(ofGetWidth()/2, 0, ofGetWidth()/2, ofGetHeight());
+    //grayImage2.draw(windowWidth/2, 0, windowWidth/2, windowHeight);
 
     if (tracking)
     {
@@ -827,10 +816,10 @@ void testApp::draw()
             {
                 //zeichnet 4 Punkte an äußersten Punkten der beiden erkannten Körper
                 ofSetHexColor(0xFF0000);
-                ofCircle(attraktoren[4].x*ofGetWidth(), attraktoren[4].y*ofGetHeight(), 7);
-                ofCircle(attraktoren[5].x*ofGetWidth(), attraktoren[5].y*ofGetHeight(), 7);
-                ofCircle(attraktoren[6].x*ofGetWidth(), attraktoren[6].y*ofGetHeight(), 7);
-                ofCircle(attraktoren[7].x*ofGetWidth(), attraktoren[7].y*ofGetHeight(), 7);
+                ofCircle(attraktoren[4].x*windowWidth, attraktoren[4].y*windowHeight, 7);
+                ofCircle(attraktoren[5].x*windowWidth, attraktoren[5].y*windowHeight, 7);
+                ofCircle(attraktoren[6].x*windowWidth, attraktoren[6].y*windowHeight, 7);
+                ofCircle(attraktoren[7].x*windowWidth, attraktoren[7].y*windowHeight, 7);
             }
         }
     }
@@ -853,7 +842,7 @@ void testApp::draw()
 
     vogelTextur.getTextureReference().unbind();
 
-    if(setzen && endCounter > 300)
+    if(setzen && endCounter > 600)
     {
         drahtTextur.getTextureReference().bind();
 
@@ -881,7 +870,7 @@ void testApp::draw()
 
 
     // Gibt Framerate in linker oberer Ecke aus
-    ofDrawBitmapString(ofToString(ofGetFrameRate()),10,10);
+    ofDrawBitmapString(ofToString(round(ofGetFrameRate())),10,10);
 
     if(setzen)
     {
@@ -891,7 +880,7 @@ void testApp::draw()
 
     //Linie, um Fluggrenze rechts zu zeigen
     //ofSetColor(255);
-    //ofRect(blubb, 0, 5, ofGetHeight());
+    //ofRect(blubb, 0, 5, windowHeight);
 
     // draw instructions
     /*ofSetColor(255);
@@ -967,6 +956,8 @@ void testApp::keyPressed(int key)
     case 'f' :
         //Fullcreen
         ofToggleFullscreen();
+        windowWidth = ofGetWidth();
+        windowHeight = ofGetHeight();
         break;
 
 //----------------------------------VÖGEL------------------------------------------------
@@ -1015,7 +1006,7 @@ void testApp::keyPressed(int key)
 //-----------------------------TRACKING-------------------------------------------
 
     case ' ':
-        bThreshWithOpenCV = !bThreshWithOpenCV;
+        ofSetFrameRate(60);
         break;
 
     case '>':

@@ -13,6 +13,7 @@ class Verfolger : public Ball{
         void draw();
         void drawEnd();
 
+        void setPos(ofPoint);
         void setSpeed(float);
         void setTexturWidth(float);
         void setTexturHeight(float);

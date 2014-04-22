@@ -32,6 +32,9 @@ class Chef : public Ball{
         float speed;
         float par1;
 
+        int drawPosX;
+        int drawPosY;
+
         ofPoint frame;
 
         int frameCounterX;
