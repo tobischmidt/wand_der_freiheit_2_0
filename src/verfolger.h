@@ -8,12 +8,18 @@ class Verfolger : public Ball{
 
     public:
 
-        Verfolger(ofPoint, float/*speed*/, float /*texturWidth*/, float /*texturHeight*/, float /*rangewidth*/, float /*grauwert*/);
-        void update(float, vector<ofPoint>, float /*texturWidth*/, float /*texturHeight*/, float /*distance*/, float /*rangewidth*/, float /*grauwert*/);
-        void update(float, ofPoint, float /*texturWidth*/, float /*texturHeight*/, float /*distance*/, float /*rangewidth*/, float /*grauwert*/);
+        Verfolger(ofPoint, float /*texturWidth*/, float /*texturHeight*/, float /*rangewidth*/, float /*grauwert*/);
+        void update(float, ofPoint);
         void draw();
         void drawEnd();
+
         void setSpeed(float);
+        void setTexturWidth(float);
+        void setTexturHeight(float);
+        void setPar1(float);
+        void setRangeWidth(float);
+        void setGrauwert(float);
+
         void newAbweichung();
 
     private:

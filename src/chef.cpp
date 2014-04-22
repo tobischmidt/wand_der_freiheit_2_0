@@ -1,11 +1,11 @@
 #include "chef.h"
 
 
-Chef::Chef(ofPoint _pos, float _speed/*NEW*/,float _texturWidth/*NEW*/, float _texturHeight/*NEW*/, float _rangeWidth/*NEW*/, float _grauwert/*new*/){
+Chef::Chef(ofPoint _pos, float _texturWidth/*NEW*/, float _texturHeight/*NEW*/, float _rangeWidth/*NEW*/, float _grauwert/*new*/){
 
     pos = _pos;
     cout << "posX: " << pos.x << " - pos.Y: " << pos.y << "\n";
-    speed = _speed; /*NEW*/
+    speed = 0.00005; /*NEW*/
     saved_move_to = ofPoint(0,0);
     rangeWidth = ofGetScreenWidth();
     flightAngle = 0;
@@ -16,63 +16,50 @@ Chef::Chef(ofPoint _pos, float _speed/*NEW*/,float _texturWidth/*NEW*/, float _t
     grauwert = _grauwert;
 }
 
-void Chef::update(float dt, ofPoint move_to,float _texturWidth/*NEW*/, float _texturHeight/*NEW*/, float _par1/*NEW*/, float _rangeWidth/*new*/, float _grauwert/*NEW*/)
+void Chef::setSpeed(float _speed)
 {
-    //par1= 0.4;
-    //par2= 1- par1;
+    speed  =_speed;
+}
 
-    if(_texturWidth)
-    {
-        texturWidth = _texturWidth / 3;/*NEW*/
-    }
+void Chef::setTexturWidth(float _texturWidth)
+{
+    texturWidth = _texturWidth;
+}
 
-    if(_texturHeight)
-    {
-        texturHeight = _texturHeight / 3; /*NEW*/
-    }
+void Chef::setTexturHeight(float _texturHeight)
+{
+    texturHeight = _texturHeight;
+}
 
-    if (_par1)
-    {
-        par1 = _par1;  /*NEW*/
-    }
-    else
-    {
-        par1 = 0.4;
-    }
-    par2= 1- par1; /*NEW*/
+void Chef::setPar1(float _par1)
+{
+    par1 = _par1;
+    par2 = 1 - par1;
+}
 
-    if (_rangeWidth)
-    {
-        rangeWidth = _rangeWidth * ofGetWidth(); /*NEW*/
-    }
-    else
-    {
-        rangeWidth = 0;
-    }
+void Chef::setRangeWidth(float _rangeWidth)
+{
+    rangeWidth = _rangeWidth;
+}
 
-    if (_grauwert)
-    {
-        grauwert = _grauwert ;
-    }
-    /*else
-    {
-        grauwert = 255;
-    }*/
+void Chef::setGrauwert(float _grauwert)
+{
+    grauwert = _grauwert;
+}
 
-
-
+void Chef::update(float dt, ofPoint move_to)
+{
     // Wenn kein move_to mitgegeben wurde oder -1, dann dem letzten Punkt folgen, also kein Update durchführen.
     if(move_to.x >= 0)
     {
         saved_move_to = move_to;
     }
 
-    //cout << "moveTo - " << move_to << "\n";
-
-    // steuert die bewegung vom Chef zur Maus - position= (aktuelle)position+richtung*geschwindigkeit*zeit
+    // steuert die bewegung vom Chef - position= (aktuelle)position+richtung*geschwindigkeit*zeit
     dir = (saved_move_to - pos) * par1 + dir * par2;
     dir.normalize();
     pos += dir * speed * dt;
+
 
     // errechnet aus dem Richtungsvektor den Drehwinkel für die Flugrichtung
     flightAngle = ofVec2f(0, 1).angle(dir);
@@ -94,8 +81,8 @@ void Chef::draw(){
         dir.y *= -1;
     }*/
 
-    ofSetColor(ofColor(0,0,255));
-     //ofSetColor(grauwert);
+    //ofSetColor(ofColor(0,0,255));
+    ofSetColor(grauwert);
 
     if(frameCounterX > 3)
     {

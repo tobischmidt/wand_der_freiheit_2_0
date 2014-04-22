@@ -15,13 +15,17 @@ class oscHelper{
         float settings[23];    /*NEW*/
         void save();
         void load();
-        void sendeLeben();
+
+        bool settingsUpdate[23];
+
+        ofxOscMessage n;
+        ofxOscMessage m;
 
 
     private:
 
         ofxOscReceiver receiver;    /*NEW*/
-        ofxOscReceiver herz2;
+        ofxOscReceiver herz;
         ofxXmlSettings XML;
         int tagNum;
 

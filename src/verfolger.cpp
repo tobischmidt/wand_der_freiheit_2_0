@@ -1,17 +1,17 @@
 #include "verfolger.h"
 
 
-Verfolger::Verfolger(ofPoint _pos, float _speed/*NEW*/,float _texturWidth/*NEW*/, float _texturHeight/*NEW*/, float _rangeWidth/*NEW*/, float _grauwert/*new*/){
+Verfolger::Verfolger(ofPoint _pos, float _texturWidth/*NEW*/, float _texturHeight/*NEW*/, float _rangeWidth/*NEW*/, float _grauwert/*new*/){
 
     pos = _pos;
-    speed = _speed; /*NEW*/
+    speed = ofRandom(0.00005, 0.00008); /*NEW*/
     saved_move_to = ofPoint(0,0);
-    rangeWidth = ofGetScreenWidth();
+    rangeWidth = _rangeWidth;
     texturWidth = _texturWidth;
     texturHeight = _texturHeight;
     frameCounterX = ofRandom(3);
     frameCounterY = ofRandom(7);
-    grauwert = 255;
+    grauwert = _grauwert;
     abweichung = ofPoint(1, 1);
 }
 
@@ -25,122 +25,40 @@ void Verfolger::newAbweichung()
     abweichung = ofPoint(ofRandom(-0.01f, 0.01), ofRandom(-0.01, 0.01));
 }
 
-void Verfolger::update(float dt, vector<ofPoint> _move_to,float _texturWidth/*NEW*/, float _texturHeight/*NEW*/, float _par1/*NEW*/, float _rangeWidth/*new*/, float _grauwert/*new*/)
+void Verfolger::setTexturWidth(float _texturWidth)
 {
-    //par1=0.4;
-    //par2= 1- par1;
-
-    if(_texturWidth)
-    {
-        texturWidth = _texturWidth / 3;/*NEW*/
-    }
-
-    if(_texturHeight)
-    {
-        texturHeight = _texturHeight / 3;   /*NEW*/
-    }
-
-    if (_par1)
-    {
-        par1 = _par1;  /*NEW*/
-    }
-    else
-    {
-        par1 = 0.4;
-    }
-
-    par2 = 1 - par1;
-
-    if (_rangeWidth)
-    {
-        rangeWidth = _rangeWidth * ofGetWidth(); /*NEW*/
-    }
-    else
-    {
-        rangeWidth = 0;
-    }
-
-    if (_grauwert)
-    {
-        grauwert = _grauwert ;
-
-    }
-    /*else
-    {
-        grauwert = 255;
-    }*/
-
-    ofPoint move_to = _move_to[ofRandom(_move_to.size() - 1)];
-
-    // Wenn kein move_to mitgegeben wurde oder -1, dann dem letzten Punkt folgen, also kein Update durchführen.
-    if(move_to.x >= 0){
-       saved_move_to = move_to + abweichung;
-    }
-
-    // steuert die bewegung vom Chef zur Maus - position= (aktuelle)position+richtung*geschwindigkeit*zeit
-    dir = (saved_move_to - pos) * par1 + dir * par2;
-    dir.normalize();
-    pos += dir * speed * dt;
-
-    //cout << "Speed" << speed << "\n";
-
-    // errechnet aus dem Richtungsvektor den Drehwinkel für die Flugrichtung
-    flightAngle = ofVec2f(0, 1).angle(dir);
+    texturWidth = _texturWidth;
 }
 
-void Verfolger::update(float dt, ofPoint move_to,float _texturWidth/*NEW*/, float _texturHeight/*NEW*/, float _par1/*NEW*/, float _rangeWidth/*new*/, float _grauwert/*new*/)
+void Verfolger::setTexturHeight(float _texturHeight)
 {
-    //par1=0.4;
-    //par2= 1- par1;
+    texturHeight = _texturHeight;
+}
 
-    if(_texturWidth)
-    {
-        texturWidth = _texturWidth / 3;/*NEW*/
-    }
-
-    if(_texturHeight)
-    {
-        texturHeight = _texturHeight / 3;   /*NEW*/
-    }
-
-    if (_par1)
-    {
-        par1 = _par1;  /*NEW*/
-    }
-    else
-    {
-        par1 = 0.5;
-    }
-
+void Verfolger::setPar1(float _par1)
+{
+    par1 = _par1;
     par2 = 1 - par1;
+}
 
-    if (_rangeWidth)
-    {
-        rangeWidth = _rangeWidth * ofGetWidth(); /*NEW*/
-    }
-    else
-    {
-        rangeWidth = 0;
-    }
+void Verfolger::setRangeWidth(float _rangeWidth)
+{
+    rangeWidth = _rangeWidth;
+}
 
-    if (_grauwert)
-    {
-        grauwert = _grauwert ;
+void Verfolger::setGrauwert(float _grauwert)
+{
+    grauwert = _grauwert;
+}
 
-    }
-    /*else
-    {
-        grauwert = 255;
-    }*/
-
-    //move_to = _move_to[ofRandom(_move_to.size()];
-
+void Verfolger::update(float dt, ofPoint move_to)
+{
     // Wenn kein move_to mitgegeben wurde oder -1, dann dem letzten Punkt folgen, also kein Update durchführen.
     if(move_to.x >= 0){
        saved_move_to = move_to + abweichung;
     }
 
-    // steuert die bewegung vom Chef zur Maus - position= (aktuelle)position+richtung*geschwindigkeit*zeit
+    // steuert die bewegung vom Verfolger - position= (aktuelle)position+richtung*geschwindigkeit*zeit
     dir = (saved_move_to - pos) * par1 + dir * par2;
     dir.normalize();
     pos += dir * speed * dt;
@@ -165,8 +83,8 @@ void Verfolger::draw(){
         dir.y *= -1;
     }*/
 
-    //ofSetColor(grauwert);
-    ofSetColor(0, 255, 0);
+    ofSetColor(grauwert);
+    //ofSetColor(0, 255, 0);
 
 
     if(frameCounterX > 7)
@@ -208,29 +126,15 @@ void Verfolger::draw(){
 
     glPopMatrix();
 
-
-    //textur.getTextureReference().unbind();
 }
 
 void Verfolger::drawEnd(){
 
-    int drawPosX = pos.x*ofGetWidth();
-    int drawPosY = pos.y*ofGetHeight();
+    drawPosX = pos.x*ofGetWidth();
+    drawPosY = pos.y*ofGetHeight();
 
-    // Bälle sollen den Bildschirm nicht verlassen
-    /*if ((drawPosX > ofGetWidth() - rangeWidth)||(drawPosX < 0))
-    {
-        dir.x *= -1;
-    }
-
-    if ((drawPosY > ofGetHeight())||(drawPosY < 0 ))
-    {
-        dir.y *= -1;
-    }*/
-
-    //ofSetColor(grauwert);
-    ofSetColor(0, 255, 0);
-
+    ofSetColor(grauwert);
+    //ofSetColor(0, 255, 0);
 
     if(frameCounterX/3 > 7)
     {
@@ -238,11 +142,16 @@ void Verfolger::drawEnd(){
         frameCounterX = 0;
     }
 
+    if(frameCounterX/3 > 7 && frameCounterY == 1)
+    {
+        frameCounterX = 7;
+    }
+
     frame.x = (frameCounterX/3) * 213;
 
     if(frameCounterY > 1)
     {
-        frameCounterY = 0;
+        frameCounterY = 1;
     }
 
     frame.y = frameCounterY * 104;
@@ -270,7 +179,4 @@ void Verfolger::drawEnd(){
             glEnd();
 
     glPopMatrix();
-
-
-    //textur.getTextureReference().unbind();
 }

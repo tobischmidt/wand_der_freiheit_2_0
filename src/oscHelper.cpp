@@ -8,7 +8,7 @@ void oscHelper::setup()
     receiver.setup(1100); // von Tablet
 
     cout << "listening for osc messages on port " << 4567 << "\n";
-    herz2.setup(4567); // von Antonio
+    herz.setup(4567); // von Antonio
 
     /*---Vögel----*/
     settings[0] = 0; //Speed
@@ -38,6 +38,11 @@ void oscHelper::setup()
     settings[12] = 0; //Grenze rechts
     settings[13] = 0; //Linien ausgeben
 
+    for(int i=0; i<23; i++)
+    {
+        settingsUpdate[i] = false;
+    }
+
     //settings[14] = 0; //osc herz
 
 }
@@ -54,15 +59,15 @@ void oscHelper::listen()
 //        }
 
     // check for waiting messages
-    while(herz2.hasWaitingMessages())
+    while(herz.hasWaitingMessages())
     {
-        ofxOscMessage n;
-        herz2.getNextMessage(&n);
-        cout << "sers" << n.getAddress() << "\n";
+        herz.getNextMessage(&n);
+
         // Vogel ausgeben von Antonio
         if(n.getAddress() == "/generateBird")
         {
             settings[19] = 1;
+            settingsUpdate[19] = true;
             cout << n.getAddress() << "\n";
         }
     }
@@ -70,7 +75,6 @@ void oscHelper::listen()
     while(receiver.hasWaitingMessages())
     {
         // get the next message
-        ofxOscMessage m;
         receiver.getNextMessage(&m);
 
 
@@ -79,85 +83,107 @@ void oscHelper::listen()
         // Speed
         if(m.getAddress() == "/1/fader1"){
             settings[0] = (m.getArgAsFloat(0)) * 0.00015;
+            settingsUpdate[0] = true;
         }
         // texturWidth
         if(m.getAddress() == "/1/fader2"){
             settings[1] = (m.getArgAsFloat(0));
+            settingsUpdate[1] = true;
         }
         // texturHeight
         if(m.getAddress() == "/1/fader4"){
             settings[16] = (m.getArgAsFloat(0));
+            settingsUpdate[16] = true;
         }
         // distance par1
         if(m.getAddress() == "/1/fader3"){
             settings[2] = (m.getArgAsFloat(0));
+            settingsUpdate[2] = true;
         }
         //ausgabe pos vögel
         if(m.getAddress() == "/1/xy1"){
             settings[3] = (m.getArgAsFloat(1));
             settings[15] = (m.getArgAsFloat(0));
+
+            settingsUpdate[3] = true;
+            settingsUpdate[15] = true;
         }
         // Vogel ausgeben
         if(m.getAddress() == "/1/push1"){
             settings[4] = (m.getArgAsFloat(0));
+            settingsUpdate[4] = true;
         }
         // grauwert
         if(m.getAddress() == "/1/fader5"){
             settings[5] = (m.getArgAsFloat(0) * 255);
+            settingsUpdate[5] = true;
         }
 
 /*------------------------Silhoutte/Kinect---------------------------*/
         // contourScaleWidth
         if(m.getAddress() == "/2/fader14"){
             settings[6] = (m.getArgAsFloat(0));
+            settingsUpdate[6] = true;
         }
         // contourScaleHeight
         if(m.getAddress() == "/2/fader2"){
             settings[17] = (m.getArgAsFloat(0));
+            settingsUpdate[17] = true;
         }
         // verschiebung 1 x
         if(m.getAddress() == "/2/fader3"){
             settings[7] = (m.getArgAsFloat(0));
+            settingsUpdate[7] = true;
         }
         // verschiebung 1 y
         if(m.getAddress() == "/2/fader5"){
             settings[20] = (m.getArgAsFloat(0));
+            settingsUpdate[20] = true;
         }
         // verschiebung 2 x
         if(m.getAddress() == "/2/fader6"){
             settings[18] = (m.getArgAsFloat(0));
+            settingsUpdate[18] = true;
         }
         // verschiebung 2 y
         if(m.getAddress() == "/2/fader7"){
             settings[21] = (m.getArgAsFloat(0));
+            settingsUpdate[21] = true;
         }
       // Interaktion starten
         if(m.getAddress() == "/2/toggle3"){
             settings[8] = (m.getArgAsFloat(0));
-             cout << settings[8] << "\n" ;
+            settingsUpdate[8] = true;
+             cout << "Interaktion" << settings[8] << "\n" ;
         }
         // nearThreshold
          if(m.getAddress() == "/2/fader1"){
             settings[9] = (m.getArgAsFloat(0)) * 255;
+            settingsUpdate[9] = true;
         }
           // farThreshold
          if(m.getAddress() == "/2/fader4"){
             settings[10] = (m.getArgAsFloat(0)) * 255;
+            settingsUpdate[10] = true;
         }
 
 /*------------------------------Animation------------------------------------*/
         // Grenze rechts
          if(m.getAddress() == "/3/fader18"){
             settings[12] = (m.getArgAsFloat(0)) ;
+            settingsUpdate[12] = true;
         }
          // Linien ausgeben
          if(m.getAddress() == "/3/toggle1"){
             settings[13] = (m.getArgAsFloat(0)) ;
+            settingsUpdate[13] = true;
         }
          // osc herz
-         if(m.getAddress() == "/3/led2"){
-            settings[19] = (m.getArgAsFloat(0)) ;
-        }
+         //if(m.getAddress() == "/3/led2"){
+         //   settings[19] = (m.getArgAsFloat(0)) ;
+         //   settingsUpdate[19] = true;
+         //}
+
          // save einstellung
          if(m.getAddress() == "/3/push1"){
             save();
@@ -172,11 +198,8 @@ void oscHelper::listen()
 /*
  * SETTING SPEICHERN
  */
-    void oscHelper::sendeLeben(){
-        cout << "sers \n";
-    }
 
-    void oscHelper::save(){
+void oscHelper::save(){
 
         XML.popTag();
         XML.clear();
