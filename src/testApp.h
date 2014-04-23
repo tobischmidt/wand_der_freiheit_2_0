@@ -104,6 +104,7 @@ class testApp : public ofBaseApp{
 
 		int counter;
 		int endCounter;
+		int zitatCounter;
 
 		ofFbo trace;
 

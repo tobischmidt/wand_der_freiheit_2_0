@@ -24,6 +24,8 @@ void testApp::setup()
     windowWidth = ofGetScreenWidth();
     windowHeight = ofGetScreenHeight();
 
+    ofSetVerticalSync(false);
+
 
 //-------------------------TRACKING-----------------------------------------------
 
@@ -107,8 +109,8 @@ void testApp::setup()
 
     speed = 0.00007;
     par1 = 0.4;
-    texturWidth = 25;
-    texturHeight = 12;
+    texturWidth = 30;
+    texturHeight = 16;
     grauwert = 255;
     startX = 0.9;
     startY = 0.3;
@@ -128,8 +130,7 @@ void testApp::setup()
 
 
     vogelTextur.loadImage("Vögel_weiß_Var3.png");
-    //vogelTextur.loadImage("verlauf6.png");
-    drahtTextur.loadImage("Stacheldraht_weiß.png");
+    drahtTextur.loadImage("Draht_weiß_neu.png");
 
     nVerfolger = 12;
     nChef = 4;
@@ -140,7 +141,7 @@ void testApp::setup()
     //nChef Chefs werden vordefiniert
     for (int i = 0; i < nChef; i++)
     {
-        theChef[i] = new Chef(ofPoint(ofRandom(1), ofRandom(1)), texturWidth, texturHeight, rangeWidth, grauwert);
+        theChef[i] = new Chef(ofPoint(ofRandom(1), ofRandom(1)), texturWidth, texturHeight, rangeWidth);
         theChef[i]->setSpeed(speed);
         theChef[i]->setPar1(par1);
     }
@@ -149,7 +150,7 @@ void testApp::setup()
     //nVerfolger Verfolger wird vordefiniert
     for (int i = 0; i < nVerfolger; i++)
     {
-        theVerfolger[i] = new Verfolger(ofPoint(ofRandom(1), ofRandom(1)), texturWidth, texturHeight, rangeWidth, grauwert);
+        theVerfolger[i] = new Verfolger(ofPoint(ofRandom(1), ofRandom(1)), texturWidth, texturHeight, rangeWidth);
         theVerfolger[i]->setSpeed(speed);
         theVerfolger[i]->setPar1(par1);
     }
@@ -161,7 +162,7 @@ void testApp::setup()
 
     vec.push_back(ofVec2f(0, 0));
 
-    for(int i= 0; i<4; i++)
+    for(int i= 0; i<3; i++)
     {
         curveDefine.push_back(vec);
     }
@@ -185,29 +186,13 @@ void testApp::setup()
 
     for(float i=0; i<220; i++)
     {
-        if(i <= 54)
-        {
-            curveDefine[1].push_back(ofVec2f(windowWidth - (i*10), sin(i/15 + M_PI) * 120 + 400));
-        }
-        else if(i > 54 && i <= 95)
-        {
-            curveDefine[1].push_back(ofVec2f(windowWidth - (i*10), sin(i/20 + M_PI) * 170 + 526));
-        }
-        else
-        {
-            curveDefine[1].push_back(ofVec2f(windowWidth - (i*10), 696));
-        }
-    }
-
-    for(float i=0; i<220; i++)
-    {
         if(i <= 63)
         {
-            curveDefine[2].push_back(ofVec2f(windowWidth - (i*10), sin(i/20 + M_PI*3/2) * 125 + 470));
+            curveDefine[1].push_back(ofVec2f(windowWidth - (i*10), sin(i/20 + M_PI*3/2) * 125 + 470));
         }
         else
         {
-            curveDefine[2].push_back(ofVec2f(windowWidth - (i*10), 595));
+            curveDefine[1].push_back(ofVec2f(windowWidth - (i*10), 595));
         }
     }
 
@@ -215,15 +200,15 @@ void testApp::setup()
     {
         if(i <= 27)
         {
-            curveDefine[3].push_back(ofVec2f(windowWidth - (i*10), sin(i/10 + M_PI*3200/2000) * 150 + 500));
+            curveDefine[2].push_back(ofVec2f(windowWidth - (i*10), sin(i/10 + M_PI*3200/2000) * 150 + 500));
         }
         else if(i > 27 && i <= 80)
         {
-            curveDefine[3].push_back(ofVec2f(windowWidth - (i*10), sin(i/15 + M_PI*3620/2000) * 110 + 546));
+            curveDefine[2].push_back(ofVec2f(windowWidth - (i*10), sin(i/15 + M_PI*3620/2000) * 110 + 546));
         }
         else
         {
-            curveDefine[3].push_back(ofVec2f(windowWidth - (i*10), 436));
+            curveDefine[2].push_back(ofVec2f(windowWidth - (i*10), 436));
         }
     }
 
@@ -235,11 +220,12 @@ void testApp::setup()
 
     runCounter = -1;
     endCounter = 0;
+    zitatCounter = 0;
 
     line.addVertex(ofPoint(vec[0]));
     line.clear();
 
-    for(int i=0; i<4; i++)
+    for(int i=0; i<3; i++)
     {
         curve.push_back(line);
     }
@@ -397,6 +383,30 @@ void testApp::update()
 #endif
 
 
+//-------------------------------------------Abschluss--------------------------------------------------------------------
+
+    if(linien)
+    {
+        //Über die Laufzeit den Polylines die Punkte übergeben, sodass sie "ins Bild laufen"
+        if((counter%2) == 0 && counter/2 < curveDefine[0].size())
+        {
+            curve[0].curveTo(ofPoint(curveDefine[0].at((counter)/2)));
+        }
+
+        if((counter%2) == 0 && counter/2 < curveDefine[1].size() && counter > 20)
+        {
+            curve[1].curveTo(ofPoint(curveDefine[1].at((counter/2) - 10)));
+        }
+
+        if((counter%2) == 0 && counter/2 < curveDefine[2].size() && counter > 40)
+        {
+            curve[2].curveTo(ofPoint(curveDefine[2].at((counter/2) - 20)));
+        }
+
+        counter++;
+    }
+
+
 //-----------------------------------VÖGEL-----------------------------------------------------------
 
     //alle 150 Durchläufe
@@ -411,7 +421,7 @@ void testApp::update()
 
     timeCur = ofGetElapsedTimeMillis();
     timeDiff = timeCur - timeOld;
-    position = ofPoint(0,0);
+    position.set(0,0);
 
     hasContours = contourFinder.blobs.size();
 
@@ -446,7 +456,7 @@ void testApp::update()
                 theChef[i]->update(timeDiff, attraktoren[i]);
 
             }
-            else if(!hasContours)
+            else
             {
                 if(!runCounter && !setzen) // Alle 150 Durchläufe
                 {
@@ -464,7 +474,8 @@ void testApp::update()
 
         else
         {
-            theChef[i]->update(timeDiff, ofPoint(-500, -500));
+            position.set(0.5, -0.3);
+            theChef[i]->update(timeDiff, position);
         }
     }
 
@@ -474,41 +485,51 @@ void testApp::update()
         {
             // Die Verfolger werden nacheinander den n Chefs zugeordnet.
             theVerfolger[i]->update(timeDiff, theChef[i%nChef]->getPos());
-            cout << sqrt(pow(theVerfolger[i]->getPos().x - curveDefine[0].at(i*10 + 70).x/windowWidth, 2) + pow(theVerfolger[i]->getPos().y - curveDefine[0].at(i*10 + 70).y/windowHeight, 2)) << "\n";
         }
     }
-
     else
     {
         endCounter++;
+        if(endCounter > 600)
+        {
+            zitatCounter++;
+        }
 
         for(int i=0; i<nVerfolger; i++)
         {
-            //if(theVerfolger[i]->getPos() != ofPoint(curveDefine[0].at(i*10).x/windowWidth, curveDefine[0].at(i*10).y/windowHeight))
-            //{
             if(i<12)
             {
 
-                if(sqrt(pow(theVerfolger[i]->getPos().x - curveDefine[0].at(i*10 + 70).x/windowWidth, 2) + pow(theVerfolger[i]->getPos().y - curveDefine[0].at(i*10 + 70).y/windowHeight, 2)) < 0.01)
+                if(sqrt(pow(theVerfolger[i]->getPos().x - curveDefine[0].at(i*10 + 70).x/windowWidth, 2) + pow(theVerfolger[i]->getPos().y - curveDefine[0].at(i*10 + 70).y/windowHeight, 2)) < 0.005)
                 {
-                    theVerfolger[i]->setPos(ofPoint(curveDefine[0].at(i*10 + 70).x/windowWidth, (curveDefine[0].at(i*10 + 70).y + 2)/windowHeight));
+                    theVerfolger[i]->setPos(ofPoint(curveDefine[0].at(i*10 + 70).x/windowWidth, (curveDefine[0].at(i*10 + 70).y)/windowHeight));
                 }
                 else
                 {
                    theVerfolger[i]->update(timeDiff, ofPoint(curveDefine[0].at(i*10 + 70).x/windowWidth, curveDefine[0].at(i*10 + 70).y/windowHeight));
                 }
             }
+
             else if(i>=12 && i<22)
             {
-                if(theVerfolger[i]->getPos() != ofPoint(curveDefine[0].at(i*10).x/windowWidth, curveDefine[0].at(i*10).y/windowHeight))
+                if(sqrt(pow(theVerfolger[i]->getPos().x - curveDefine[1].at((i-12)*10 + 90).x/windowWidth, 2) + pow(theVerfolger[i]->getPos().y - curveDefine[1].at((i-12)*10 + 90).y/windowHeight, 2)) < 0.01)
+                {
+                    theVerfolger[i]->setPos(ofPoint(curveDefine[1].at((i-12)*10 + 90).x/windowWidth, curveDefine[1].at((i-12)*10 + 90).y/windowHeight));
+                }
+                else
                 {
                     theVerfolger[i]->update(timeDiff, ofPoint(curveDefine[1].at((i-12)*10 + 90).x/windowWidth, curveDefine[1].at((i-12)*10 + 90).y/windowHeight));
                 }
 
             }
+
             else
             {
-                if(theVerfolger[i]->getPos() != ofPoint(curveDefine[0].at(i*10).x/windowWidth, curveDefine[0].at(i*10).y/windowHeight))
+                if(sqrt(pow(theVerfolger[i]->getPos().x - curveDefine[2].at((i-22)*10 + 90).x/windowWidth, 2) + pow(theVerfolger[i]->getPos().y - curveDefine[2].at((i-22)*10 + 90).y/windowHeight, 2)) < 0.01)
+                {
+                    theVerfolger[i]->setPos(ofPoint(curveDefine[2].at((i-22)*10 + 90).x/windowWidth, curveDefine[2].at((i-22)*10 + 90).y/windowHeight));
+                }
+                else
                 {
                     theVerfolger[i]->update(timeDiff, ofPoint(curveDefine[2].at((i-22)*10 + 90).x/windowWidth, curveDefine[2].at((i-22)*10 + 90).y/windowHeight));
                 }
@@ -531,7 +552,7 @@ void testApp::update()
 
     if(createVerfolger)
     {
-        theVerfolger[nVerfolger] = new Verfolger(ofPoint(startX, startY), texturWidth, texturHeight, rangeWidth, grauwert);
+        theVerfolger[nVerfolger] = new Verfolger(ofPoint(startX, startY), texturWidth, texturHeight, rangeWidth);
         theVerfolger[nVerfolger]->setSpeed(speed);
         theVerfolger[nVerfolger]->setPar1(par1);
 
@@ -545,34 +566,6 @@ void testApp::update()
     trace.begin();
     drawContours();
     trace.end();
-
-//-------------------------------------------Abschluss--------------------------------------------------------------------
-
-    if(linien)
-    {
-        counter++;
-
-        //Über die Laufzeit den Polylines die Punkte übergeben, sodass sie "ins Bild laufen"
-        if((counter%2) == 0 && counter/2 < curveDefine[0].size())
-        {
-            curve[0].curveTo(ofPoint(curveDefine[0].at((counter)/2)));
-        }
-
-        if((counter%2) == 0 && counter/2 < curveDefine[1].size() && counter > 20)
-        {
-            curve[1].curveTo(ofPoint(curveDefine[1].at((counter/2) - 10)));
-        }
-
-        if((counter%2) == 0 && counter/2 < curveDefine[2].size() && counter > 40)
-        {
-            curve[2].curveTo(ofPoint(curveDefine[2].at((counter/2) - 20)));
-        }
-
-        if((counter%2) == 0 && counter/2 < curveDefine[3].size() && counter > 30)
-        {
-            curve[3].curveTo(ofPoint(curveDefine[3].at((counter/2) - 15)));
-        }
-    }
 }
 
 //--------------------------------------------------------------
@@ -755,7 +748,7 @@ void testApp::drawContours()
 
 void testApp::draw()
 {
-    ofSetColor(255);
+    //ofSetColor(255);
     //background.draw(0, 0, windowWidth, windowHeight);
     ofSetColor(120);
 
@@ -764,7 +757,7 @@ void testApp::draw()
     if(linien)
     {
         ofPushStyle();
-        ofSetLineWidth(3);
+        ofSetLineWidth(4);
 
         for(int i=0; i<curve.size(); i++)
         {
@@ -849,7 +842,7 @@ void testApp::draw()
         //Zeichnet alle Verfolger
         for (int i=0; i<nVerfolger; i++)
         {
-            theVerfolger[i]->drawEnd();
+            theVerfolger[i]->drawEnd(endCounter);
         }
 
         drahtTextur.getTextureReference().unbind();
@@ -874,7 +867,7 @@ void testApp::draw()
 
     if(setzen)
     {
-        ofSetColor(120);
+        ofSetColor(120, 120, 120, zitatCounter);
         zitat.draw(300, 800, 800, 200);
     }
 
@@ -964,12 +957,12 @@ void testApp::keyPressed(int key)
 
     case 'l' :
 
-        /*for(int i=0; i<curve.size(); i++)
+        for(int i=0; i<curve.size(); i++)
         {
             curve[i].clear();
         }
 
-        counter = -1;*/
+        counter = 0;
 
         linien = !linien;
         break;
@@ -977,13 +970,23 @@ void testApp::keyPressed(int key)
     case 's' :
 
         endCounter = 0;
+        zitatCounter = 0;
+
         setzen = !setzen;
+
+        if(!setzen)
+        {
+            for(int i=0; i<nVerfolger; i++)
+            {
+                theVerfolger[i]->setPar1(par1);
+            }
+        }
         break;
 
     case 'v':
 
         //neuer verfolger wird erstellt
-        theVerfolger[nVerfolger] = new Verfolger(ofPoint(startX, startY), texturWidth, texturHeight, rangeWidth, grauwert);
+        theVerfolger[nVerfolger] = new Verfolger(ofPoint(startX, startY), texturWidth, texturHeight, rangeWidth);
         theVerfolger[nVerfolger]->setSpeed(speed);
         theVerfolger[nVerfolger]->setPar1(par1);
 
@@ -994,7 +997,7 @@ void testApp::keyPressed(int key)
     case 'b':
 
         //neuer chef wird erstellt
-        theChef[nChef] = new Chef(ofPoint(startX, startY), texturWidth, texturHeight, rangeWidth, grauwert);
+        theChef[nChef] = new Chef(ofPoint(startX, startY), texturWidth, texturHeight, rangeWidth);
         theChef[nChef]->setSpeed(speed);
         theChef[nChef]->setPar1(par1);
 

@@ -1,11 +1,11 @@
 #include "chef.h"
 
 
-Chef::Chef(ofPoint _pos, float _texturWidth/*NEW*/, float _texturHeight/*NEW*/, float _rangeWidth/*NEW*/, float _grauwert/*new*/){
+Chef::Chef(ofPoint _pos, float _texturWidth, float _texturHeight, float _rangeWidth){
 
     pos = _pos;
     cout << "posX: " << pos.x << " - pos.Y: " << pos.y << "\n";
-    speed = 0.00005; /*NEW*/
+    speed = 0.00005;
     saved_move_to = ofPoint(0,0);
     rangeWidth = ofGetScreenWidth();
     flightAngle = 0;
@@ -13,7 +13,6 @@ Chef::Chef(ofPoint _pos, float _texturWidth/*NEW*/, float _texturHeight/*NEW*/, 
     texturHeight = _texturHeight;
     frameCounterX = ofRandom(3);
     frameCounterY = ofRandom(7);
-    grauwert = _grauwert;
 }
 
 void Chef::setSpeed(float _speed)
@@ -40,11 +39,6 @@ void Chef::setPar1(float _par1)
 void Chef::setRangeWidth(float _rangeWidth)
 {
     rangeWidth = _rangeWidth;
-}
-
-void Chef::setGrauwert(float _grauwert)
-{
-    grauwert = _grauwert;
 }
 
 void Chef::update(float dt, ofPoint move_to)
@@ -101,8 +95,7 @@ void Chef::update(float dt, ofPoint move_to)
 void Chef::draw()
 {
 
-    //ofSetColor(ofColor(0,0,255));
-    ofSetColor(grauwert);
+    ofSetColor(255);
 
     glPushMatrix();
 
@@ -122,7 +115,7 @@ void Chef::draw()
             glTexCoord2f(frame.x, frame.y + 104);
             glVertex2f(-texturWidth, texturHeight);
 
-            glEnd();
+        glEnd();
 
     glPopMatrix();
 

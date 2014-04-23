@@ -9,7 +9,7 @@ class Chef : public Ball{
 
     public:
 
-        Chef(ofPoint, float/*texturWidth*/, float /*texturHeight*/, float /*rangeWidth*/, float /*grauwert*/);
+        Chef(ofPoint, float, float, float);
         void update(float, ofPoint);
         void draw();
 
@@ -18,14 +18,12 @@ class Chef : public Ball{
         void setTexturHeight(float);
         void setPar1(float);
         void setRangeWidth(float);
-        void setGrauwert(float);
 
     private:
 
         ofPoint saved_move_to;
         float flightAngle;
         float rangeWidth;
-        float grauwert;
 
         float texturWidth;
         float texturHeight;

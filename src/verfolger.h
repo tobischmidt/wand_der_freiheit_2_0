@@ -8,10 +8,10 @@ class Verfolger : public Ball{
 
     public:
 
-        Verfolger(ofPoint, float /*texturWidth*/, float /*texturHeight*/, float /*rangewidth*/, float /*grauwert*/);
+        Verfolger(ofPoint, float, float, float);
         void update(float, ofPoint);
         void draw();
-        void drawEnd();
+        void drawEnd(int);
 
         void setPos(ofPoint);
         void setSpeed(float);
@@ -19,7 +19,6 @@ class Verfolger : public Ball{
         void setTexturHeight(float);
         void setPar1(float);
         void setRangeWidth(float);
-        void setGrauwert(float);
 
         void newAbweichung();
 
@@ -28,7 +27,6 @@ class Verfolger : public Ball{
         ofPoint saved_move_to;
         float flightAngle;
         float rangeWidth;
-        float grauwert;
 
         float texturWidth;
         float texturHeight;
@@ -39,6 +37,9 @@ class Verfolger : public Ball{
 
         int frameCounterX;
         int frameCounterY;
+
+        int frameCounterEndX;
+        int frameCounterEndY;
 
         int drawPosX;
         int drawPosY;

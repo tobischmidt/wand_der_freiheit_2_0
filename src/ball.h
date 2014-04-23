@@ -11,13 +11,6 @@ class Ball{
         virtual void draw();
         ofPoint getPos();
 
-//        void setSpeed(float);
-//        void setTexturWidth(float);
-//        void setTexturHeight(float);
-//        void setPar1(float);
-//        void setRangeWidth(float);
-//        void setGrauwert(float);
-
     protected:
 
         float par1;
@@ -28,7 +21,6 @@ class Ball{
         float texturWidth;
         float texturHeight;
         float speed;
-        float grauwert;
         float rangeWidth;
 };
 

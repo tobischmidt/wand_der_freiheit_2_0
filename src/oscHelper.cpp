@@ -18,8 +18,8 @@ void oscHelper::setup()
     settings[3] = 0; //ausgabe pos vögel X
     settings[15] = 0; //ausgabe pos vögel Y
     settings[4] = 0; //vogel ausgeben
-    settings[5] = 0; //grauwert
-    settings[19] = 0; // Vogel asugeben von Antonio
+    //settings[5] = 0; //grauwert
+    settings[19] = 0; // Vogel ausgeben von Antonio
 
 
     /*---Silhoutte/Kinect----*/
@@ -113,11 +113,11 @@ void oscHelper::listen()
             settings[4] = (m.getArgAsFloat(0));
             settingsUpdate[4] = true;
         }
-        // grauwert
-        if(m.getAddress() == "/1/fader5"){
-            settings[5] = (m.getArgAsFloat(0) * 255);
-            settingsUpdate[5] = true;
-        }
+//        // grauwert
+//        if(m.getAddress() == "/1/fader5"){
+//            settings[5] = (m.getArgAsFloat(0) * 255);
+//            settingsUpdate[5] = true;
+//        }
 
 /*------------------------Silhoutte/Kinect---------------------------*/
         // contourScaleWidth
