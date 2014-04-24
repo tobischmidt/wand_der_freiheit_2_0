@@ -38,8 +38,10 @@ class testApp : public ofBaseApp{
 //-------------------------------VÖGEL------------------------------------
 
         Ball** theBall;
-        Chef** theChef;
-        Verfolger** theVerfolger;
+        //Chef** theChef;
+        vector<Chef*> theChef;
+        //Verfolger** theVerfolger;
+        vector<Verfolger*> theVerfolger;
 
 //------------------------------TRACKING----------------------------------
 
@@ -86,6 +88,9 @@ class testApp : public ofBaseApp{
 	    float adjustment2X;
 	    float adjustment2Y;
 
+	    float lineAdjustmentX;
+	    float lineAdjustmentY;
+
 	    float contourScaleWidth;
 	    float contourScaleHeight;
 
@@ -98,7 +103,11 @@ class testApp : public ofBaseApp{
 
 		vector<ofPolyline> contours;
 
-		vector<vector<ofVec2f> > curveDefine;
+		//vector<vector<ofVec2f> > curveDefine;
+		ofPoint curveDefine1[420];
+		ofPoint curveDefine2[420];
+		ofPoint curveDefine3[420];
+		ofPoint curveDefine4[420];
 		vector<ofPolyline> curve;
 		vector<ofVec2f> vec;
 
