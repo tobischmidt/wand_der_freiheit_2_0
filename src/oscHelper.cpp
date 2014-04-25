@@ -82,7 +82,7 @@ void oscHelper::listen()
  /*----------------------------Vögel---------------------------*/
         // Speed
         if(m.getAddress() == "/1/fader1"){
-            settings[0] = (m.getArgAsFloat(0)) * 0.00015;
+            settings[0] = (m.getArgAsFloat(0)) * 0.00007;
             settingsUpdate[0] = true;
         }
         // texturWidth

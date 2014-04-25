@@ -25,7 +25,12 @@ void Verfolger::setPos(ofPoint _pos)
 
 void Verfolger::setSpeed(float _speed)
 {
-    speed  =_speed;
+    speed  =_speed * ofRandom(0.8, 1.2);
+}
+
+float Verfolger::getSpeed()
+{
+    return speed;
 }
 
 void Verfolger::newAbweichung()
@@ -130,11 +135,17 @@ void Verfolger::draw()
 
 }
 
+void Verfolger::resetEnd()
+{
+    frameCounterEndX = 0;
+    frameCounterEndY = 0;
+}
+
 void Verfolger::drawEnd(int _color){
 
-    ofSetColor(855-_color);
+    ofSetColor(1055-_color);
 
-    if(_color>735)
+    if(_color>935)
     {
         ofSetColor(120);
     }

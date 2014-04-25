@@ -37,11 +37,11 @@ class testApp : public ofBaseApp{
 
 //-------------------------------VÖGEL------------------------------------
 
-        Ball** theBall;
-        //Chef** theChef;
+        //Ball** theBall;
         vector<Chef*> theChef;
-        //Verfolger** theVerfolger;
+
         vector<Verfolger*> theVerfolger;
+        vector<Verfolger*>::iterator verfolgerIt;
 
 //------------------------------TRACKING----------------------------------
 
@@ -120,10 +120,13 @@ class testApp : public ofBaseApp{
 		bool setzen;
 		bool linien;
 		bool transformation;
+		bool blend;
 
 		bool doOscUpdate;
 
 		int runCounter;
+
+		int blendCounter;
 
     private:
 
@@ -147,6 +150,8 @@ class testApp : public ofBaseApp{
         //Fenstergröße
         int windowWidth;
         int windowHeight;
+
+        int platzhalter;
 
 };
 

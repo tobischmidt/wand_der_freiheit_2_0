@@ -137,8 +137,8 @@ void testApp::setup()
     vogelTextur.loadImage("Vögel_weiß_Var3.png");
     drahtTextur.loadImage("Draht_weiß_neu.png");
 
-    nVerfolger = 12;
-    nChef = 4;
+    nVerfolger = 24;
+    nChef = 8;
 
     //nChef Chefs werden vordefiniert
     for (int i = 0; i < nChef; i++)
@@ -148,6 +148,8 @@ void testApp::setup()
         theChef.back()->setPar1(par1);
     }
 
+
+    theVerfolger.reserve(300);
 
     //nVerfolger Verfolger wird vordefiniert
     for (int i = 0; i < nVerfolger; i++)
@@ -159,6 +161,8 @@ void testApp::setup()
 
 
 //--------------------------ABSCHLUSS-----------------------------------------------------
+
+    blend = false;
 
     counter = 0;
 
@@ -255,6 +259,7 @@ void testApp::update()
     if(runCounter > 150)
     {
         runCounter = 0;
+        cout << "Verfolger: " << nVerfolger << "\n";
     }
 
 //-------------------------------------------------------OSC----------------------------------------------
@@ -430,6 +435,20 @@ void testApp::update()
         counter++;
     }
 
+    if(counter == 700)
+    {
+        setzen = true;
+
+        for(int i=0; i<nVerfolger; i++)
+        {
+            theVerfolger[i]->resetEnd();
+        }
+
+        endCounter = 0;
+        zitatCounter = 0;
+    }
+
+
 
 //-----------------------------------VÖGEL-----------------------------------------------------------
 
@@ -438,7 +457,7 @@ void testApp::update()
     {
         for(int i=0; i<nVerfolger; i++)
         {
-            theVerfolger[i]->setSpeed(ofRandom(0.00005, 0.00008));
+            //theVerfolger[i]->setSpeed(ofRandom(0.00005, 0.00008));
             theVerfolger[i]->newAbweichung();
         }
     }
@@ -477,7 +496,26 @@ void testApp::update()
                     attraktoren[j].y = (attraktoren[j].y/kinect.height + adjustment2Y/windowHeight) * contourScaleHeight/windowHeight;
                 }
 
-                theChef[i]->update(timeDiff, attraktoren[i]);
+                if(i<8)
+                {
+                    theChef[i]->update(timeDiff, attraktoren[i]);
+                }
+
+                else
+                {
+                    if(!runCounter) // Alle 150 Durchläufe
+                    {
+                        // Zufälliger Position folgen.
+                        position.set(ofRandom(1), ofRandom(0.4)); // Bei schnellen Prozessoren pendeln die Kugeln sich in der Mitte aus. Hier müsste ein Timer eingebaut werden, damit die Chefs erstmal eine Zeit lang in eine Richtung fliegen.
+                    }
+                    else  // Ansonsten
+                    {
+                        // Dem letzten Punkt folgen.
+                        position.set(-1, -1);
+                    }
+
+                    theChef[i]->update(timeDiff, position);
+                }
 
             }
             else
@@ -509,12 +547,26 @@ void testApp::update()
         {
             // Die Verfolger werden nacheinander den n Chefs zugeordnet.
             theVerfolger[i]->update(timeDiff, theChef[i%nChef]->getPos());
+        //}
+
+//        for (int i=platzhalter; i<nVerfolger; i++)
+//        {
+//            if(!runCounter)
+//            {
+//                position.set(ofRandom(1), ofRandom(1));
+//            }
+//            else
+//            {
+//                position.set(-1, -1);
+//            }
+//
+//            theVerfolger[i]->update(timeDiff, position);
         }
     }
     else
     {
         endCounter++;
-        if(endCounter > 600)
+        if(endCounter > 800)
         {
             zitatCounter++;
         }
@@ -573,6 +625,16 @@ void testApp::update()
             else
             {
                 theVerfolger[i]->update(timeDiff, ofPoint(500, -500));
+
+                if(endCounter > 1000)
+                {
+                    for(int i=nVerfolger; i>44; i--)
+                    {
+                        delete theVerfolger.back();
+                        theVerfolger.pop_back();
+                        nVerfolger--;
+                    }
+                }
             }
 
             theVerfolger[i]->setPar1(1);
@@ -589,13 +651,37 @@ void testApp::update()
         osc.settings[19] = 0;
     }
 
+    platzhalter = nVerfolger;
+
+    if(platzhalter>40)
+    {
+        platzhalter = 40;
+    }
+
     if(createVerfolger)
     {
-        theVerfolger.push_back( new Verfolger(ofPoint(startX, startY), texturWidth, texturHeight, rangeWidth));
-        theVerfolger.back()->setSpeed(speed);
-        theVerfolger.back()->setPar1(par1);
+        //neuer Verfolger wird erstellt
+        verfolgerIt = theVerfolger.begin();
+        verfolgerIt += ofRandom(0, platzhalter);
+        theVerfolger.insert(verfolgerIt, new Verfolger(ofPoint(startX, startY), texturWidth, texturHeight, rangeWidth));
 
-        nVerfolger++;
+        position.set(ofRandom(1), ofRandom(1));
+        (*verfolgerIt)->update(timeDiff, position);
+        (*verfolgerIt)->setSpeed(speed);
+        (*verfolgerIt)->setPar1(par1);
+
+        nVerfolger = theVerfolger.size();
+        cout << "Verfolger \n";
+
+        if(nVerfolger > 40 && nVerfolger%5==1)
+        {
+            //neuer chef wird erstellt
+            theChef.push_back( new Chef(ofPoint(startX, startY), texturWidth, texturHeight, rangeWidth));
+            theChef.back()->setSpeed(speed);
+            theChef.back()->setPar1(par1);
+
+            nChef = theChef.size();
+        }
 
         createVerfolger = false;
     }
@@ -605,12 +691,80 @@ void testApp::update()
     trace.begin();
     drawContours();
     trace.end();
+
+    if(blend)
+    {
+        blendCounter++;
+    }
+
+    if(blendCounter > 255)
+    {
+        setzen = false;
+        endCounter = 0;
+
+        linien = false;
+
+        par1 = 0.4;
+
+        for(int i=nVerfolger; i>24; i--)
+        {
+            delete theVerfolger.back();
+            theVerfolger.pop_back();
+            nVerfolger--;
+        }
+        for(int i=nChef; i>8; i--)
+        {
+            delete theChef.back();
+            theChef.pop_back();
+            nChef--;
+        }
+
+        for(int i=0; i<nChef; i++)
+        {
+            theChef[i]->setPar1(par1);
+        }
+        for(int i=0; i<nVerfolger; i++)
+        {
+            theVerfolger[i]->setPar1(par1);
+            theVerfolger[i]->resetEnd();
+        }
+
+    }
+
+    if(blendCounter > 1555)
+    {
+        blend = false;
+        blendCounter = 0;
+
+        for(int i=0; i<curve.size(); i++)
+        {
+            curve[i].clear();
+        }
+
+        counter = 0;
+    }
 }
 
 //--------------------------------------------------------------
 
 void testApp::updateOsc()
 {
+    if(osc.settingsUpdate[0] && osc.settings[0] != speed)
+    {
+        speed = osc.settings[0];
+        osc.settingsUpdate[0] = false;
+
+        for(int i=0; i<nChef; i++)
+        {
+            theChef[i]->setSpeed(speed);
+        }
+
+        for(int i=0; i<nVerfolger; i++)
+        {
+            theVerfolger[i]->setSpeed(speed);
+        }
+    }
+
     if(osc.settingsUpdate[8] && osc.settings[8] == 1)
     {
         tracking = true;
@@ -619,8 +773,6 @@ void testApp::updateOsc()
     {
         tracking = false;
     }
-    cout << ofToString(tracking) << "\n" ;
-
 
     if(osc.settingsUpdate[3] && osc.settings[3] != startX)
     {
@@ -791,8 +943,6 @@ void testApp::draw()
     //background.draw(0, 0, windowWidth, windowHeight);
     ofSetColor(120);
 
-    //ofRect(0, windowHeight/2, windowWidth, 3);
-
     if(linien)
     {
         ofPushStyle();
@@ -862,8 +1012,6 @@ void testApp::draw()
 //----------------------------VÖGEL--------------------------------------------------------
 
     //Bindet die Textur auf die Festplatte
-    //ofSetColor(255);
-
     vogelTextur.getTextureReference().bind();
 
     //Zeichnet alle Chefs
@@ -874,7 +1022,7 @@ void testApp::draw()
 
     vogelTextur.getTextureReference().unbind();
 
-    if(setzen && endCounter > 600)
+    if(setzen && endCounter > 800)
     {
         drahtTextur.getTextureReference().bind();
 
@@ -908,6 +1056,21 @@ void testApp::draw()
     {
         ofSetColor(120, 120, 120, zitatCounter);
         zitat.draw(300, 800, 800, 200);
+    }
+
+    if(blend)
+    {
+        if(blendCounter<1300)
+        {
+            ofSetColor(0, 0, 0, blendCounter);
+        }
+
+        else
+        {
+            ofSetColor(0, 0, 0, 1555-blendCounter);
+        }
+
+        ofRect(0, 0, windowWidth, windowHeight);
     }
 
     //Linie, um Fluggrenze rechts zu zeigen
@@ -985,6 +1148,12 @@ void testApp::keyPressed(int key)
     switch (key)
     {
 
+    case 'm' :
+
+        blend = !blend;
+        blendCounter = 0;
+        break;
+
     case 'f' :
         //Fullcreen
         ofToggleFullscreen();
@@ -994,12 +1163,22 @@ void testApp::keyPressed(int key)
 
     case 'a' :
 
-        lineAdjustmentX ++;
+        lineAdjustmentX += 5;
         break;
 
     case 'd' :
 
-        lineAdjustmentX --;
+        lineAdjustmentX -= 5;
+        break;
+
+    case 'w' :
+
+        lineAdjustmentY += 5;
+        break;
+
+    case 'e' :
+
+        lineAdjustmentY -= 5;
         break;
 
 //----------------------------------VÖGEL------------------------------------------------
@@ -1027,6 +1206,7 @@ void testApp::keyPressed(int key)
         {
             for(int i=0; i<nVerfolger; i++)
             {
+                theVerfolger[i]->resetEnd();
                 theVerfolger[i]->setPar1(par1);
             }
         }
@@ -1034,13 +1214,29 @@ void testApp::keyPressed(int key)
 
     case 'v':
 
-        //neuer verfolger wird erstellt
-        theVerfolger.push_back( new Verfolger(ofPoint(startX, startY), texturWidth, texturHeight, rangeWidth));
-        theVerfolger.back()->setSpeed(speed);
-        theVerfolger.back()->setPar1(par1);
+        //neuer Verfolger wird erstellt
+        verfolgerIt = theVerfolger.begin();
+        verfolgerIt += ofRandom(0, platzhalter);
+        theVerfolger.insert(verfolgerIt, new Verfolger(ofPoint(startX, startY), texturWidth, texturHeight, rangeWidth));
 
-        nVerfolger++;
+        position.set(ofRandom(1), ofRandom(1));
+        (*verfolgerIt)->update(timeDiff, position);
+        (*verfolgerIt)->setSpeed(speed);
+        (*verfolgerIt)->setPar1(par1);
+
+        nVerfolger = theVerfolger.size();
         cout << "Verfolger \n";
+
+        if(nVerfolger > 40 && nVerfolger%5==1)
+        {
+            //neuer chef wird erstellt
+            theChef.push_back( new Chef(ofPoint(startX, startY), texturWidth, texturHeight, rangeWidth));
+            theChef.back()->setSpeed(speed);
+            theChef.back()->setPar1(par1);
+
+            nChef = theChef.size();
+        }
+
         break;
 
     case 'b':
@@ -1050,7 +1246,7 @@ void testApp::keyPressed(int key)
         theChef.back()->setSpeed(speed);
         theChef.back()->setPar1(par1);
 
-        nChef++;
+        nChef = theChef.size();
         cout << "Chef \n";
         break;
 

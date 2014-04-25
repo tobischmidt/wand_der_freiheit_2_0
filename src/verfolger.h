@@ -21,6 +21,9 @@ class Verfolger : public Ball{
         void setRangeWidth(float);
 
         void newAbweichung();
+        void resetEnd();
+
+        float getSpeed();
 
     private:
 

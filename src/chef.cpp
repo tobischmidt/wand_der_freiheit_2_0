@@ -96,6 +96,7 @@ void Chef::draw()
 {
 
     ofSetColor(255);
+    //ofSetColor(255, 0, 255);
 
     glPushMatrix();
 
