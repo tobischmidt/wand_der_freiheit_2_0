@@ -143,9 +143,9 @@ void Verfolger::resetEnd()
 
 void Verfolger::drawEnd(int _color){
 
-    ofSetColor(1055-_color);
+    ofSetColor(1455-_color);
 
-    if(_color>935)
+    if(_color>1335)
     {
         ofSetColor(120);
     }

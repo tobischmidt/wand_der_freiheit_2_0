@@ -81,6 +81,8 @@ class testApp : public ofBaseApp{
 	    float startY;
 
         int blubb;
+
+        ofPath blubbs;
         ofPolyline line;
 
 	    float adjustmentX;
@@ -101,7 +103,9 @@ class testApp : public ofBaseApp{
 		ofImage vogelTextur;
 		ofImage drahtTextur;
 
-		vector<ofPolyline> contours;
+		//vector<ofPolyline> contours;
+		vector<ofPath> contours;
+
 
 		//vector<vector<ofVec2f> > curveDefine;
 		ofPoint curveDefine1[420];
@@ -111,7 +115,7 @@ class testApp : public ofBaseApp{
 		vector<ofPolyline> curve;
 		vector<ofVec2f> vec;
 
-		int counter;
+		int lineCounter;
 		int endCounter;
 		int zitatCounter;
 
@@ -136,15 +140,15 @@ class testApp : public ofBaseApp{
 
         int nVerfolger;
         int nChef;
-        bool createVerfolger; /*NEW*/
-        float texturWidth; /*NEW*/
-        float texturHeight; /*NEW*/
-        float speed; /*NEW*/
-        float par1; /*NEW*/
-        float rangeWidth; /*new*/
-        float grauwert; /*new*/
+        bool createVerfolger;
+        float texturWidth;
+        float texturHeight;
+        float speed;
+        float par1;
+        float rangeWidth;
+        float grauwert;
 
-        oscHelper osc; /*NEW*/
+        oscHelper osc;
         ofPoint position;
 
         //Fenstergröße

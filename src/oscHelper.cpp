@@ -4,6 +4,10 @@
 void oscHelper::setup()
 {
 
+    touchOsc.setup("192.168.1.105", 1300);
+
+    arraySize = 23;
+
     cout << "listening for osc messages on port " << 1100 << "\n";
     receiver.setup(1100); // von Tablet
 
@@ -18,7 +22,7 @@ void oscHelper::setup()
     settings[3] = 0; //ausgabe pos vögel X
     settings[15] = 0; //ausgabe pos vögel Y
     settings[4] = 0; //vogel ausgeben
-    //settings[5] = 0; //grauwert
+
     settings[19] = 0; // Vogel ausgeben von Antonio
 
 
@@ -36,21 +40,21 @@ void oscHelper::setup()
 
      /*---Animation----*/
     settings[12] = 0; //Grenze rechts
-    settings[13] = 0; //Linien ausgeben
+    settings[13] = 0; //Animation abspielenm
+    settings[11] = 0; //Linien Verschiebung x
+    settings[14] = 0; //Linien Verschiebung y
+    settings[5] = 0; //Übergang
 
     for(int i=0; i<23; i++)
     {
         settingsUpdate[i] = false;
     }
 
-    //settings[14] = 0; //osc herz
 
 }
 
 void oscHelper::listen()
 {
-    //cout << "bin da" << "\n";
-   // sendeLeben();
     // hide old messages
 //        for(int i = 0; i < NUM_MSG_STRINGS; i++){
 //            if(timers[i] < ofGetElapsedTimef()){
@@ -81,27 +85,27 @@ void oscHelper::listen()
 
  /*----------------------------Vögel---------------------------*/
         // Speed
-        if(m.getAddress() == "/1/fader1"){
+        if(m.getAddress() == "/0"){
             settings[0] = (m.getArgAsFloat(0)) * 0.00007;
             settingsUpdate[0] = true;
         }
         // texturWidth
-        if(m.getAddress() == "/1/fader2"){
+        if(m.getAddress() == "/1"){
             settings[1] = (m.getArgAsFloat(0));
             settingsUpdate[1] = true;
         }
         // texturHeight
-        if(m.getAddress() == "/1/fader4"){
+        if(m.getAddress() == "/16"){
             settings[16] = (m.getArgAsFloat(0));
             settingsUpdate[16] = true;
         }
         // distance par1
-        if(m.getAddress() == "/1/fader3"){
+        if(m.getAddress() == "/2"){
             settings[2] = (m.getArgAsFloat(0));
             settingsUpdate[2] = true;
         }
         //ausgabe pos vögel
-        if(m.getAddress() == "/1/xy1"){
+        if(m.getAddress() == "/3"){
             settings[3] = (m.getArgAsFloat(1));
             settings[15] = (m.getArgAsFloat(0));
 
@@ -109,87 +113,102 @@ void oscHelper::listen()
             settingsUpdate[15] = true;
         }
         // Vogel ausgeben
-        if(m.getAddress() == "/1/push1"){
+        if(m.getAddress() == "/4"){
             settings[4] = (m.getArgAsFloat(0));
             settingsUpdate[4] = true;
         }
-//        // grauwert
-//        if(m.getAddress() == "/1/fader5"){
-//            settings[5] = (m.getArgAsFloat(0) * 255);
-//            settingsUpdate[5] = true;
-//        }
 
 /*------------------------Silhoutte/Kinect---------------------------*/
         // contourScaleWidth
-        if(m.getAddress() == "/2/fader14"){
+        if(m.getAddress() == "/6"){
             settings[6] = (m.getArgAsFloat(0));
             settingsUpdate[6] = true;
         }
         // contourScaleHeight
-        if(m.getAddress() == "/2/fader2"){
+        if(m.getAddress() == "/17"){
             settings[17] = (m.getArgAsFloat(0));
             settingsUpdate[17] = true;
         }
         // verschiebung 1 x
-        if(m.getAddress() == "/2/fader3"){
+        if(m.getAddress() == "/7"){
             settings[7] = (m.getArgAsFloat(0));
             settingsUpdate[7] = true;
         }
         // verschiebung 1 y
-        if(m.getAddress() == "/2/fader5"){
+        if(m.getAddress() == "/20"){
             settings[20] = (m.getArgAsFloat(0));
             settingsUpdate[20] = true;
         }
         // verschiebung 2 x
-        if(m.getAddress() == "/2/fader6"){
+        if(m.getAddress() == "/18"){
             settings[18] = (m.getArgAsFloat(0));
             settingsUpdate[18] = true;
         }
         // verschiebung 2 y
-        if(m.getAddress() == "/2/fader7"){
+        if(m.getAddress() == "/21"){
             settings[21] = (m.getArgAsFloat(0));
             settingsUpdate[21] = true;
         }
       // Interaktion starten
-        if(m.getAddress() == "/2/toggle3"){
+        if(m.getAddress() == "/8"){
             settings[8] = (m.getArgAsFloat(0));
             settingsUpdate[8] = true;
              cout << "Interaktion" << settings[8] << "\n" ;
         }
         // nearThreshold
-         if(m.getAddress() == "/2/fader1"){
+         if(m.getAddress() == "/9"){
             settings[9] = (m.getArgAsFloat(0)) * 255;
             settingsUpdate[9] = true;
         }
           // farThreshold
-         if(m.getAddress() == "/2/fader4"){
+         if(m.getAddress() == "/10"){
             settings[10] = (m.getArgAsFloat(0)) * 255;
             settingsUpdate[10] = true;
         }
 
 /*------------------------------Animation------------------------------------*/
         // Grenze rechts
-         if(m.getAddress() == "/3/fader18"){
+         if(m.getAddress() == "/12"){
             settings[12] = (m.getArgAsFloat(0)) ;
             settingsUpdate[12] = true;
         }
-         // Linien ausgeben
-         if(m.getAddress() == "/3/toggle1"){
+         // Animation starten
+         if(m.getAddress() == "/13"){
             settings[13] = (m.getArgAsFloat(0)) ;
             settingsUpdate[13] = true;
         }
-         // osc herz
-         //if(m.getAddress() == "/3/led2"){
-         //   settings[19] = (m.getArgAsFloat(0)) ;
-         //   settingsUpdate[19] = true;
-         //}
 
-         // save einstellung
-         if(m.getAddress() == "/3/push1"){
+        //Übergang
+        if(m.getAddress() == "/5"){
+            settings[5] = (m.getArgAsFloat(0)) ;
+            settingsUpdate[5] = true;
+        }
+
+
+        // Linien Verschiebung x
+         if(m.getAddress() == "/11"){
+            settings[11] = (m.getArgAsFloat(0)) ;
+            settingsUpdate[11] = true;
+        }
+
+        // Linien Verschiebung y
+         if(m.getAddress() == "/14"){
+            settings[14] = (m.getArgAsFloat(0)) ;
+            settingsUpdate[14] = true;
+        }
+
+/*-------------------------------Lade/Speicher------------------------------*/
+
+
+        // save einstellung
+        if(m.getAddress() == "/3/push/2"){
+            cout << "SaveButton pushed \n";
             save();
         }
+
         //laden
-        if(m.getAddress() == "/3/push2"){
+        if(m.getAddress() == "/3/push/1"){
+            cout << "LoadButton pushed \n";
             load();
         }
     }
@@ -206,37 +225,53 @@ void oscHelper::save(){
 
         // -------------------------
 
-        for(int i=0; i<22; i++){
+        for(int i=0; i<arraySize; i++){
 
-            tagNum = XML.addTag( ofToString(i) );
-            XML.setValue( ofToString(i) + ":VALUE", settings[i], tagNum );
+            tagNum = XML.addTag("NR" + ofToString(i) );
+            XML.setValue("NR" + ofToString(i) + ":VALUE", settings[i], tagNum );
             XML.popTag();
         }
 
         if(XML.saveFile("setting.xml")){
-            cout << "alles gut" << endl;
+            cout << "Settings erfolgreich gespeichert" << endl;
         } else {
-            cout << "geht net" << endl;
+            cout << "Settings speichern erfolglos" << endl;
         }
     }
+
+
+/*------------------------TouchOSC synchronisieren---------------------------------*/
+
+void oscHelper::syncSettingToOsc(){
+
+        ofxOscMessage m;
+        for(int i=0; i<arraySize; i++)
+        {
+            m.clear();
+            m.setAddress("/" + ofToString(i));
+            m.addFloatArg(settings[i]);
+            touchOsc.sendMessage(m);
+        }
+}
+
 
 /*
  * SETTING LADEN
  */
 void oscHelper::load(){
 
-        XML.popTag();
-        XML.clear();
+        if( XMLloading.loadFile("setting.xml") ){
 
-        if( XML.loadFile("setting.xml") ){
+            XMLloading.popTag();
 
-            XML.popTag();
+            for(int i=0; i<arraySize; i++){
 
-            for(int i=0; i<22; i++){
-
-                XML.popTag();
-                settings[i] = XML.getValue( ofToString(i) + ":VALUE", 0.5, 0);
+                XMLloading.popTag();
+                settings[i] = XMLloading.getValue("NR" + ofToString(i) + ":VALUE", 0.5, 0);
+                settingsUpdate[i] = true;
             }
+
+            syncSettingToOsc();
 
             cout << "Setting erfolgreich geladen!" << endl;
 

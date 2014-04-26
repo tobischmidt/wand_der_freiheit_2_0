@@ -11,10 +11,11 @@ class oscHelper{
 
         void setup();
         void listen();
-        float* getSettings(); /*NEW*/
-        float settings[23];    /*NEW*/
+        float* getSettings();
+        float settings[23];
         void save();
         void load();
+        void syncSettingToOsc();
 
         bool settingsUpdate[23];
 
@@ -24,10 +25,12 @@ class oscHelper{
 
     private:
 
-        ofxOscReceiver receiver;    /*NEW*/
+        ofxOscReceiver receiver;
         ofxOscReceiver herz;
+        ofxOscSender touchOsc;
         ofxXmlSettings XML;
-        int tagNum;
+        ofxXmlSettings XMLloading;
+        int tagNum, arraySize;
 
 };
 

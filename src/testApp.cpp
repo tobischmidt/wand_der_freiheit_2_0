@@ -17,7 +17,7 @@ void testApp::setup()
     ofSetWindowTitle("Wand der Freiheit");
 
     background.loadImage("left_wall_2.jpg");
-    zitat.loadImage("Zitat3.png");
+    zitat.loadImage("zitat_aa.png");
 
     timeOld = ofGetElapsedTimeMillis();
     timeCur = timeOld;
@@ -70,8 +70,7 @@ void testApp::setup()
 
 
 
-    // set the tilt to 0 on startup
-
+    // set the tilt to value of "angle" on startup
     kinect.setCameraTiltAngle(angle);
 
 
@@ -164,21 +163,18 @@ void testApp::setup()
 
     blend = false;
 
-    counter = 0;
-
-    vec.push_back(ofVec2f(0, 0));
-
+    lineCounter = 0;
 
     // 4 Linien vordefiniert
     for(int i=0; i<420; i++)
     {
         if(i <= 70)
         {
-            curveDefine1[i].set(windowWidth - (i*10), sin((float)i/15) * 50 + 400);
+            curveDefine1[i].set(3840 - (i*10), sin((float)i/15) * 50 + 400);
         }
         else
         {
-            curveDefine1[i].set(windowWidth - (i*10), 350);
+            curveDefine1[i].set(3840 - (i*10), 350);
         }
     }
 
@@ -186,15 +182,15 @@ void testApp::setup()
     {
         if(i <= 27)
         {
-            curveDefine2[i].set(windowWidth - (i*10), sin((float)i/10 + M_PI*3200/2000) * 150 + 514);
+            curveDefine2[i].set(3840 - (i*10), sin((float)i/10 + M_PI*3200/2000) * 150 + 514);
         }
         else if(i > 27 && i <= 80)
         {
-            curveDefine2[i].set(windowWidth - (i*10), sin((float)i/15 + M_PI*3620/2000) * 110 + 560);
+            curveDefine2[i].set(3840 - (i*10), sin((float)i/15 + M_PI*3620/2000) * 110 + 560);
         }
         else
         {
-            curveDefine2[i].set(windowWidth - (i*10), 450);
+            curveDefine2[i].set(3840 - (i*10), 450);
         }
     }
 
@@ -202,11 +198,11 @@ void testApp::setup()
     {
         if(i <= 63)
         {
-            curveDefine3[i].set(windowWidth - (i*10), sin((float)i/20 + M_PI*3/2) * 125 + 425);
+            curveDefine3[i].set(3840 - (i*10), sin((float)i/20 + M_PI*3/2) * 125 + 425);
         }
         else
         {
-            curveDefine3[i].set(windowWidth - (i*10), 550);
+            curveDefine3[i].set(3840 - (i*10), 550);
         }
     }
 
@@ -214,15 +210,15 @@ void testApp::setup()
     {
         if(i <= 54)
         {
-            curveDefine4[i].set(windowWidth - (i*10), sin((float)i/15 + M_PI) * 120 + 354);
+            curveDefine4[i].set(3840 - (i*10), sin((float)i/15 + M_PI) * 120 + 354);
         }
         else if(i > 54 && i <= 95)
         {
-            curveDefine4[i].set(windowWidth - (i*10), sin((float)i/20 + M_PI) * 170 + 480);
+            curveDefine4[i].set(3840 - (i*10), sin((float)i/20 + M_PI) * 170 + 480);
         }
         else
         {
-            curveDefine4[i].set(windowWidth - (i*10), 650);
+            curveDefine4[i].set(3840 - (i*10), 650);
         }
     }
 
@@ -236,7 +232,11 @@ void testApp::setup()
     endCounter = 0;
     zitatCounter = 0;
 
-    line.addVertex(ofPoint(vec[0]));
+    vec.push_back(ofVec2f(0, 0));
+
+    blubbs.lineTo(ofPoint(0, 0));
+
+    line.addVertex(vec[0]);
     line.clear();
 
     for(int i=0; i<4; i++)
@@ -326,21 +326,21 @@ void testApp::update()
 
         if(contourFinder.blobs.size() > 0)//Wenn mindestens ein Objekt erkannt wird
         {
-            for (int j=0; j< 2; j++)
+            for (int j=0; j<2; j++)
             {
                 for( int i=0; i<contourFinder.blobs[j].nPts; i+=10 )//Iteriert durch die Punkte der Kontur, nimmt nur jeden dritten wegen Laufzeit
                 {
-                    if(contourFinder.blobs[j].pts[i].x/2 < leftEnd[j].x)
+                    if(contourFinder.blobs[j].pts[i].x < leftEnd[j].x)
                     {
                         //Wenn aktueller Punkt weiter links als gespeicherter Punkt wird dieser neu gespeichert
                         //x-Wert durch 2 geteilt, da nur auf linker Bidlschirmhälfte
-                        leftEnd[j].set(contourFinder.blobs[j].pts[i].x/2, contourFinder.blobs[j].pts[i].y);
+                        leftEnd[j].set(contourFinder.blobs[j].pts[i].x, contourFinder.blobs[j].pts[i].y);
                     }
 
-                    if(contourFinder.blobs[j].pts[i].x/2 > rightEnd[j].x)
+                    if(contourFinder.blobs[j].pts[i].x > rightEnd[j].x)
                     {
                         //Wenn aktueller Punkt weiter rechts als gespeicherter Punkt wird dieser neu gespeichert
-                        rightEnd[j].set(contourFinder.blobs[j].pts[i].x/2, contourFinder.blobs[j].pts[i].y);
+                        rightEnd[j].set(contourFinder.blobs[j].pts[i].x, contourFinder.blobs[j].pts[i].y);
                     }
                 }
             }
@@ -383,21 +383,21 @@ void testApp::update()
 
         if(contourFinder2.blobs.size() > 0)
         {
-            for (int j=0; j< 2; j++)
+            for (int j=0; j<2; j++)
             {
                 for( int i=0; i<contourFinder2.blobs[j].nPts; i+=10 )//Iteriert durch die Punkte der Kontur, nimmt nur jeden dritten wegen Laufzeit
                 {
-                    if(contourFinder2.blobs[j].pts[i].x/2 < leftEnd[j+2].x)
+                    if(contourFinder2.blobs[j].pts[i].x < leftEnd[j+2].x)
                     {
                         //Wenn aktueller Punkt weiter links als gespeicherter Punkt wird dieser neu gespeichert
                         //x-Wert durch 2 geteilt, da nur auf linker Bidlschirmhälfte
-                        leftEnd[j+2].set(contourFinder2.blobs[j].pts[i].x/2, contourFinder2.blobs[j].pts[i].y);
+                        leftEnd[j+2].set(contourFinder2.blobs[j].pts[i].x, contourFinder2.blobs[j].pts[i].y);
                     }
 
-                    if(contourFinder2.blobs[j].pts[i].x/2 > rightEnd[j+2].x)
+                    if(contourFinder2.blobs[j].pts[i].x > rightEnd[j+2].x)
                     {
                         //Wenn aktueller Punkt weiter rechts als gespeicherter Punkt wird dieser neu gespeichert
-                        rightEnd[j+2].set(contourFinder2.blobs[j].pts[i].x/2, contourFinder2.blobs[j].pts[i].y);
+                        rightEnd[j+2].set(contourFinder2.blobs[j].pts[i].x, contourFinder2.blobs[j].pts[i].y);
                     }
                 }
             }
@@ -412,30 +412,30 @@ void testApp::update()
     if(linien)
     {
         //Über die Laufzeit den Polylines die Punkte übergeben, sodass sie "ins Bild laufen"
-        if((counter%2) == 0 && counter/2 < 420)
+        if((lineCounter%2) == 0 && lineCounter/2 < 420)
         {
-            curve[0].curveTo(curveDefine1[counter/2].x - lineAdjustmentX, curveDefine1[counter/2].y - lineAdjustmentY);
+            curve[0].curveTo(curveDefine1[lineCounter/2].x - lineAdjustmentX, curveDefine1[lineCounter/2].y - lineAdjustmentY);
         }
 
-        if((counter%2) == 0 && counter/2 < 420 && counter > 20)
+        if((lineCounter%2) == 0 && lineCounter/2 < 420 && lineCounter > 20)
         {
-            curve[1].curveTo(curveDefine2[counter/2 - 10].x - lineAdjustmentX, curveDefine2[counter/2 - 10].y - lineAdjustmentY);
+            curve[1].curveTo(curveDefine2[lineCounter/2 - 10].x - lineAdjustmentX, curveDefine2[lineCounter/2 - 10].y - lineAdjustmentY);
         }
 
-        if((counter%2) == 0 && counter/2 < 420 && counter > 40)
+        if((lineCounter%2) == 0 && lineCounter/2 < 420 && lineCounter > 40)
         {
-            curve[2].curveTo(curveDefine3[counter/2 - 20].x - lineAdjustmentX, curveDefine3[counter/2 - 20].y - lineAdjustmentY);
+            curve[2].curveTo(curveDefine3[lineCounter/2 - 20].x - lineAdjustmentX, curveDefine3[lineCounter/2 - 20].y - lineAdjustmentY);
         }
 
-        if((counter%2) == 0 && counter/2 < 420 && counter > 30)
+        if((lineCounter%2) == 0 && lineCounter/2 < 420 && lineCounter > 30)
         {
-            curve[3].curveTo(curveDefine4[counter/2 - 15].x - lineAdjustmentX, curveDefine4[counter/2 - 15].y - lineAdjustmentY);
+            curve[3].curveTo(curveDefine4[lineCounter/2 - 15].x - lineAdjustmentX, curveDefine4[lineCounter/2 - 15].y - lineAdjustmentY);
         }
 
-        counter++;
+        lineCounter++;
     }
 
-    if(counter == 700)
+    if(lineCounter == 900)
     {
         setzen = true;
 
@@ -457,7 +457,7 @@ void testApp::update()
     {
         for(int i=0; i<nVerfolger; i++)
         {
-            //theVerfolger[i]->setSpeed(ofRandom(0.00005, 0.00008));
+            theVerfolger[i]->setSpeed(speed);
             theVerfolger[i]->newAbweichung();
         }
     }
@@ -543,37 +543,52 @@ void testApp::update()
 
     if(!setzen)
     {
+        if(createVerfolger)
+        {
+            //neuer Verfolger wird erstellt
+            verfolgerIt = theVerfolger.begin();
+            verfolgerIt += ofRandom(0, platzhalter);
+            theVerfolger.insert(verfolgerIt, new Verfolger(ofPoint(startX, startY), texturWidth, texturHeight, rangeWidth));
+
+            position.set(ofRandom(1), ofRandom(1));
+            (*verfolgerIt)->update(timeDiff, position);
+            (*verfolgerIt)->setSpeed(speed);
+            (*verfolgerIt)->setPar1(par1);
+
+            nVerfolger = theVerfolger.size();
+            cout << "Verfolger \n";
+
+            if(nVerfolger > 40 && nVerfolger%5==1)
+            {
+                //neuer chef wird erstellt
+                theChef.push_back( new Chef(ofPoint(startX, startY), texturWidth, texturHeight, rangeWidth));
+                theChef.back()->setSpeed(speed);
+                theChef.back()->setPar1(par1);
+
+                nChef = theChef.size();
+            }
+
+        createVerfolger = false;
+        }
+
         for (int i=0; i<nVerfolger; i++)
         {
             // Die Verfolger werden nacheinander den n Chefs zugeordnet.
             theVerfolger[i]->update(timeDiff, theChef[i%nChef]->getPos());
-        //}
 
-//        for (int i=platzhalter; i<nVerfolger; i++)
-//        {
-//            if(!runCounter)
-//            {
-//                position.set(ofRandom(1), ofRandom(1));
-//            }
-//            else
-//            {
-//                position.set(-1, -1);
-//            }
-//
-//            theVerfolger[i]->update(timeDiff, position);
         }
     }
     else
     {
         endCounter++;
-        if(endCounter > 800)
+        if(endCounter > 1200)
         {
             zitatCounter++;
         }
 
         for(int i=0; i<nVerfolger; i++)
         {
-            if(i<12)
+            if(i<32)
             {
 
                 if(sqrt(pow(theVerfolger[i]->getPos().x - (curveDefine1[i*10 + 70].x - lineAdjustmentX)/windowWidth, 2) + pow(theVerfolger[i]->getPos().y - (curveDefine1[i*10 + 70].y - lineAdjustmentY)/windowHeight, 2)) < 0.01)
@@ -586,55 +601,45 @@ void testApp::update()
                 }
             }
 
-            else if(i>=12 && i<23)
+            else if(i>=32 && i<63)
             {
-                if(sqrt(pow(theVerfolger[i]->getPos().x - (curveDefine2[(i-12)*10 + 77].x - lineAdjustmentX)/windowWidth, 2) + pow(theVerfolger[i]->getPos().y - (curveDefine2[(i-12)*10 + 77].y - lineAdjustmentY)/windowHeight, 2)) < 0.01)
+                if(sqrt(pow(theVerfolger[i]->getPos().x - (curveDefine2[(i-32)*10 + 77].x - lineAdjustmentX)/windowWidth, 2) + pow(theVerfolger[i]->getPos().y - (curveDefine2[(i-32)*10 + 77].y - lineAdjustmentY)/windowHeight, 2)) < 0.01)
                 {
-                    theVerfolger[i]->setPos(ofPoint((curveDefine2[(i-12)*10 + 77].x - lineAdjustmentX)/windowWidth, (curveDefine2[(i-12)*10 + 77].y - lineAdjustmentY)/windowHeight));
+                    theVerfolger[i]->setPos(ofPoint((curveDefine2[(i-32)*10 + 77].x - lineAdjustmentX)/windowWidth, (curveDefine2[(i-32)*10 + 77].y - lineAdjustmentY)/windowHeight));
                 }
                 else
                 {
-                    theVerfolger[i]->update(timeDiff, ofPoint((curveDefine2[(i-12)*10 + 77].x - lineAdjustmentX)/windowWidth, (curveDefine2[(i-12)*10 + 77].y - lineAdjustmentY)/windowHeight));
+                    theVerfolger[i]->update(timeDiff, ofPoint((curveDefine2[(i-32)*10 + 77].x - lineAdjustmentX)/windowWidth, (curveDefine2[(i-32)*10 + 77].y - lineAdjustmentY)/windowHeight));
                 }
 
             }
 
-            else if(i>=23 && i<34)
+            else if(i>=63 && i<94)
             {
-                if(sqrt(pow(theVerfolger[i]->getPos().x - (curveDefine3[(i-23)*10 + 80].x - lineAdjustmentX)/windowWidth, 2) + pow(theVerfolger[i]->getPos().y - (curveDefine3[(i-23)*10 + 80].y - lineAdjustmentY)/windowHeight, 2)) < 0.01)
+                if(sqrt(pow(theVerfolger[i]->getPos().x - (curveDefine3[(i-63)*10 + 80].x - lineAdjustmentX)/windowWidth, 2) + pow(theVerfolger[i]->getPos().y - (curveDefine3[(i-63)*10 + 80].y - lineAdjustmentY)/windowHeight, 2)) < 0.01)
                 {
-                    theVerfolger[i]->setPos(ofPoint((curveDefine3[(i-23)*10 + 80].x - lineAdjustmentX)/windowWidth, (curveDefine3[(i-23)*10 + 80].y - lineAdjustmentY)/windowHeight));
+                    theVerfolger[i]->setPos(ofPoint((curveDefine3[(i-63)*10 + 80].x - lineAdjustmentX)/windowWidth, (curveDefine3[(i-63)*10 + 80].y - lineAdjustmentY)/windowHeight));
                 }
                 else
                 {
-                    theVerfolger[i]->update(timeDiff, ofPoint((curveDefine3[(i-23)*10 + 80].x - lineAdjustmentX)/windowWidth, (curveDefine3[(i-23)*10 + 80].y - lineAdjustmentY)/windowHeight));
+                    theVerfolger[i]->update(timeDiff, ofPoint((curveDefine3[(i-63)*10 + 80].x - lineAdjustmentX)/windowWidth, (curveDefine3[(i-63)*10 + 80].y - lineAdjustmentY)/windowHeight));
                 }
 
             }
-            else if(i>=34 && i<44)
+            else if(i>=94 && i<124)
             {
-                if(sqrt(pow(theVerfolger[i]->getPos().x - (curveDefine4[(i-34)*10 + 93].x - lineAdjustmentX)/windowWidth, 2) + pow(theVerfolger[i]->getPos().y - (curveDefine4[(i-34)*10 + 93].y - lineAdjustmentY)/windowHeight, 2)) < 0.01)
+                if(sqrt(pow(theVerfolger[i]->getPos().x - (curveDefine4[(i-94)*10 + 93].x - lineAdjustmentX)/windowWidth, 2) + pow(theVerfolger[i]->getPos().y - (curveDefine4[(i-94)*10 + 93].y - lineAdjustmentY)/windowHeight, 2)) < 0.01)
                 {
-                    theVerfolger[i]->setPos(ofPoint((curveDefine4[(i-34)*10 + 93].x - lineAdjustmentX)/windowWidth, (curveDefine4[(i-34)*10 + 93].y - lineAdjustmentY)/windowHeight));
+                    theVerfolger[i]->setPos(ofPoint((curveDefine4[(i-94)*10 + 93].x - lineAdjustmentX)/windowWidth, (curveDefine4[(i-94)*10 + 93].y - lineAdjustmentY)/windowHeight));
                 }
                 else
                 {
-                    theVerfolger[i]->update(timeDiff, ofPoint((curveDefine4[(i-34)*10 + 93].x - lineAdjustmentX)/windowWidth, (curveDefine4[(i-34)*10 + 93].y - lineAdjustmentY)/windowHeight));
+                    theVerfolger[i]->update(timeDiff, ofPoint((curveDefine4[(i-94)*10 + 93].x - lineAdjustmentX)/windowWidth, (curveDefine4[(i-94)*10 + 93].y - lineAdjustmentY)/windowHeight));
                 }
             }
             else
             {
-                theVerfolger[i]->update(timeDiff, ofPoint(500, -500));
-
-                if(endCounter > 1000)
-                {
-                    for(int i=nVerfolger; i>44; i--)
-                    {
-                        delete theVerfolger.back();
-                        theVerfolger.pop_back();
-                        nVerfolger--;
-                    }
-                }
+                theVerfolger[i]->update(timeDiff, ofPoint(0.5, -500));
             }
 
             theVerfolger[i]->setPar1(1);
@@ -644,46 +649,11 @@ void testApp::update()
 
     timeOld = timeCur;
 
-    if(osc.settings[4] == 1 || osc.settings[19] == 1)
-    {
-        createVerfolger = true;
-        osc.settings[4] = 0;
-        osc.settings[19] = 0;
-    }
-
     platzhalter = nVerfolger;
 
     if(platzhalter>40)
     {
         platzhalter = 40;
-    }
-
-    if(createVerfolger)
-    {
-        //neuer Verfolger wird erstellt
-        verfolgerIt = theVerfolger.begin();
-        verfolgerIt += ofRandom(0, platzhalter);
-        theVerfolger.insert(verfolgerIt, new Verfolger(ofPoint(startX, startY), texturWidth, texturHeight, rangeWidth));
-
-        position.set(ofRandom(1), ofRandom(1));
-        (*verfolgerIt)->update(timeDiff, position);
-        (*verfolgerIt)->setSpeed(speed);
-        (*verfolgerIt)->setPar1(par1);
-
-        nVerfolger = theVerfolger.size();
-        cout << "Verfolger \n";
-
-        if(nVerfolger > 40 && nVerfolger%5==1)
-        {
-            //neuer chef wird erstellt
-            theChef.push_back( new Chef(ofPoint(startX, startY), texturWidth, texturHeight, rangeWidth));
-            theChef.back()->setSpeed(speed);
-            theChef.back()->setPar1(par1);
-
-            nChef = theChef.size();
-        }
-
-        createVerfolger = false;
     }
 
     ofEnableAlphaBlending();
@@ -741,7 +711,7 @@ void testApp::update()
             curve[i].clear();
         }
 
-        counter = 0;
+        lineCounter = 0;
     }
 }
 
@@ -769,7 +739,8 @@ void testApp::updateOsc()
     {
         tracking = true;
     }
-    else
+
+    if(osc.settingsUpdate[8] && osc.settings[8] == 0)
     {
         tracking = false;
     }
@@ -881,10 +852,64 @@ void testApp::updateOsc()
         }
     }
 
+    //Linienverschiebung x
+    if(osc.settingsUpdate[11] && osc.settings[11] * windowWidth != lineAdjustmentX)
+    {
+        lineAdjustmentX = osc.settings[11] * windowWidth;
+        osc.settingsUpdate[11] = false;
+    }
+    //Linienverschiebung y
+    if(osc.settingsUpdate[14] && osc.settings[14] * windowHeight != lineAdjustmentY)
+    {
+        lineAdjustmentY = osc.settings[14] * windowHeight;
+        osc.settingsUpdate[14] = false;
+    }
+
+    //Animation abspielen
+    if(osc.settingsUpdate[13] && osc.settings[13] == 1)
+    {
+        linien = true;
+        osc.settingsUpdate[13] = false;
+    }
+
+    if(osc.settingsUpdate[13] && osc.settings[13] == 0)
+    {
+        linien = false;
+        lineCounter = 0;
+        osc.settingsUpdate[13] = false;
+
+        for(int i=0; i<curve.size(); i++)
+        {
+            curve[i].clear();
+        }
+    }
+
+    //Übergang
+    if(osc.settingsUpdate[5] && osc.settings[5] == 1)
+    {
+        blend = true;
+        osc.settingsUpdate[5] = false;
+    }
+    if(osc.settingsUpdate[5] && osc.settings[5] == 0)
+    {
+        blend = false;
+        blendCounter = 0;
+        osc.settingsUpdate[5] = false;
+    }
+
     if(osc.settingsUpdate[12] && osc.settings[12] != blubb)
     {
         blubb = windowWidth - (osc.settings[12] * windowWidth);
         osc.settingsUpdate[12] = false;
+    }
+
+    if((osc.settingsUpdate[4] && osc.settings[4] == 1) || (osc.settingsUpdate[19] && osc.settings[19] == 1))
+    {
+        createVerfolger = true;
+        osc.settings[4] = 0;
+        osc.settings[19] = 0;
+        osc.settingsUpdate[4] = false;
+        osc.settingsUpdate[19] = false;
     }
 }
 
@@ -893,7 +918,7 @@ void testApp::drawContours()
 {
     ofFill();
     ofSetColor(0,0,0,30);
-    ofRect(0, 0, windowWidth, windowHeight);
+    ofRect(0, 0, 3940, 1200);
 
     ofPushStyle();
     //ofSetLineWidth(3);
@@ -906,14 +931,17 @@ void testApp::drawContours()
     for( int i=0; i<(int)contourFinder.blobs.size(); i++ )
     {
 
-        contours.push_back(contourFinder.blobs[i].pts);
+        //contours.push_back(contourFinder.blobs[i].pts);
+        contours.push_back(blubbs);
         contours[i].clear();
 
-        for(int j=0; j<contourFinder.blobs[i].nPts; j++)
+        for(int j=0; j<contourFinder.blobs[i].nPts; j+=2)
         {
-            contours[i].addVertex((contourFinder.blobs[i].pts[j].x*windowWidth/640/2 + adjustmentX) * contourScaleWidth/windowWidth, (contourFinder.blobs[i].pts[j].y*windowHeight/480 + adjustmentY) * contourScaleHeight/windowHeight);
+            //contours[i].addVertex((contourFinder.blobs[i].pts[j].x*windowWidth/640 + adjustmentX) * contourScaleWidth/windowWidth, (contourFinder.blobs[i].pts[j].y*windowHeight/480 + adjustmentY) * contourScaleHeight/windowHeight);
+            contours[i].lineTo((contourFinder.blobs[i].pts[j].x*windowWidth/640 + adjustmentX) * contourScaleWidth/windowWidth, (contourFinder.blobs[i].pts[j].y*windowHeight/480 + adjustmentY) * contourScaleHeight/windowHeight);
         }
 
+        contours[i].close();
         contours[i].draw();
     }
     contours.clear();
@@ -921,14 +949,17 @@ void testApp::drawContours()
     for( int i=0; i<(int)contourFinder2.blobs.size(); i++ )
     {
 
-        contours.push_back(contourFinder2.blobs[i].pts);
+        //contours.push_back(contourFinder2.blobs[i].pts);
+        contours.push_back(blubbs);
         contours[i].clear();
 
-        for(int j=0; j<contourFinder2.blobs[i].nPts; j++)
+        for(int j=0; j<contourFinder2.blobs[i].nPts; j+=2)
         {
-            contours[i].addVertex((contourFinder2.blobs[i].pts[j].x*windowWidth/640/2 + adjustment2X) * contourScaleWidth/windowWidth, (contourFinder2.blobs[i].pts[j].y*windowHeight/480 + adjustment2Y) * contourScaleHeight/windowHeight);
+            //contours[i].addVertex((contourFinder2.blobs[i].pts[j].x*windowWidth/640 + adjustment2X) * contourScaleWidth/windowWidth, (contourFinder2.blobs[i].pts[j].y*windowHeight/480 + adjustment2Y) * contourScaleHeight/windowHeight);
+            contours[i].lineTo((contourFinder2.blobs[i].pts[j].x*windowWidth/640 + adjustment2X) * contourScaleWidth/windowWidth, (contourFinder2.blobs[i].pts[j].y*windowHeight/480 + adjustment2Y) * contourScaleHeight/windowHeight);
         }
 
+        contours[i].close();
         contours[i].draw();
 
     }
@@ -1022,7 +1053,7 @@ void testApp::draw()
 
     vogelTextur.getTextureReference().unbind();
 
-    if(setzen && endCounter > 800)
+    if(setzen && endCounter > 1200)
     {
         drahtTextur.getTextureReference().bind();
 
@@ -1190,7 +1221,7 @@ void testApp::keyPressed(int key)
             curve[i].clear();
         }
 
-        counter = 0;
+        lineCounter = 0;
 
         linien = !linien;
         break;
@@ -1214,28 +1245,7 @@ void testApp::keyPressed(int key)
 
     case 'v':
 
-        //neuer Verfolger wird erstellt
-        verfolgerIt = theVerfolger.begin();
-        verfolgerIt += ofRandom(0, platzhalter);
-        theVerfolger.insert(verfolgerIt, new Verfolger(ofPoint(startX, startY), texturWidth, texturHeight, rangeWidth));
-
-        position.set(ofRandom(1), ofRandom(1));
-        (*verfolgerIt)->update(timeDiff, position);
-        (*verfolgerIt)->setSpeed(speed);
-        (*verfolgerIt)->setPar1(par1);
-
-        nVerfolger = theVerfolger.size();
-        cout << "Verfolger \n";
-
-        if(nVerfolger > 40 && nVerfolger%5==1)
-        {
-            //neuer chef wird erstellt
-            theChef.push_back( new Chef(ofPoint(startX, startY), texturWidth, texturHeight, rangeWidth));
-            theChef.back()->setSpeed(speed);
-            theChef.back()->setPar1(par1);
-
-            nChef = theChef.size();
-        }
+        createVerfolger = true;
 
         break;
 
@@ -1252,6 +1262,22 @@ void testApp::keyPressed(int key)
 
 
 //-----------------------------TRACKING-------------------------------------------
+
+    case 'y':
+        adjustmentX -= 20;
+        break;
+
+    case 'x':
+        adjustmentX += 20;
+        break;
+
+    case 'j':
+        adjustment2X -= 20;
+        break;
+
+    case 'k':
+        adjustment2X += 20;
+        break;
 
     case ' ':
         ofSetFrameRate(60);
