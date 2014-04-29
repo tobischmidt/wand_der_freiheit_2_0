@@ -4,7 +4,7 @@
 void oscHelper::setup()
 {
 
-    touchOsc.setup("192.168.1.100", 1300);
+    touchOsc.setup("192.168.1.101", 1300);
 
     arraySize = 29;
 
