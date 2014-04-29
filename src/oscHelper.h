@@ -12,12 +12,14 @@ class oscHelper{
         void setup();
         void listen();
         float* getSettings();
-        float settings[23];
+        float settings[29];
         void save();
         void load();
         void syncSettingToOsc();
 
-        bool settingsUpdate[23];
+        void sendToTablet(float, bool, bool, float);
+
+        bool settingsUpdate[29];
 
         ofxOscMessage n;
         ofxOscMessage m;

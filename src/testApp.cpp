@@ -17,7 +17,7 @@ void testApp::setup()
     ofSetWindowTitle("Wand der Freiheit");
 
     background.loadImage("left_wall_2.jpg");
-    zitat.loadImage("zitat_aa.png");
+    zitat.loadImage("zitat_klein_klammer.png");
 
     timeOld = ofGetElapsedTimeMillis();
     timeCur = timeOld;
@@ -126,6 +126,10 @@ void testApp::setup()
 
     contourScaleWidth = windowWidth/2;
     contourScaleHeight = windowHeight;
+
+    grauwert = 0;
+    konturDicke = 3;
+    spurLaenge = 8;
 
     rangeWidth = windowWidth;
 
@@ -254,19 +258,21 @@ void testApp::setup()
 
 void testApp::update()
 {
+
+    osc.listen();
+
     //Zähler, der alle 150 Durchläufe zurückgesetzt wird.
     runCounter++;
     if(runCounter > 150)
     {
         runCounter = 0;
-        cout << "Verfolger: " << nVerfolger << "\n";
+        osc.sendToTablet(ofGetFrameRate(), kinect.isConnected(), kinect2.isConnected(), nVerfolger);
+        //cout << "Verfolger: " << nVerfolger << "\n";
     }
 
 //-------------------------------------------------------OSC----------------------------------------------
 
-    osc.listen();
-
-    for(int i=0; i<23; i++)
+    for(int i=0; i<26; i++)
     {
         if(osc.settingsUpdate[i])
         {
@@ -556,7 +562,8 @@ void testApp::update()
             (*verfolgerIt)->setPar1(par1);
 
             nVerfolger = theVerfolger.size();
-            cout << "Verfolger \n";
+            //cout << "Verfolger \n";
+            cout << "Verfolger: " << nVerfolger << "\n";
 
             if(nVerfolger > 40 && nVerfolger%5==1)
             {
@@ -682,6 +689,8 @@ void testApp::update()
             theVerfolger.pop_back();
             nVerfolger--;
         }
+        cout << "Verfolger: " << nVerfolger << "\n";
+
         for(int i=nChef; i>8; i--)
         {
             delete theChef.back();
@@ -721,7 +730,7 @@ void testApp::updateOsc()
 {
     if(osc.settingsUpdate[0] && osc.settings[0] != speed)
     {
-        speed = osc.settings[0];
+        speed = osc.settings[0] * 0.00007;
         osc.settingsUpdate[0] = false;
 
         for(int i=0; i<nChef; i++)
@@ -759,39 +768,39 @@ void testApp::updateOsc()
 
     if(osc.settingsUpdate[9] && osc.settings[9] != nearThreshold)
     {
-        nearThreshold = osc.settings[9];
+        nearThreshold = osc.settings[9] * 255;
         osc.settingsUpdate[9] = false;
     }
 
     if(osc.settingsUpdate[10] && osc.settings[10] != farThreshold)
     {
-        farThreshold = osc.settings[10];
+        farThreshold = osc.settings[10] * 255;
         osc.settingsUpdate[10] = false;
     }
 
     // verschiebung 1 x
-    if(osc.settingsUpdate[7] && osc.settings[7] * windowWidth != adjustmentX)
+    if(osc.settingsUpdate[7] && osc.settings[7] * 5000 != adjustmentX)
     {
-        adjustmentX = osc.settings[7] * windowWidth;
+        adjustmentX = osc.settings[7] * 5000;
         osc.settingsUpdate[7] = false;
     }
 
     // verschiebung 1 y
-    if(osc.settingsUpdate[20] && osc.settings[20] * windowHeight != adjustmentY)
+    if(osc.settingsUpdate[20] && osc.settings[20] * 5000 != adjustmentY)
     {
-        adjustmentY = osc.settings[20] * windowHeight;
+        adjustmentY = osc.settings[20] * 5000;
         osc.settingsUpdate[20] = false;
     }
 
-    if(osc.settingsUpdate[18] && osc.settings[18] * windowWidth != adjustment2X)
+    if(osc.settingsUpdate[18] && osc.settings[18] * 5000 != adjustment2X)
     {
-        adjustment2X = osc.settings[18] * windowWidth + windowWidth/2;
+        adjustment2X = osc.settings[18] * 5000 + windowWidth/2;
         osc.settingsUpdate[18] = false;
     }
 
-    if(osc.settingsUpdate[21] && osc.settings[21] * windowHeight != adjustment2Y)
+    if(osc.settingsUpdate[21] && osc.settings[21] * 5000 != adjustment2Y)
     {
-        adjustment2Y = osc.settings[21] * windowHeight;
+        adjustment2Y = osc.settings[21] * 5000;
         osc.settingsUpdate[21] = false;
     }
 
@@ -903,6 +912,27 @@ void testApp::updateOsc()
         osc.settingsUpdate[12] = false;
     }
 
+    // Grauwert Kontur
+    if(osc.settingsUpdate[26] && osc.settings[26] * 255 != grauwert)
+    {
+        grauwert = osc.settings[26] * 255;
+        osc.settingsUpdate[26] = false;
+    }
+
+    // Konturdicke
+    if(osc.settingsUpdate[27] && osc.settings[27] * 10!= konturDicke)
+    {
+        konturDicke = osc.settings[27] * 10;
+        osc.settingsUpdate[27] = false;
+    }
+
+    // Spurlänge
+    if(osc.settingsUpdate[28] && osc.settings[28] * 100 != spurLaenge)
+    {
+        spurLaenge = osc.settings[28] * 100 + 5;
+        osc.settingsUpdate[28] = false;
+    }
+
     if((osc.settingsUpdate[4] && osc.settings[4] == 1) || (osc.settingsUpdate[19] && osc.settings[19] == 1))
     {
         createVerfolger = true;
@@ -911,13 +941,21 @@ void testApp::updateOsc()
         osc.settingsUpdate[4] = false;
         osc.settingsUpdate[19] = false;
     }
+
+    //---------------Rückgaben an Tablet------------------------------
+
+    if(osc.settingsUpdate[25] && osc.settings[25] != nVerfolger)
+    {
+        nVerfolger = osc.settings[25];
+        osc.settingsUpdate[25] = false;
+    }
 }
 
 
 void testApp::drawContours()
 {
-    ofFill();
-    ofSetColor(0,0,0,30);
+    //ofFill();
+    ofSetColor(0,0,0,spurLaenge);
     ofRect(0, 0, 3940, 1200);
 
     ofPushStyle();
@@ -925,7 +963,8 @@ void testApp::drawContours()
 
     // ---------------------------- draw the contours
 
-    ofFill();
+    //ofFill();
+    ofNoFill();
     ofSetColor(255, 255, 255);
 
     for( int i=0; i<(int)contourFinder.blobs.size(); i++ )
@@ -941,7 +980,7 @@ void testApp::drawContours()
             contours[i].lineTo((contourFinder.blobs[i].pts[j].x*windowWidth/640 + adjustmentX) * contourScaleWidth/windowWidth, (contourFinder.blobs[i].pts[j].y*windowHeight/480 + adjustmentY) * contourScaleHeight/windowHeight);
         }
 
-        contours[i].close();
+        //contours[i].close();
         contours[i].draw();
     }
     contours.clear();
@@ -959,7 +998,7 @@ void testApp::drawContours()
             contours[i].lineTo((contourFinder2.blobs[i].pts[j].x*windowWidth/640 + adjustment2X) * contourScaleWidth/windowWidth, (contourFinder2.blobs[i].pts[j].y*windowHeight/480 + adjustment2Y) * contourScaleHeight/windowHeight);
         }
 
-        contours[i].close();
+        //contours[i].close();
         contours[i].draw();
 
     }
@@ -998,6 +1037,51 @@ void testApp::draw()
     {
         //Wenn Tracking aktiviert ist wird die Kontur gezeichnet
         trace.draw(0, 0);
+
+        ofSetColor(255);
+
+        for( int i=0; i<(int)contourFinder.blobs.size(); i++ )
+        {
+
+            //contours.push_back(contourFinder.blobs[i].pts);
+            contours.push_back(blubbs);
+            contours[i].clear();
+
+            for(int j=0; j<contourFinder.blobs[i].nPts; j+=2)
+            {
+                //contours[i].addVertex((contourFinder.blobs[i].pts[j].x*windowWidth/640 + adjustmentX) * contourScaleWidth/windowWidth, (contourFinder.blobs[i].pts[j].y*windowHeight/480 + adjustmentY) * contourScaleHeight/windowHeight);
+                contours[i].lineTo((contourFinder.blobs[i].pts[j].x*windowWidth/640 + adjustmentX) * contourScaleWidth/windowWidth, (contourFinder.blobs[i].pts[j].y*windowHeight/480 + adjustmentY) * contourScaleHeight/windowHeight);
+            }
+
+            contours[i].close();
+            contours[i].setFillColor(grauwert);
+            contours[i].setStrokeWidth(konturDicke);
+            ofSetColor(255);
+            contours[i].draw();
+        }
+        contours.clear();
+
+        for( int i=0; i<(int)contourFinder2.blobs.size(); i++ )
+        {
+
+            //contours.push_back(contourFinder2.blobs[i].pts);
+            contours.push_back(blubbs);
+            contours[i].clear();
+
+            for(int j=0; j<contourFinder2.blobs[i].nPts; j+=2)
+            {
+                //contours[i].addVertex((contourFinder2.blobs[i].pts[j].x*windowWidth/640 + adjustment2X) * contourScaleWidth/windowWidth, (contourFinder2.blobs[i].pts[j].y*windowHeight/480 + adjustment2Y) * contourScaleHeight/windowHeight);
+                contours[i].lineTo((contourFinder2.blobs[i].pts[j].x*windowWidth/640 + adjustment2X) * contourScaleWidth/windowWidth, (contourFinder2.blobs[i].pts[j].y*windowHeight/480 + adjustment2Y) * contourScaleHeight/windowHeight);
+            }
+
+            contours[i].close();
+            contours[i].setFillColor(grauwert);
+            contours[i].setStrokeWidth(konturDicke);
+            ofSetColor(255);
+            contours[i].draw();
+
+        }
+        contours.clear();
 
         //Wenn enddraw = true werden die Attraktoren als rote Punkte dargestellt
         if(enddraw)

@@ -6983,7 +6983,7 @@
 	"ofMain.h"
 	"testApp.h"
 
-1398543638 e:\entwicklung\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\testapp.h
+1398715524 e:\entwicklung\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\testapp.h
 	"ofMain.h"
 	"ball.h"
 	"chef.h"
@@ -6992,7 +6992,7 @@
 	"ofxKinect.h"
 	"oscHelper.h"
 
-1398523763 e:\entwicklung\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\oschelper.h
+1398715524 e:\entwicklung\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\oschelper.h
 	"ofMain.h"
 	"ofxOsc.h"
 	"ofxXMLSettings.h"
@@ -7003,11 +7003,11 @@
 	"ofxOscSender.h"
 	"ofxOscReceiver.h"
 
-1398529888 source:e:\entwicklung\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\oschelper.cpp
+1398768335 source:e:\entwicklung\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\oschelper.cpp
 	"oscHelper.h"
 	"testApp.h"
 
-1398542209 source:e:\entwicklung\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\testapp.cpp
+1398766463 source:e:\entwicklung\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\testapp.cpp
 	"testApp.h"
 	"chef.h"
 	"verfolger.h"

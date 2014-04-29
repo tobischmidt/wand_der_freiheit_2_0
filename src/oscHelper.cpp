@@ -4,12 +4,12 @@
 void oscHelper::setup()
 {
 
-    touchOsc.setup("192.168.1.105", 1300);
+    touchOsc.setup("192.168.1.100", 1300);
 
-    arraySize = 23;
+    arraySize = 29;
 
-    cout << "listening for osc messages on port " << 1100 << "\n";
-    receiver.setup(1100); // von Tablet
+    cout << "listening for osc messages on port " << 1101 << "\n";
+    receiver.setup(1101); // von Tablet
 
     cout << "listening for osc messages on port " << 4567 << "\n";
     herz.setup(4567); // von Antonio
@@ -45,7 +45,13 @@ void oscHelper::setup()
     settings[14] = 0; //Linien Verschiebung y
     settings[5] = 0; //Übergang
 
-    for(int i=0; i<23; i++)
+    /*-----Ausgaben----*/
+    settings[22] = 0; // Framerate anzeigen
+    settings[23] = 0; // Kinect 1
+    settings[24] = 0; // Kinect 2
+    settings[25] = 0; // Anzahl Verfolger
+
+    for(int i=0; i<arraySize; i++)
     {
         settingsUpdate[i] = false;
     }
@@ -80,13 +86,14 @@ void oscHelper::listen()
     {
         // get the next message
         receiver.getNextMessage(&m);
+        //cout << "Address: " << m.getAddress() << endl;
 
 
 
  /*----------------------------Vögel---------------------------*/
         // Speed
         if(m.getAddress() == "/0"){
-            settings[0] = (m.getArgAsFloat(0)) * 0.00007;
+            settings[0] = (m.getArgAsFloat(0));
             settingsUpdate[0] = true;
         }
         // texturWidth
@@ -157,12 +164,12 @@ void oscHelper::listen()
         }
         // nearThreshold
          if(m.getAddress() == "/9"){
-            settings[9] = (m.getArgAsFloat(0)) * 255;
+            settings[9] = (m.getArgAsFloat(0));
             settingsUpdate[9] = true;
         }
           // farThreshold
          if(m.getAddress() == "/10"){
-            settings[10] = (m.getArgAsFloat(0)) * 255;
+            settings[10] = (m.getArgAsFloat(0));
             settingsUpdate[10] = true;
         }
 
@@ -197,6 +204,24 @@ void oscHelper::listen()
             settingsUpdate[14] = true;
         }
 
+        // Grauwert Silhouette
+         if(m.getAddress() == "/26"){
+            settings[26] = (m.getArgAsFloat(0)) ;
+            settingsUpdate[26] = true;
+        }
+
+        // Konturdicke
+         if(m.getAddress() == "/27"){
+            settings[27] = (m.getArgAsFloat(0)) ;
+            settingsUpdate[27] = true;
+        }
+
+        // Spurlänge
+         if(m.getAddress() == "/28"){
+            settings[28] = (m.getArgAsFloat(0)) ;
+            settingsUpdate[28] = true;
+        }
+
 /*-------------------------------Lade/Speicher------------------------------*/
 
 
@@ -225,11 +250,14 @@ void oscHelper::save(){
 
         // -------------------------
 
-        for(int i=0; i<arraySize; i++){
+        for(int i=0; i<29; i++){
 
-            tagNum = XML.addTag("NR" + ofToString(i) );
-            XML.setValue("NR" + ofToString(i) + ":VALUE", settings[i], tagNum );
-            XML.popTag();
+            if(i<22 || i>25)
+            {
+                tagNum = XML.addTag("NR" + ofToString(i) );
+                XML.setValue("NR" + ofToString(i) + ":VALUE", settings[i], tagNum );
+                XML.popTag();
+            }
         }
 
         if(XML.saveFile("setting.xml")){
@@ -254,6 +282,33 @@ void oscHelper::syncSettingToOsc(){
         }
 }
 
+void oscHelper::sendToTablet(float _frameRate, bool _kinect1, bool _kinect2, float _nVerfolger){
+
+        //cout << "Data sent to Tablet \n";
+
+        ofxOscMessage m;
+
+        m.clear();
+        m.setAddress("/22");
+        m.addFloatArg(_frameRate);
+        touchOsc.sendMessage(m);
+
+        m.clear();
+        m.setAddress("/23");
+        m.addFloatArg(_kinect1);
+        touchOsc.sendMessage(m);
+
+        m.clear();
+        m.setAddress("/24");
+        m.addFloatArg(_kinect2);
+        touchOsc.sendMessage(m);
+
+        m.clear();
+        m.setAddress("/25");
+        m.addFloatArg(_nVerfolger);
+        touchOsc.sendMessage(m);
+}
+
 
 /*
  * SETTING LADEN
@@ -264,11 +319,14 @@ void oscHelper::load(){
 
             XMLloading.popTag();
 
-            for(int i=0; i<arraySize; i++){
+            for(int i=0; i<29; i++){
 
-                XMLloading.popTag();
-                settings[i] = XMLloading.getValue("NR" + ofToString(i) + ":VALUE", 0.5, 0);
-                settingsUpdate[i] = true;
+                if(i<22 || i>25)
+                {
+                    XMLloading.popTag();
+                    settings[i] = XMLloading.getValue("NR" + ofToString(i) + ":VALUE", 0.5, 0);
+                    settingsUpdate[i] = true;
+                }
             }
 
             syncSettingToOsc();

@@ -96,6 +96,10 @@ class testApp : public ofBaseApp{
 	    float contourScaleWidth;
 	    float contourScaleHeight;
 
+	    float grauwertKontur;
+	    float konturDicke;
+	    float spurLaenge;
+
         int current_msg_string; /*NEW*/
 		string msg_strings[NUM_MSG_STRINGS];    /*NEW*/
 		float timers[NUM_MSG_STRINGS];  /*NEW*/
