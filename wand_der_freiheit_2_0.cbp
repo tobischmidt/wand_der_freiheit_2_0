@@ -201,12 +201,6 @@
 			<Add after='cmd /c if not exist &quot;$(PROJECT_DIR)bin/data&quot; mkdir &quot;$(PROJECT_DIR)bin/data&quot;' />
 			<Mode after="always" />
 		</ExtraCommands>
-		<Unit filename="../../../addons/ofxGifDecoder-master/src/ofxGifDecoder.cpp" />
-		<Unit filename="../../../addons/ofxGifDecoder-master/src/ofxGifDecoder.h" />
-		<Unit filename="../../../addons/ofxGifDecoder-master/src/ofxGifFile.cpp" />
-		<Unit filename="../../../addons/ofxGifDecoder-master/src/ofxGifFile.h" />
-		<Unit filename="../../../addons/ofxGifDecoder-master/src/ofxGifFrame.cpp" />
-		<Unit filename="../../../addons/ofxGifDecoder-master/src/ofxGifFrame.h" />
 		<Unit filename="../../../addons/ofxKinect/libs/libfreenect/include/libfreenect-registration.h">
 			<Option virtualFolder="addons/ofxKinect/libs/libfreenect/include" />
 		</Unit>

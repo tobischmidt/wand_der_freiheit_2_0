@@ -1,14 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
-	<ActiveTarget name="debug" />
+	<ActiveTarget name="release" />
 	<File name="src\ball.h" open="1" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="411" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="..\..\..\addons\ofxOpenCv\src\ofxCvContourFinder.cpp" open="0" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1395" topLine="36" />
 		</Cursor>
 	</File>
 	<File name="src\main.cpp" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -36,6 +31,11 @@
 			<Cursor1 position="11439" topLine="303" />
 		</Cursor>
 	</File>
+	<File name="..\..\..\addons\ofxOpenCv\src\ofxCvContourFinder.h" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1657" topLine="0" />
+		</Cursor>
+	</File>
 	<File name="src\ball.cpp" open="1" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="137" topLine="0" />
@@ -44,11 +44,6 @@
 	<File name="src\chef.cpp" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="2104" topLine="75" />
-		</Cursor>
-	</File>
-	<File name="..\..\..\addons\ofxOpenCv\src\ofxCvContourFinder.h" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1657" topLine="0" />
 		</Cursor>
 	</File>
 	<File name="src\chef.h" open="1" top="0" tabpos="10" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -66,14 +61,19 @@
 			<Cursor1 position="28532" topLine="0" />
 		</Cursor>
 	</File>
+	<File name="..\..\..\addons\ofxOpenCv\src\ofxCvBlob.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="327" topLine="12" />
+		</Cursor>
+	</File>
 	<File name="src\verfolger.cpp" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="3460" topLine="10" />
 		</Cursor>
 	</File>
-	<File name="..\..\..\addons\ofxOpenCv\src\ofxCvBlob.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="..\..\..\addons\ofxOpenCv\src\ofxCvContourFinder.cpp" open="0" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="327" topLine="12" />
+			<Cursor1 position="1395" topLine="36" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>
