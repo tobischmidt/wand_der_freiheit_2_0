@@ -7003,11 +7003,11 @@
 	"ofxOscSender.h"
 	"ofxOscReceiver.h"
 
-1398772941 source:e:\entwicklung\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\oschelper.cpp
+1398783667 source:e:\entwicklung\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\oschelper.cpp
 	"oscHelper.h"
 	"testApp.h"
 
-1398766463 source:e:\entwicklung\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\testapp.cpp
+1398864978 source:e:\entwicklung\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\testapp.cpp
 	"testApp.h"
 	"chef.h"
 	"verfolger.h"

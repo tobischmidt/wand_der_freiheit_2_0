@@ -17,7 +17,7 @@ void testApp::setup()
     ofSetWindowTitle("Wand der Freiheit");
 
     background.loadImage("left_wall_2.jpg");
-    zitat.loadImage("zitat_klein_klammer.png");
+    zitat.loadImage("zitat2.png");
 
     timeOld = ofGetElapsedTimeMillis();
     timeCur = timeOld;
@@ -140,8 +140,12 @@ void testApp::setup()
     vogelTextur.loadImage("Vögel_weiß_Var3.png");
     drahtTextur.loadImage("Draht_weiß_neu.png");
 
-    nVerfolger = 24;
-    nChef = 8;
+    //nVerfolger = 24;
+    //nChef = 8;
+    nChef = 4;
+    nVerfolger = 16;
+
+    theChef.reserve(100);
 
     //nChef Chefs werden vordefiniert
     for (int i = 0; i < nChef; i++)
@@ -326,30 +330,31 @@ void testApp::update()
             // also, find holes is set to true so we will get interior contours as well....
             if (tracking)
             {
-                contourFinder.findContours(grayImage, 10, (kinect.width*kinect.height)/2, 2, false);
+                contourFinder.findContours(grayImage, 1000, (kinect.width*kinect.height)/2, 1, false);
             }
         }
 
         if(contourFinder.blobs.size() > 0)//Wenn mindestens ein Objekt erkannt wird
         {
-            for (int j=0; j<2; j++)
-            {
-                for( int i=0; i<contourFinder.blobs[j].nPts; i+=10 )//Iteriert durch die Punkte der Kontur, nimmt nur jeden dritten wegen Laufzeit
+            //Bei einer Kinect nur 1 left & richt end jeweils
+            //for (int j=0; j<2; j++)
+            //{
+                for( int i=0; i<contourFinder.blobs[0].nPts; i+=10 )//Iteriert durch die Punkte der Kontur, nimmt nur jeden dritten wegen Laufzeit
                 {
-                    if(contourFinder.blobs[j].pts[i].x < leftEnd[j].x)
+                    if(contourFinder.blobs[0].pts[i].x < leftEnd[0].x)
                     {
                         //Wenn aktueller Punkt weiter links als gespeicherter Punkt wird dieser neu gespeichert
                         //x-Wert durch 2 geteilt, da nur auf linker Bidlschirmhälfte
-                        leftEnd[j].set(contourFinder.blobs[j].pts[i].x, contourFinder.blobs[j].pts[i].y);
+                        leftEnd[0].set(contourFinder.blobs[0].pts[i].x, contourFinder.blobs[0].pts[i].y);
                     }
 
-                    if(contourFinder.blobs[j].pts[i].x > rightEnd[j].x)
+                    if(contourFinder.blobs[0].pts[i].x > rightEnd[0].x)
                     {
                         //Wenn aktueller Punkt weiter rechts als gespeicherter Punkt wird dieser neu gespeichert
-                        rightEnd[j].set(contourFinder.blobs[j].pts[i].x, contourFinder.blobs[j].pts[i].y);
+                        rightEnd[0].set(contourFinder.blobs[0].pts[i].x, contourFinder.blobs[0].pts[i].y);
                     }
                 }
-            }
+            //}
         }
     }
 
@@ -383,30 +388,30 @@ void testApp::update()
             // also, find holes is set to true so we will get interior contours as well....
             if (tracking)
             {
-                contourFinder2.findContours(grayImage2, 10, (kinect2.width*kinect2.height)/2, 2, false);
+                contourFinder2.findContours(grayImage2, 1000, (kinect2.width*kinect2.height)/2, 1, false);
             }
         }
 
         if(contourFinder2.blobs.size() > 0)
         {
-            for (int j=0; j<2; j++)
-            {
-                for( int i=0; i<contourFinder2.blobs[j].nPts; i+=10 )//Iteriert durch die Punkte der Kontur, nimmt nur jeden dritten wegen Laufzeit
+            //for (int j=0; j<2; j++)
+            //{
+                for( int i=0; i<contourFinder2.blobs[0].nPts; i+=10 )//Iteriert durch die Punkte der Kontur, nimmt nur jeden dritten wegen Laufzeit
                 {
-                    if(contourFinder2.blobs[j].pts[i].x < leftEnd[j+2].x)
+                    if(contourFinder2.blobs[0].pts[i].x < leftEnd[0+1].x)
                     {
                         //Wenn aktueller Punkt weiter links als gespeicherter Punkt wird dieser neu gespeichert
                         //x-Wert durch 2 geteilt, da nur auf linker Bidlschirmhälfte
-                        leftEnd[j+2].set(contourFinder2.blobs[j].pts[i].x, contourFinder2.blobs[j].pts[i].y);
+                        leftEnd[0+1].set(contourFinder2.blobs[0].pts[i].x, contourFinder2.blobs[0].pts[i].y);
                     }
 
-                    if(contourFinder2.blobs[j].pts[i].x > rightEnd[j+2].x)
+                    if(contourFinder2.blobs[0].pts[i].x > rightEnd[0+1].x)
                     {
                         //Wenn aktueller Punkt weiter rechts als gespeicherter Punkt wird dieser neu gespeichert
-                        rightEnd[j+2].set(contourFinder2.blobs[j].pts[i].x, contourFinder2.blobs[j].pts[i].y);
+                        rightEnd[0+1].set(contourFinder2.blobs[0].pts[i].x, contourFinder2.blobs[0].pts[i].y);
                     }
                 }
-            }
+            //}
         }
     }
 
@@ -470,7 +475,7 @@ void testApp::update()
 
     timeCur = ofGetElapsedTimeMillis();
     timeDiff = timeCur - timeOld;
-    position.set(0,0);
+    //position.set(0,0);
 
     hasContours = contourFinder.blobs.size();
 
@@ -481,28 +486,96 @@ void testApp::update()
         {
             if(hasContours)
             {
+//                attraktoren[0] = rightEnd[0];
+//                attraktoren[1] = leftEnd[0];
+//                attraktoren[2] = rightEnd[1];
+//                attraktoren[3] = leftEnd[1];
+//                attraktoren[4] = rightEnd[2];
+//                attraktoren[5] = leftEnd[2];
+//                attraktoren[6] = rightEnd[3];
+//                attraktoren[7] = leftEnd[3];
+//
+//                for(int j=0; j<4; j++)
+//                {
+//                    attraktoren[j].x = (attraktoren[j].x/kinect.width + adjustmentX/windowWidth) * contourScaleWidth/windowWidth;
+//                    attraktoren[j].y = (attraktoren[j].y/kinect.height + adjustmentY/windowHeight) * contourScaleHeight/windowHeight;
+//                }
+//
+//                for(int j=4; j<8; j++)
+//                {
+//                    if(kinect2.isConnected())
+//                    {
+//                        attraktoren[j].x = (attraktoren[j].x/kinect.width + adjustment2X/windowWidth) * contourScaleWidth/windowWidth;
+//                        attraktoren[j].y = (attraktoren[j].y/kinect.height + adjustment2Y/windowHeight) * contourScaleHeight/windowHeight;
+//                    }
+//                    else
+//                    {
+//                        if(!runCounter)
+//                        {
+//                            attraktoren[j].set(ofRandom(0.5), ofRandom(0.35));
+//                        }
+//                        else
+//                        {
+//                            attraktoren[j].set(-1, -1);
+//                        }
+//                    }
+//                }
+//
+//                if(i<8)
+//                {
+//                    theChef[i]->update(timeDiff, attraktoren[i]);
+//                }
+//
+//                else
+//                {
+//                    if(!runCounter) // Alle 150 Durchläufe
+//                    {
+//                        // Zufälliger Position folgen.
+//                        position.set(ofRandom(0.5), ofRandom(0.35)); // Bei schnellen Prozessoren pendeln die Kugeln sich in der Mitte aus. Hier müsste ein Timer eingebaut werden, damit die Chefs erstmal eine Zeit lang in eine Richtung fliegen.
+//                    }
+//                    else  // Ansonsten
+//                    {
+//                        // Dem letzten Punkt folgen.
+//                        position.set(-1, -1);
+//                    }
+//
+//                    theChef[i]->update(timeDiff, position);
+//                }
+
+//-----------------------ALTERNAT FÜR 1 PERSON----------------------------------------------------------
+
                 attraktoren[0] = rightEnd[0];
                 attraktoren[1] = leftEnd[0];
                 attraktoren[2] = rightEnd[1];
                 attraktoren[3] = leftEnd[1];
-                attraktoren[4] = rightEnd[2];
-                attraktoren[5] = leftEnd[2];
-                attraktoren[6] = rightEnd[3];
-                attraktoren[7] = leftEnd[3];
 
-                for(int j=0; j<4; j++)
+                for(int j=0; j<2; j++)
                 {
                     attraktoren[j].x = (attraktoren[j].x/kinect.width + adjustmentX/windowWidth) * contourScaleWidth/windowWidth;
                     attraktoren[j].y = (attraktoren[j].y/kinect.height + adjustmentY/windowHeight) * contourScaleHeight/windowHeight;
                 }
 
-                for(int j=4; j<8; j++)
+                for(int j=2; j<4; j++)
                 {
-                    attraktoren[j].x = (attraktoren[j].x/kinect.width + adjustment2X/windowWidth) * contourScaleWidth/windowWidth;
-                    attraktoren[j].y = (attraktoren[j].y/kinect.height + adjustment2Y/windowHeight) * contourScaleHeight/windowHeight;
+                    if(kinect2.isConnected())
+                    {
+                        attraktoren[j].x = (attraktoren[j].x/kinect.width + adjustment2X/windowWidth) * contourScaleWidth/windowWidth;
+                        attraktoren[j].y = (attraktoren[j].y/kinect.height + adjustment2Y/windowHeight) * contourScaleHeight/windowHeight;
+                    }
+                    else
+                    {
+                        if(!runCounter)
+                        {
+                            attraktoren[j].set(ofRandom(0.5), ofRandom(0.35));
+                        }
+                        else
+                        {
+                            attraktoren[j].set(-1, -1);
+                        }
+                    }
                 }
 
-                if(i<8)
+                if(i<4)
                 {
                     theChef[i]->update(timeDiff, attraktoren[i]);
                 }
@@ -512,7 +585,7 @@ void testApp::update()
                     if(!runCounter) // Alle 150 Durchläufe
                     {
                         // Zufälliger Position folgen.
-                        position.set(ofRandom(1), ofRandom(0.4)); // Bei schnellen Prozessoren pendeln die Kugeln sich in der Mitte aus. Hier müsste ein Timer eingebaut werden, damit die Chefs erstmal eine Zeit lang in eine Richtung fliegen.
+                        position.set(ofRandom(0.5), ofRandom(0.35)); // Bei schnellen Prozessoren pendeln die Kugeln sich in der Mitte aus. Hier müsste ein Timer eingebaut werden, damit die Chefs erstmal eine Zeit lang in eine Richtung fliegen.
                     }
                     else  // Ansonsten
                     {
@@ -526,10 +599,10 @@ void testApp::update()
             }
             else
             {
-                if(!runCounter && !setzen) // Alle 150 Durchläufe
+                if(!runCounter) // Alle 150 Durchläufe
                 {
                     // Zufälliger Position folgen.
-                    position.set(ofRandom(1), ofRandom(1)); // Bei schnellen Prozessoren pendeln die Kugeln sich in der Mitte aus. Hier müsste ein Timer eingebaut werden, damit die Chefs erstmal eine Zeit lang in eine Richtung fliegen.
+                    position.set(ofRandom(0.5), ofRandom(1)); // Bei schnellen Prozessoren pendeln die Kugeln sich in der Mitte aus. Hier müsste ein Timer eingebaut werden, damit die Chefs erstmal eine Zeit lang in eine Richtung fliegen.
                 }
                 else  // Ansonsten
                 {
@@ -539,17 +612,16 @@ void testApp::update()
                 theChef[i]->update(timeDiff, position);
             }
         }
-
         else
         {
-            position.set(0.5, -0.3);
+            position.set(0.5, -0.5);
             theChef[i]->update(timeDiff, position);
         }
     }
 
     if(!setzen)
     {
-        if(createVerfolger)
+        if(createVerfolger && nVerfolger < 200)
         {
             //neuer Verfolger wird erstellt
             verfolgerIt = theVerfolger.begin();
@@ -565,7 +637,8 @@ void testApp::update()
             //cout << "Verfolger \n";
             cout << "Verfolger: " << nVerfolger << "\n";
 
-            if(nVerfolger > 40 && nVerfolger%5==1)
+            if(nVerfolger > 28 && nVerfolger%7==1)
+            //if(nVerfolger > 40 && nVerfolger%5==1)
             {
                 //neuer chef wird erstellt
                 theChef.push_back( new Chef(ofPoint(startX, startY), texturWidth, texturHeight, rangeWidth));
@@ -575,7 +648,7 @@ void testApp::update()
                 nChef = theChef.size();
             }
 
-        createVerfolger = false;
+            createVerfolger = false;
         }
 
         for (int i=0; i<nVerfolger; i++)
@@ -681,9 +754,10 @@ void testApp::update()
 
         linien = false;
 
-        par1 = 0.4;
+        par1 = osc.settings[2];
 
-        for(int i=nVerfolger; i>24; i--)
+        for(int i=nVerfolger; i>16; i--)
+        //for(int i=nVerfolger; i>24; i--)
         {
             delete theVerfolger.back();
             theVerfolger.pop_back();
@@ -691,7 +765,8 @@ void testApp::update()
         }
         cout << "Verfolger: " << nVerfolger << "\n";
 
-        for(int i=nChef; i>8; i--)
+        for(int i=nChef; i>4; i--)
+        //for(int i=nChef; i>8; i--)
         {
             delete theChef.back();
             theChef.pop_back();
@@ -1092,8 +1167,9 @@ void testApp::draw()
                 ofSetHexColor(0xFF0000);
                 ofCircle(attraktoren[0].x*windowWidth, attraktoren[0].y*windowHeight, 7);
                 ofCircle(attraktoren[1].x*windowWidth, attraktoren[1].y*windowHeight, 7);
-                ofCircle(attraktoren[2].x*windowWidth, attraktoren[2].y*windowHeight, 7);
-                ofCircle(attraktoren[3].x*windowWidth, attraktoren[3].y*windowHeight, 7);
+                //Nur wenn 2 Körper, sonst nicht
+                //ofCircle(attraktoren[2].x*windowWidth, attraktoren[2].y*windowHeight, 7);
+                //ofCircle(attraktoren[3].x*windowWidth, attraktoren[3].y*windowHeight, 7);
 
             }
         }
@@ -1115,13 +1191,17 @@ void testApp::draw()
                 ofSetHexColor(0xFF0000);
                 ofCircle(attraktoren[4].x*windowWidth, attraktoren[4].y*windowHeight, 7);
                 ofCircle(attraktoren[5].x*windowWidth, attraktoren[5].y*windowHeight, 7);
-                ofCircle(attraktoren[6].x*windowWidth, attraktoren[6].y*windowHeight, 7);
-                ofCircle(attraktoren[7].x*windowWidth, attraktoren[7].y*windowHeight, 7);
+                //mur Wenn 2 Körper, sonst nicht
+                //ofCircle(attraktoren[6].x*windowWidth, attraktoren[6].y*windowHeight, 7);
+                //ofCircle(attraktoren[7].x*windowWidth, attraktoren[7].y*windowHeight, 7);
             }
         }
     }
 
 #endif
+
+    contourFinder.blobs.clear();
+    contourFinder2.blobs.clear();
 
 
 //----------------------------VÖGEL--------------------------------------------------------
@@ -1162,7 +1242,6 @@ void testApp::draw()
 
         vogelTextur.getTextureReference().unbind();
     }
-
 
     // Gibt Framerate in linker oberer Ecke aus
     ofDrawBitmapString(ofToString(round(ofGetFrameRate())),10,10);
