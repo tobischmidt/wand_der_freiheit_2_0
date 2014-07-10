@@ -10,16 +10,16 @@ class oscHelper{
     public:
 
         void setup();
-        void listen();
-        float* getSettings();
+        void listen();  //Auf OSC Nachricht warten
+        float* getSettings();  //Wert von Setting abfragen
         float settings[29];
-        void save();
-        void load();
-        void syncSettingToOsc();
+        void save();  //Werte in xml Datei speichern
+        void load();  //werte aus xml Datei laden
+        void syncSettingToOsc();  //TouchOSC synchornisieren
 
-        void sendToTablet(float, bool, bool, float);
+        void sendToTablet(float, bool, bool, float);  //Daten an Tablet senden
 
-        bool settingsUpdate[29];
+        bool settingsUpdate[29];  //Setting hat neuen Wert erhalten
 
         ofxOscMessage n;
         ofxOscMessage m;

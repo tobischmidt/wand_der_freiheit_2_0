@@ -11,18 +11,14 @@
 void testApp::setup()
 {
     // Setting Vertical Sync ON in videocard driver and leaving out ofSetFrameRate helps!!
-    //ofSetFrameRate(60);
     ofSetVerticalSync(false);
 
     ofSetWindowTitle("Wand der Freiheit");
 
-    background.loadImage("left_wall_2.jpg");
     zitat.loadImage("zitat2.png");
 
     timeOld = ofGetElapsedTimeMillis();
     timeCur = timeOld;
-
-
 
     //Fenstergröße
     windowWidth = ofGetScreenWidth();
@@ -32,9 +28,8 @@ void testApp::setup()
 //-------------------------TRACKING-----------------------------------------------
 
 
-    //Tracking & Zeichnen der Endpunkte zunächst ausgeschalten
+    //Tracking zunächst ausgeschalten
     tracking = false;
-    enddraw = false;
     hasContours = false;
 
     ofSetLogLevel(OF_LOG_VERBOSE);
@@ -45,21 +40,9 @@ void testApp::setup()
     // enable depth->video image calibration
     kinect.setRegistration(false);
 
-    //kinect.init();
     kinect.init(false, false); // disable video image (faster fps)
 
     kinect.open();		// opens first available kinect
-    //kinect.open(1);	// open a kinect by id, starting with 0 (sorted by serial # lexicographically))
-
-    // print the intrinsic IR sensor values
-    /*if(kinect.isConnected())
-    {
-        ofLogNotice() << "sensor-emitter dist: " << kinect.getSensorEmitterDistance() << "cm";
-        ofLogNotice() << "sensor-camera dist:  " << kinect.getSensorCameraDistance() << "cm";
-        ofLogNotice() << "zero plane pixel size: " << kinect.getZeroPlanePixelSize() << "mm";
-        ofLogNotice() << "zero plane dist: " << kinect.getZeroPlaneDistance() << "mm";
-    }*/
-
 
     grayImage.allocate(kinect.width, kinect.height);
     grayThreshNear.allocate(kinect.width, kinect.height);
@@ -67,8 +50,6 @@ void testApp::setup()
 
     nearThreshold = 255;
     farThreshold = 0;
-
-
 
     // set the tilt to value of "angle" on startup
     kinect.setCameraTiltAngle(angle);
@@ -88,31 +69,28 @@ void testApp::setup()
     //Fbo für Spur der Silhouette
     trace.allocate(windowWidth, windowHeight, GL_RGBA32F_ARB);
 
+    //Fbo zunächst clearen
     trace.begin();
     ofClear(255,255,255, 0);
     trace.end();
 
+    //Endpunkte auf sinnvolle vergleichswerte setzen
     leftEnd[0].set(10000, 500);
     rightEnd[0].set(-10, 500);
     leftEnd[1].set(10000, 500);
     rightEnd[1].set(-10, 500);
-    leftEnd[2].set(10000, 500);
-    rightEnd[2].set(-10, 500);
-    leftEnd[3].set(10000, 500);
-    rightEnd[3].set(-10, 500);
 
 
 //-------------------------OSC Variablen-----------------------------------
 
     doOscUpdate = false;
 
-    osc.setup(); /*NEW*/
+    osc.setup();
 
     speed = 0.00007;
     par1 = 0.4;
     texturWidth = 30;
     texturHeight = 16;
-    grauwert = 255;
     startX = 0.9;
     startY = 0.3;
 
@@ -140,12 +118,10 @@ void testApp::setup()
     vogelTextur.loadImage("Vögel_weiß_Var3.png");
     drahtTextur.loadImage("Draht_weiß_neu.png");
 
-    //nVerfolger = 24;
-    //nChef = 8;
     nChef = 4;
     nVerfolger = 16;
 
-    theChef.reserve(100);
+    theChef.reserve(100);  //Speicherplatz im Vector reservieren
 
     //nChef Chefs werden vordefiniert
     for (int i = 0; i < nChef; i++)
@@ -230,7 +206,6 @@ void testApp::setup()
         }
     }
 
-
     setzen = false;
     linien = false;
     createVerfolger = false;
@@ -255,6 +230,7 @@ void testApp::setup()
     //Hintergrundfarbe schwarz
     ofBackground(0);
 
+    //Bei Programmstart 2 Sekunden warten
     ofSleepMillis(2000);
 }
 
@@ -270,12 +246,12 @@ void testApp::update()
     if(runCounter > 150)
     {
         runCounter = 0;
-        osc.sendToTablet(ofGetFrameRate(), kinect.isConnected(), kinect2.isConnected(), nVerfolger);
-        //cout << "Verfolger: " << nVerfolger << "\n";
+        osc.sendToTablet(ofGetFrameRate(), kinect.isConnected(), kinect2.isConnected(), nVerfolger);  //Daten and TouchOSC senden
     }
 
 //-------------------------------------------------------OSC----------------------------------------------
 
+    //Abfrage, ob ein OSC wert geändert wurde
     for(int i=0; i<26; i++)
     {
         if(osc.settingsUpdate[i])
@@ -295,14 +271,11 @@ void testApp::update()
 
     if(kinect.isConnected())
     {
+        //Endpunkte auf gute vergleichswerte setzen, sodass sicher die akutellen Endpunkte gespeichert werden
         leftEnd[0].set(10000, 500);
         rightEnd[0].set(-10, 500);
         leftEnd[1].set(10000, 500);
         rightEnd[1].set(-10, 500);
-        leftEnd[2].set(10000, 500);
-        rightEnd[2].set(-10, 500);
-        leftEnd[3].set(10000, 500);
-        rightEnd[3].set(-10, 500);
 
         kinect.update();
 
@@ -328,23 +301,21 @@ void testApp::update()
             // Wenn Tracking aktiviert wird
             // find contours which are between the size of 10 pixels and 1/2 the w*h pixels.
             // also, find holes is set to true so we will get interior contours as well....
+
             if (tracking)
             {
                 contourFinder.findContours(grayImage, 1000, (kinect.width*kinect.height)/2, 1, false);
             }
+
         }
 
         if(contourFinder.blobs.size() > 0)//Wenn mindestens ein Objekt erkannt wird
         {
-            //Bei einer Kinect nur 1 left & richt end jeweils
-            //for (int j=0; j<2; j++)
-            //{
                 for( int i=0; i<contourFinder.blobs[0].nPts; i+=10 )//Iteriert durch die Punkte der Kontur, nimmt nur jeden dritten wegen Laufzeit
                 {
                     if(contourFinder.blobs[0].pts[i].x < leftEnd[0].x)
                     {
                         //Wenn aktueller Punkt weiter links als gespeicherter Punkt wird dieser neu gespeichert
-                        //x-Wert durch 2 geteilt, da nur auf linker Bidlschirmhälfte
                         leftEnd[0].set(contourFinder.blobs[0].pts[i].x, contourFinder.blobs[0].pts[i].y);
                     }
 
@@ -354,7 +325,6 @@ void testApp::update()
                         rightEnd[0].set(contourFinder.blobs[0].pts[i].x, contourFinder.blobs[0].pts[i].y);
                     }
                 }
-            //}
         }
     }
 
@@ -394,24 +364,21 @@ void testApp::update()
 
         if(contourFinder2.blobs.size() > 0)
         {
-            //for (int j=0; j<2; j++)
-            //{
                 for( int i=0; i<contourFinder2.blobs[0].nPts; i+=10 )//Iteriert durch die Punkte der Kontur, nimmt nur jeden dritten wegen Laufzeit
                 {
-                    if(contourFinder2.blobs[0].pts[i].x < leftEnd[0+1].x)
+                    if(contourFinder2.blobs[0].pts[i].x < leftEnd[1].x)
                     {
                         //Wenn aktueller Punkt weiter links als gespeicherter Punkt wird dieser neu gespeichert
                         //x-Wert durch 2 geteilt, da nur auf linker Bidlschirmhälfte
-                        leftEnd[0+1].set(contourFinder2.blobs[0].pts[i].x, contourFinder2.blobs[0].pts[i].y);
+                        leftEnd[1].set(contourFinder2.blobs[0].pts[i].x, contourFinder2.blobs[0].pts[i].y);
                     }
 
-                    if(contourFinder2.blobs[0].pts[i].x > rightEnd[0+1].x)
+                    if(contourFinder2.blobs[0].pts[i].x > rightEnd[1].x)
                     {
                         //Wenn aktueller Punkt weiter rechts als gespeicherter Punkt wird dieser neu gespeichert
-                        rightEnd[0+1].set(contourFinder2.blobs[0].pts[i].x, contourFinder2.blobs[0].pts[i].y);
+                        rightEnd[1].set(contourFinder2.blobs[0].pts[i].x, contourFinder2.blobs[0].pts[i].y);
                     }
                 }
-            //}
         }
     }
 
@@ -448,11 +415,11 @@ void testApp::update()
 
     if(lineCounter == 900)
     {
-        setzen = true;
+        setzen = true;  //nach ein paar Sekunden, wenn Linien vollständig eingefahren sind, Vögel auf die Linien setzen lassen
 
         for(int i=0; i<nVerfolger; i++)
         {
-            theVerfolger[i]->resetEnd();
+            theVerfolger[i]->resetEnd();  //Verwnadlungsanimation auf Anfang setzen
         }
 
         endCounter = 0;
@@ -468,6 +435,7 @@ void testApp::update()
     {
         for(int i=0; i<nVerfolger; i++)
         {
+            //Für Verfolger neue Geschwindigkeiten und Abweichungen setzen, um enge Grüppchen zu vermeiden
             theVerfolger[i]->setSpeed(speed);
             theVerfolger[i]->newAbweichung();
         }
@@ -475,79 +443,25 @@ void testApp::update()
 
     timeCur = ofGetElapsedTimeMillis();
     timeDiff = timeCur - timeOld;
-    //position.set(0,0);
 
+    //Wenn Tracking aktiviert und Objekt von Kamera erkannt wird, wird hasContours auf true gesetzt
     hasContours = contourFinder.blobs.size();
 
     for (int i=0; i<nChef; i++)
     {
-        // Wenn ein Körper von der Kinect getrackt wird
+        // Wenn Vögel sich nicht setzen sollen
         if(!setzen)
         {
+            // Wenn ein Körper von der Kinect getrackt wird
             if(hasContours)
             {
-//                attraktoren[0] = rightEnd[0];
-//                attraktoren[1] = leftEnd[0];
-//                attraktoren[2] = rightEnd[1];
-//                attraktoren[3] = leftEnd[1];
-//                attraktoren[4] = rightEnd[2];
-//                attraktoren[5] = leftEnd[2];
-//                attraktoren[6] = rightEnd[3];
-//                attraktoren[7] = leftEnd[3];
-//
-//                for(int j=0; j<4; j++)
-//                {
-//                    attraktoren[j].x = (attraktoren[j].x/kinect.width + adjustmentX/windowWidth) * contourScaleWidth/windowWidth;
-//                    attraktoren[j].y = (attraktoren[j].y/kinect.height + adjustmentY/windowHeight) * contourScaleHeight/windowHeight;
-//                }
-//
-//                for(int j=4; j<8; j++)
-//                {
-//                    if(kinect2.isConnected())
-//                    {
-//                        attraktoren[j].x = (attraktoren[j].x/kinect.width + adjustment2X/windowWidth) * contourScaleWidth/windowWidth;
-//                        attraktoren[j].y = (attraktoren[j].y/kinect.height + adjustment2Y/windowHeight) * contourScaleHeight/windowHeight;
-//                    }
-//                    else
-//                    {
-//                        if(!runCounter)
-//                        {
-//                            attraktoren[j].set(ofRandom(0.5), ofRandom(0.35));
-//                        }
-//                        else
-//                        {
-//                            attraktoren[j].set(-1, -1);
-//                        }
-//                    }
-//                }
-//
-//                if(i<8)
-//                {
-//                    theChef[i]->update(timeDiff, attraktoren[i]);
-//                }
-//
-//                else
-//                {
-//                    if(!runCounter) // Alle 150 Durchläufe
-//                    {
-//                        // Zufälliger Position folgen.
-//                        position.set(ofRandom(0.5), ofRandom(0.35)); // Bei schnellen Prozessoren pendeln die Kugeln sich in der Mitte aus. Hier müsste ein Timer eingebaut werden, damit die Chefs erstmal eine Zeit lang in eine Richtung fliegen.
-//                    }
-//                    else  // Ansonsten
-//                    {
-//                        // Dem letzten Punkt folgen.
-//                        position.set(-1, -1);
-//                    }
-//
-//                    theChef[i]->update(timeDiff, position);
-//                }
-
-//-----------------------ALTERNAT FÜR 1 PERSON----------------------------------------------------------
-
+                //Endpunkte als neue Attraktoren festlegen
                 attraktoren[0] = rightEnd[0];
                 attraktoren[1] = leftEnd[0];
                 attraktoren[2] = rightEnd[1];
                 attraktoren[3] = leftEnd[1];
+
+                //Attraktorpunkte runterskalieren auf Werte zwischen 0 und 1, richtig anhand der Silhouetten positionieren
 
                 for(int j=0; j<2; j++)
                 {
@@ -564,6 +478,8 @@ void testApp::update()
                     }
                     else
                     {
+                        //Wenn nur eine Kinect angeschlossen sollen Vögel, die sonst zur zweiten Silhouette fliegen, zufällig herumfliegen
+
                         if(!runCounter)
                         {
                             attraktoren[j].set(ofRandom(0.5), ofRandom(0.35));
@@ -577,11 +493,14 @@ void testApp::update()
 
                 if(i<4)
                 {
+                    //4 Chefs die Attraktorpunkte als Ziele übergeben
                     theChef[i]->update(timeDiff, attraktoren[i]);
                 }
 
                 else
                 {
+                    //Restliche Chefs zufällig herumfliegen lassen
+
                     if(!runCounter) // Alle 150 Durchläufe
                     {
                         // Zufälliger Position folgen.
@@ -599,10 +518,12 @@ void testApp::update()
             }
             else
             {
+                //Wenn kein Körper getrackt wird sollen alle Chefs zufällig herumfliegen
+
                 if(!runCounter) // Alle 150 Durchläufe
                 {
                     // Zufälliger Position folgen.
-                    position.set(ofRandom(0.5), ofRandom(1)); // Bei schnellen Prozessoren pendeln die Kugeln sich in der Mitte aus. Hier müsste ein Timer eingebaut werden, damit die Chefs erstmal eine Zeit lang in eine Richtung fliegen.
+                    position.set(ofRandom(0.5), ofRandom(0.9)); // Bei schnellen Prozessoren pendeln die Kugeln sich in der Mitte aus. Hier müsste ein Timer eingebaut werden, damit die Chefs erstmal eine Zeit lang in eine Richtung fliegen.
                 }
                 else  // Ansonsten
                 {
@@ -614,6 +535,7 @@ void testApp::update()
         }
         else
         {
+            //Wenn setzen aktiviert wurde, sollen die Chefs aus dem Bild fliegen
             position.set(0.5, -0.5);
             theChef[i]->update(timeDiff, position);
         }
@@ -621,6 +543,8 @@ void testApp::update()
 
     if(!setzen)
     {
+        //Wenn setzen nciht aktiviert ist
+
         if(createVerfolger && nVerfolger < 200)
         {
             //neuer Verfolger wird erstellt
@@ -634,11 +558,9 @@ void testApp::update()
             (*verfolgerIt)->setPar1(par1);
 
             nVerfolger = theVerfolger.size();
-            //cout << "Verfolger \n";
             cout << "Verfolger: " << nVerfolger << "\n";
 
-            if(nVerfolger > 28 && nVerfolger%7==1)
-            //if(nVerfolger > 40 && nVerfolger%5==1)
+            if(nVerfolger > 28 && nVerfolger%7==1) //Es sollen immer maximal 6 Verfolger einem Chef fliegen -> für jeden 6. neuen Verfolger wird auch ein neuer Chef erstellt
             {
                 //neuer chef wird erstellt
                 theChef.push_back( new Chef(ofPoint(startX, startY), texturWidth, texturHeight, rangeWidth));
@@ -660,6 +582,8 @@ void testApp::update()
     }
     else
     {
+        //Setzen wurde aktiviert
+
         endCounter++;
         if(endCounter > 1200)
         {
@@ -668,6 +592,8 @@ void testApp::update()
 
         for(int i=0; i<nVerfolger; i++)
         {
+            //125 Verfolger fliegen Richtung fester Punkte auf den Linien und sollen schließlich still auf ihnen sitzen, wenn sie die Entfernung klein genug ist
+
             if(i<32)
             {
 
@@ -719,10 +645,11 @@ void testApp::update()
             }
             else
             {
+                //restliche Verfolger fliegen aus dem Bild
                 theVerfolger[i]->update(timeDiff, ofPoint(0.5, -500));
             }
 
-            theVerfolger[i]->setPar1(1);
+            theVerfolger[i]->setPar1(1);  //Par 1 für alle Verfolger auf 1 setzen
         }
     }
 
@@ -738,41 +665,53 @@ void testApp::update()
 
     ofEnableAlphaBlending();
 
+    //Konturen in das Fbo zeichnen
     trace.begin();
     drawContours();
     trace.end();
 
     if(blend)
     {
+        //Bild langsam mit schwarz überblenden
         blendCounter++;
     }
 
-    if(blendCounter > 255)
+    if(blendCounter == 255)
     {
-        setzen = false;
+        //Wenn Bild komplett überblendet ist
+
+        setzen = false;  //setzen deaktivieren
         endCounter = 0;
 
-        linien = false;
+        linien = false;  //Linien wieder zurücksetzen
 
-        par1 = osc.settings[2];
+        //Par 1 wieder auf alten Wert setzen
+        if(osc.settings[2] != 0)
+        {
+            par1 = osc.settings[2];
+        }
+        else
+        {
+            par1 = 0.4;
+        }
 
-        for(int i=nVerfolger; i>16; i--)
-        //for(int i=nVerfolger; i>24; i--)
+        //Alle Verfolger bis auf 24 löschen
+        for(int i=nVerfolger; i>24; i--)
         {
             delete theVerfolger.back();
             theVerfolger.pop_back();
             nVerfolger--;
         }
-        cout << "Verfolger: " << nVerfolger << "\n";
 
+        //Alle Chefs bis auf 4 löschen
         for(int i=nChef; i>4; i--)
-        //for(int i=nChef; i>8; i--)
         {
             delete theChef.back();
             theChef.pop_back();
             nChef--;
         }
 
+        //Für alle Vögel Par1 wieder auf alten Wet setzen
         for(int i=0; i<nChef; i++)
         {
             theChef[i]->setPar1(par1);
@@ -780,20 +719,22 @@ void testApp::update()
         for(int i=0; i<nVerfolger; i++)
         {
             theVerfolger[i]->setPar1(par1);
-            theVerfolger[i]->resetEnd();
+            theVerfolger[i]->resetEnd();  //Verwandlungsanimation auf Anfang setzen
         }
 
     }
 
     if(blendCounter > 1555)
     {
-        blend = false;
+        blend = false;  //Überblendung deaktivieren
         blendCounter = 0;
 
         for(int i=0; i<curve.size(); i++)
         {
-            curve[i].clear();
+            curve[i].clear();  //Linien wieder löschen
         }
+
+        cout << "Verfolger: " << nVerfolger << "\n";
 
         lineCounter = 0;
     }
@@ -803,6 +744,8 @@ void testApp::update()
 
 void testApp::updateOsc()
 {
+    //Geänderte OSC-Werte den entsprechenden Variablen übergeben
+
     if(osc.settingsUpdate[0] && osc.settings[0] != speed)
     {
         speed = osc.settings[0] * 0.00007;
@@ -829,18 +772,6 @@ void testApp::updateOsc()
         tracking = false;
     }
 
-    if(osc.settingsUpdate[3] && osc.settings[3] != startX)
-    {
-        startX = osc.settings[3];
-        osc.settingsUpdate[3] = false;
-    }
-
-    if(osc.settingsUpdate[15] && osc.settings[15] != startY)
-    {
-        startY = osc.settings[15];
-        osc.settingsUpdate[15] = false;
-    }
-
     if(osc.settingsUpdate[9] && osc.settings[9] != nearThreshold)
     {
         nearThreshold = osc.settings[9] * 255;
@@ -853,29 +784,27 @@ void testApp::updateOsc()
         osc.settingsUpdate[10] = false;
     }
 
-    // verschiebung 1 x
-    if(osc.settingsUpdate[7] && osc.settings[7] * 5000 != adjustmentX)
+    if(osc.settingsUpdate[7] && osc.settings[7] * 8000 != adjustmentX)
     {
-        adjustmentX = osc.settings[7] * 5000;
+        adjustmentX = osc.settings[7] * 8000;
         osc.settingsUpdate[7] = false;
     }
 
-    // verschiebung 1 y
-    if(osc.settingsUpdate[20] && osc.settings[20] * 5000 != adjustmentY)
+    if(osc.settingsUpdate[20] && osc.settings[20] * 8000 != adjustmentY)
     {
-        adjustmentY = osc.settings[20] * 5000;
+        adjustmentY = osc.settings[20] * 8000;
         osc.settingsUpdate[20] = false;
     }
 
-    if(osc.settingsUpdate[18] && osc.settings[18] * 5000 != adjustment2X)
+    if(osc.settingsUpdate[18] && osc.settings[18] * 8000 != adjustment2X)
     {
-        adjustment2X = osc.settings[18] * 5000 + windowWidth/2;
+        adjustment2X = osc.settings[18] * 8000 + windowWidth/2;
         osc.settingsUpdate[18] = false;
     }
 
-    if(osc.settingsUpdate[21] && osc.settings[21] * 5000 != adjustment2Y)
+    if(osc.settingsUpdate[21] && osc.settings[21] * 8000 != adjustment2Y)
     {
-        adjustment2Y = osc.settings[21] * 5000;
+        adjustment2Y = osc.settings[21] * 8000;
         osc.settingsUpdate[21] = false;
     }
 
@@ -936,13 +865,12 @@ void testApp::updateOsc()
         }
     }
 
-    //Linienverschiebung x
     if(osc.settingsUpdate[11] && osc.settings[11] * windowWidth != lineAdjustmentX)
     {
         lineAdjustmentX = osc.settings[11] * windowWidth;
         osc.settingsUpdate[11] = false;
     }
-    //Linienverschiebung y
+
     if(osc.settingsUpdate[14] && osc.settings[14] * windowHeight != lineAdjustmentY)
     {
         lineAdjustmentY = osc.settings[14] * windowHeight;
@@ -968,7 +896,7 @@ void testApp::updateOsc()
         }
     }
 
-    //Übergang
+    //Üblendung
     if(osc.settingsUpdate[5] && osc.settings[5] == 1)
     {
         blend = true;
@@ -981,30 +909,21 @@ void testApp::updateOsc()
         osc.settingsUpdate[5] = false;
     }
 
-    if(osc.settingsUpdate[12] && osc.settings[12] != blubb)
-    {
-        blubb = windowWidth - (osc.settings[12] * windowWidth);
-        osc.settingsUpdate[12] = false;
-    }
-
-    // Grauwert Kontur
     if(osc.settingsUpdate[26] && osc.settings[26] * 255 != grauwert)
     {
         grauwert = osc.settings[26] * 255;
         osc.settingsUpdate[26] = false;
     }
 
-    // Konturdicke
     if(osc.settingsUpdate[27] && osc.settings[27] * 10!= konturDicke)
     {
         konturDicke = osc.settings[27] * 10;
         osc.settingsUpdate[27] = false;
     }
 
-    // Spurlänge
     if(osc.settingsUpdate[28] && osc.settings[28] * 100 != spurLaenge)
     {
-        spurLaenge = osc.settings[28] * 100 + 5;
+        spurLaenge = osc.settings[28] * 50 + 5;
         osc.settingsUpdate[28] = false;
     }
 
@@ -1027,54 +946,47 @@ void testApp::updateOsc()
 }
 
 
-void testApp::drawContours()
+void testApp::drawContours()  //Wird in Fbo gezeichnet
 {
-    //ofFill();
-    ofSetColor(0,0,0,spurLaenge);
+    ofSetColor(0,0,0,spurLaenge);  //Alphawert entspricht über OSC steuerbarem Wert
     ofRect(0, 0, 3940, 1200);
 
     ofPushStyle();
-    //ofSetLineWidth(3);
 
     // ---------------------------- draw the contours
-
-    //ofFill();
     ofNoFill();
+
+    //Farbe weiß
     ofSetColor(255, 255, 255);
 
     for( int i=0; i<(int)contourFinder.blobs.size(); i++ )
     {
 
-        //contours.push_back(contourFinder.blobs[i].pts);
         contours.push_back(blubbs);
         contours[i].clear();
 
         for(int j=0; j<contourFinder.blobs[i].nPts; j+=2)
         {
-            //contours[i].addVertex((contourFinder.blobs[i].pts[j].x*windowWidth/640 + adjustmentX) * contourScaleWidth/windowWidth, (contourFinder.blobs[i].pts[j].y*windowHeight/480 + adjustmentY) * contourScaleHeight/windowHeight);
+            //contours die vom contourFinder erkannte Kontur übergeben
             contours[i].lineTo((contourFinder.blobs[i].pts[j].x*windowWidth/640 + adjustmentX) * contourScaleWidth/windowWidth, (contourFinder.blobs[i].pts[j].y*windowHeight/480 + adjustmentY) * contourScaleHeight/windowHeight);
         }
 
-        //contours[i].close();
-        contours[i].draw();
+        contours[i].draw();  //Erste Kontur zeichnen
     }
     contours.clear();
 
     for( int i=0; i<(int)contourFinder2.blobs.size(); i++ )
     {
-
-        //contours.push_back(contourFinder2.blobs[i].pts);
         contours.push_back(blubbs);
         contours[i].clear();
 
         for(int j=0; j<contourFinder2.blobs[i].nPts; j+=2)
         {
-            //contours[i].addVertex((contourFinder2.blobs[i].pts[j].x*windowWidth/640 + adjustment2X) * contourScaleWidth/windowWidth, (contourFinder2.blobs[i].pts[j].y*windowHeight/480 + adjustment2Y) * contourScaleHeight/windowHeight);
+            //contours die vom contourFinder2 erkannte Kontur übergeben
             contours[i].lineTo((contourFinder2.blobs[i].pts[j].x*windowWidth/640 + adjustment2X) * contourScaleWidth/windowWidth, (contourFinder2.blobs[i].pts[j].y*windowHeight/480 + adjustment2Y) * contourScaleHeight/windowHeight);
         }
 
-        //contours[i].close();
-        contours[i].draw();
+        contours[i].draw();  //Zweite Kontur zeichnen
 
     }
     contours.clear();
@@ -1084,10 +996,9 @@ void testApp::drawContours()
 
 void testApp::draw()
 {
-    //ofSetColor(255);
-    //background.draw(0, 0, windowWidth, windowHeight);
     ofSetColor(120);
 
+    //Linien zeichnen wenn sie einfahren
     if(linien)
     {
         ofPushStyle();
@@ -1106,28 +1017,25 @@ void testApp::draw()
 
     ofSetColor(255, 255, 255);
 
-    //grayImage.draw(0, 0, windowWidth, windowHeight);
-
     if(tracking)
     {
-        //Wenn Tracking aktiviert ist wird die Kontur gezeichnet
+        //Wenn Tracking aktiviert ist wird das Fbo/die Silhouetten gezeichnet
         trace.draw(0, 0);
 
-        ofSetColor(255);
+        //Konturen werden in schwarz nocheinmal ohen Spur gezeichnet, so dass eindruck einer hohlen Silhouette entsteht
 
         for( int i=0; i<(int)contourFinder.blobs.size(); i++ )
         {
 
-            //contours.push_back(contourFinder.blobs[i].pts);
             contours.push_back(blubbs);
             contours[i].clear();
 
             for(int j=0; j<contourFinder.blobs[i].nPts; j+=2)
             {
-                //contours[i].addVertex((contourFinder.blobs[i].pts[j].x*windowWidth/640 + adjustmentX) * contourScaleWidth/windowWidth, (contourFinder.blobs[i].pts[j].y*windowHeight/480 + adjustmentY) * contourScaleHeight/windowHeight);
                 contours[i].lineTo((contourFinder.blobs[i].pts[j].x*windowWidth/640 + adjustmentX) * contourScaleWidth/windowWidth, (contourFinder.blobs[i].pts[j].y*windowHeight/480 + adjustmentY) * contourScaleHeight/windowHeight);
             }
 
+            contours[i].lineTo((contourFinder.blobs[i].pts[0].x*windowWidth/640 + adjustmentX) * contourScaleWidth/windowWidth, (contourFinder.blobs[i].pts[0].y*windowHeight/480 + adjustmentY) * contourScaleHeight/windowHeight);
             contours[i].close();
             contours[i].setFillColor(grauwert);
             contours[i].setStrokeWidth(konturDicke);
@@ -1139,13 +1047,11 @@ void testApp::draw()
         for( int i=0; i<(int)contourFinder2.blobs.size(); i++ )
         {
 
-            //contours.push_back(contourFinder2.blobs[i].pts);
             contours.push_back(blubbs);
             contours[i].clear();
 
             for(int j=0; j<contourFinder2.blobs[i].nPts; j+=2)
             {
-                //contours[i].addVertex((contourFinder2.blobs[i].pts[j].x*windowWidth/640 + adjustment2X) * contourScaleWidth/windowWidth, (contourFinder2.blobs[i].pts[j].y*windowHeight/480 + adjustment2Y) * contourScaleHeight/windowHeight);
                 contours[i].lineTo((contourFinder2.blobs[i].pts[j].x*windowWidth/640 + adjustment2X) * contourScaleWidth/windowWidth, (contourFinder2.blobs[i].pts[j].y*windowHeight/480 + adjustment2Y) * contourScaleHeight/windowHeight);
             }
 
@@ -1156,55 +1062,10 @@ void testApp::draw()
             contours[i].draw();
 
         }
+
         contours.clear();
 
-        //Wenn enddraw = true werden die Attraktoren als rote Punkte dargestellt
-        if(enddraw)
-        {
-            if(contourFinder.blobs.size() > 0)    //wenn mindestens ein Körper erkannt wird
-            {
-                //zeichnet 4 Punkte an äußersten Punkten der beiden erkannten Körper
-                ofSetHexColor(0xFF0000);
-                ofCircle(attraktoren[0].x*windowWidth, attraktoren[0].y*windowHeight, 7);
-                ofCircle(attraktoren[1].x*windowWidth, attraktoren[1].y*windowHeight, 7);
-                //Nur wenn 2 Körper, sonst nicht
-                //ofCircle(attraktoren[2].x*windowWidth, attraktoren[2].y*windowHeight, 7);
-                //ofCircle(attraktoren[3].x*windowWidth, attraktoren[3].y*windowHeight, 7);
-
-            }
-        }
-    }
-
-#ifdef USE_TWO_KINECTS
-
-    ofSetHexColor(0xFFFFFF);
-
-    //grayImage2.draw(windowWidth/2, 0, windowWidth/2, windowHeight);
-
-    if (tracking)
-    {
-        if(enddraw)
-        {
-            if(contourFinder2.blobs.size() > 0)    //wenn ein Körper erkannt wird
-            {
-                //zeichnet 4 Punkte an äußersten Punkten der beiden erkannten Körper
-                ofSetHexColor(0xFF0000);
-                ofCircle(attraktoren[4].x*windowWidth, attraktoren[4].y*windowHeight, 7);
-                ofCircle(attraktoren[5].x*windowWidth, attraktoren[5].y*windowHeight, 7);
-                //mur Wenn 2 Körper, sonst nicht
-                //ofCircle(attraktoren[6].x*windowWidth, attraktoren[6].y*windowHeight, 7);
-                //ofCircle(attraktoren[7].x*windowWidth, attraktoren[7].y*windowHeight, 7);
-            }
-        }
-    }
-
-#endif
-
-    contourFinder.blobs.clear();
-    contourFinder2.blobs.clear();
-
-
-//----------------------------VÖGEL--------------------------------------------------------
+////----------------------------VÖGEL--------------------------------------------------------
 
     //Bindet die Textur auf die Festplatte
     vogelTextur.getTextureReference().bind();
@@ -1215,10 +1076,12 @@ void testApp::draw()
         theChef[i]->draw();
     }
 
+    //löst textur wieder von der Festplatte
     vogelTextur.getTextureReference().unbind();
 
     if(setzen && endCounter > 1200)
     {
+        //Verwandlungsanimation zum festgelegten Zeitpunkt
         drahtTextur.getTextureReference().bind();
 
         //Zeichnet alle Verfolger
@@ -1232,6 +1095,7 @@ void testApp::draw()
 
     else
     {
+        //normale Vogeltextur
         vogelTextur.getTextureReference().bind();
 
         //Zeichnet alle Verfolger
@@ -1243,17 +1107,16 @@ void testApp::draw()
         vogelTextur.getTextureReference().unbind();
     }
 
-    // Gibt Framerate in linker oberer Ecke aus
-    ofDrawBitmapString(ofToString(round(ofGetFrameRate())),10,10);
-
     if(setzen)
     {
+        //Zitat soll langsam eingeblendet werden
         ofSetColor(120, 120, 120, zitatCounter);
-        zitat.draw(300, 800, 800, 200);
+        zitat.draw(800, 800, 800, 200);
     }
 
     if(blend)
     {
+        //Bild soll langsam mit schwarz überblendet und nach einiger Zeit wieder eingeblendet werden
         if(blendCounter<1300)
         {
             ofSetColor(0, 0, 0, blendCounter);
@@ -1266,41 +1129,7 @@ void testApp::draw()
 
         ofRect(0, 0, windowWidth, windowHeight);
     }
-
-    //Linie, um Fluggrenze rechts zu zeigen
-    //ofSetColor(255);
-    //ofRect(blubb, 0, 5, windowHeight);
-
-    // draw instructions
-    /*ofSetColor(255);
-    stringstream reportStream;
-
-    if(kinect.hasAccelControl())
-    {
-        reportStream << "accel is: " << ofToString(kinect.getMksAccel().x, 2) << " / "
-                     << ofToString(kinect.getMksAccel().y, 2) << " / "
-                     << ofToString(kinect.getMksAccel().z, 2) << endl;
-    }
-    else
-    {
-        reportStream << "Note: this is a newer Xbox Kinect or Kinect For Windows device," << endl
-                     << "motor / led / accel controls are not currently supported" << endl << endl;
-    }
-
-    reportStream << "using opencv threshold = " << bThreshWithOpenCV <<" (press spacebar)" << endl
-                 << "set near threshold " << nearThreshold << " (press: + -)" << endl
-                 << "set far threshold " << farThreshold << " (press: < >) num blobs found " << contourFinder.nBlobs
-                 << ", fps: " << ofGetFrameRate() << endl
-                 << "press c to close the connection and o to open it again, connection is: " << kinect.isConnected() << endl;
-
-
-    if(kinect.hasCamTiltControl())
-    {
-        reportStream << "press UP and DOWN to change the tilt angle: " << angle << " degrees" << endl
-                     << "press 1-5 & 0 to change the led mode" << endl;
-    }
-
-    ofDrawBitmapString(reportStream.str(), 20, 652);*/
+  }
 }
 
 
@@ -1326,13 +1155,6 @@ void testApp::mouseReleased(int x, int y, int button)
         tracking = !tracking;
         cout << "tracking" << ofToString(tracking);
     }
-
-    //Bei Rechtsklick wird zeichnen der Attraktorpunkte de/aktiviert
-    if(button)
-    {
-        enddraw = !enddraw;
-        cout << "balldraw" << ofToString(enddraw);
-    }
 }
 
 //--------------------------------------------------------------
@@ -1344,16 +1166,20 @@ void testApp::keyPressed(int key)
 
     case 'm' :
 
+        //Überblendung de/aktivieren
         blend = !blend;
         blendCounter = 0;
         break;
 
     case 'f' :
+
         //Fullcreen
         ofToggleFullscreen();
         windowWidth = ofGetWidth();
         windowHeight = ofGetHeight();
         break;
+
+    //Linien verschieben
 
     case 'a' :
 
@@ -1379,6 +1205,8 @@ void testApp::keyPressed(int key)
 
     case 'l' :
 
+        //Linien einlaufen lassen
+
         for(int i=0; i<curve.size(); i++)
         {
             curve[i].clear();
@@ -1390,6 +1218,8 @@ void testApp::keyPressed(int key)
         break;
 
     case 's' :
+
+        //Setzen aktivieren
 
         endCounter = 0;
         zitatCounter = 0;
@@ -1408,6 +1238,7 @@ void testApp::keyPressed(int key)
 
     case 'v':
 
+        //neuen Verfolger erstellen
         createVerfolger = true;
 
         break;
@@ -1425,6 +1256,8 @@ void testApp::keyPressed(int key)
 
 
 //-----------------------------TRACKING-------------------------------------------
+
+    //Silhouetten verschieben
 
     case 'y':
         adjustmentX -= 20;

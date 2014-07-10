@@ -4,7 +4,6 @@
 Chef::Chef(ofPoint _pos, float _texturWidth, float _texturHeight, float _rangeWidth){
 
     pos = _pos;
-    cout << "posX: " << pos.x << " - pos.Y: " << pos.y << "\n";
     speed = 0.00005;
     saved_move_to = ofPoint(0,0);
     rangeWidth = ofGetScreenWidth();
@@ -60,19 +59,11 @@ void Chef::update(float dt, ofPoint move_to)
 
     //--------------------Darstellung
 
+    //Zeichenposition des Vogels
     drawPosX = pos.x * ofGetWidth();
     drawPosY = pos.y * ofGetHeight();
 
-    // Bälle sollen den Bildschirm nicht verlassen
-    /*if ((drawPosX > ofGetWidth() - rangeWidth)||(drawPosX < 0))
-    {
-        dir.x *= -1;
-    }
-
-    if ((drawPosY > ofGetHeight())||(drawPosY < 0))
-    {
-        dir.y *= -1;
-    }*/
+    //aktuellen Frame der Fluganimation bestimmen
 
     if(frameCounterX > 7)
     {
@@ -96,13 +87,15 @@ void Chef::draw()
 {
 
     ofSetColor(255);
-    //ofSetColor(255, 0, 255);
 
+    //aktuellen Frame aus dem png, das auf der Grafikarte liegt, herausnehmen und zeichnen
     glPushMatrix();
 
-        glTranslated(drawPosX, drawPosY, 0);
-        glRotatef(flightAngle + 180, 0, 0, 1);
+        glTranslated(drawPosX, drawPosY, 0);  //Ursprung auf Position des Vogels setzen
+        glRotatef(flightAngle + 180, 0, 0, 1);  //Textur in Flugrichtung ausrichten
         glBegin(GL_QUADS);
+
+            //Aktuellen Frame aus dem png auswählen und anhand der Eckpunkte auf Texturgröße skalieren
 
             glTexCoord2f(frame.x, frame.y);
             glVertex2f(-texturWidth, -texturHeight);

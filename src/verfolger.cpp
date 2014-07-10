@@ -75,19 +75,12 @@ void Verfolger::update(float dt, ofPoint move_to)
     flightAngle = ofVec2f(0, 1).angle(dir);
 
     //---------------------Darstellung
+
+    //Zeichenposition des Vogels
     drawPosX = pos.x*ofGetWidth();
     drawPosY = pos.y*ofGetHeight();
 
-    // Bälle sollen den Bildschirm nicht verlassen
-    /*if ((drawPosX > ofGetWidth() - rangeWidth)||(drawPosX < 0))
-    {
-        dir.x *= -1;
-    }
-
-    if ((drawPosY > ofGetHeight())||(drawPosY < 0 ))
-    {
-        dir.y *= -1;
-    }*/
+    //aktuellen Frame der Fluganimation bestimmen
 
     if(frameCounterX > 7)
     {
@@ -111,11 +104,14 @@ void Verfolger::draw()
 {
     ofSetColor(255);
 
+    //aktuellen Frame aus dem png, das auf der Grafikarte liegt, herausnehmen und zeichnen
     glPushMatrix();
 
-        glTranslated(drawPosX, drawPosY, 0);
-        glRotatef(flightAngle + 180, 0, 0, 1);
+        glTranslated(drawPosX, drawPosY, 0);  //Ursprung auf Position des Vogels setzen
+        glRotatef(flightAngle + 180, 0, 0, 1);  //Textur in Flugrichtung ausrichten
         glBegin(GL_QUADS);
+
+            //Aktuellen Frame aus dem png auswählen und anhand der Eckpunkte auf Texturgröße skalieren
 
             glTexCoord2f(frame.x, frame.y);
             glVertex2f(-texturWidth, -texturHeight);
@@ -143,12 +139,15 @@ void Verfolger::resetEnd()
 
 void Verfolger::drawEnd(int _color){
 
+    //Farbe soll langsam von weiß zur Farbe des Zauns übergehen
     ofSetColor(1455-_color);
 
     if(_color>1335)
     {
         ofSetColor(120);
     }
+
+    //aktuellen Frame der Verwandlungsanimation bestimmen, wird nur einmal druchlaufen
 
     if(frameCounterEndX/3 > 7)
     {
@@ -177,6 +176,8 @@ void Verfolger::drawEnd(int _color){
         glTranslated(drawPosX, drawPosY, 0);
         glRotatef(flightAngle + 180, 0, 0, 1);
         glBegin(GL_QUADS);
+
+            //Aktuellen Frame aus dem png auswählen und anhand der Eckpunkte auf Texturgröße skalieren
 
             glTexCoord2f(frame.x, frame.y);
             glVertex2f(-texturWidth, -texturHeight);

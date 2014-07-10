@@ -4,7 +4,7 @@
 void oscHelper::setup()
 {
 
-    touchOsc.setup("192.168.1.113", 1300);
+    touchOsc.setup("192.168.1.44", 1300);
 
     arraySize = 29;
 
@@ -39,7 +39,6 @@ void oscHelper::setup()
     settings[10] = 0; //farThreshold
 
      /*---Animation----*/
-    settings[12] = 0; //Grenze rechts
     settings[13] = 0; //Animation abspielenm
     settings[11] = 0; //Linien Verschiebung x
     settings[14] = 0; //Linien Verschiebung y
@@ -61,12 +60,6 @@ void oscHelper::setup()
 
 void oscHelper::listen()
 {
-    // hide old messages
-//        for(int i = 0; i < NUM_MSG_STRINGS; i++){
-//            if(timers[i] < ofGetElapsedTimef()){
-//                msg_strings[i] = "";
-//            }
-//        }
 
     // check for waiting messages
     while(herz.hasWaitingMessages())
@@ -86,8 +79,6 @@ void oscHelper::listen()
     {
         // get the next message
         receiver.getNextMessage(&m);
-        //cout << "Address: " << m.getAddress() << endl;
-
 
 
  /*----------------------------Vögel---------------------------*/
@@ -174,11 +165,7 @@ void oscHelper::listen()
         }
 
 /*------------------------------Animation------------------------------------*/
-        // Grenze rechts
-         if(m.getAddress() == "/12"){
-            settings[12] = (m.getArgAsFloat(0)) ;
-            settingsUpdate[12] = true;
-        }
+
          // Animation starten
          if(m.getAddress() == "/13"){
             settings[13] = (m.getArgAsFloat(0)) ;
@@ -283,8 +270,6 @@ void oscHelper::syncSettingToOsc(){
 }
 
 void oscHelper::sendToTablet(float _frameRate, bool _kinect1, bool _kinect2, float _nVerfolger){
-
-        //cout << "Data sent to Tablet \n";
 
         ofxOscMessage m;
 

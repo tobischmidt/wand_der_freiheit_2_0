@@ -10,9 +10,9 @@
 #include "ofxOpenCv.h"
 #include "ofxKinect.h"
 
-#include "oscHelper.h" /*NEW*/
-#define PORT 8000   /*NEW*/
-#define NUM_MSG_STRINGS 20  /*NEW*/
+#include "oscHelper.h"
+#define PORT 8000
+#define NUM_MSG_STRINGS 20
 
 #define USE_TWO_KINECTS
 
@@ -31,13 +31,11 @@ class testApp : public ofBaseApp{
         void keyPressed(int);
         void mouseReleased(int x, int y, int button);
 
-        ofImage background;
-        ofImage zitat;
+        ofImage zitat;  //Zitat als png
 
 
 //-------------------------------VÖGEL------------------------------------
 
-        //Ball** theBall;
         vector<Chef*> theChef;
 
         vector<Verfolger*> theVerfolger;
@@ -45,22 +43,10 @@ class testApp : public ofBaseApp{
 
 //------------------------------TRACKING----------------------------------
 
-	    bool tracking;
-	    bool enddraw;
-	    bool hasContours;
+	    bool tracking;  //tracking an-/ausschalten
+	    bool hasContours;  //ein Objekt wird getrackt
 
 	    ofxKinect kinect;
-
-#ifdef USE_TWO_KINECTS
-        ofxKinect kinect2;
-
-        ofxCvGrayscaleImage grayImage2; // grayscale depth image
-	    //ofxCvGrayscaleImage grayThreshNear2; // the near thresholded image
-	    //ofxCvGrayscaleImage grayThreshFar2; // the far thresholded image
-
-	    ofxCvContourFinder contourFinder2;
-
-#endif
 
 	    ofxCvGrayscaleImage grayImage; // grayscale depth image
 	    ofxCvGrayscaleImage grayThreshNear; // the near thresholded image
@@ -68,98 +54,99 @@ class testApp : public ofBaseApp{
 
     	ofxCvContourFinder contourFinder;
 
+#ifdef USE_TWO_KINECTS
+        ofxKinect kinect2;
+
+        ofxCvGrayscaleImage grayImage2; // grayscale depth image
+
+	    ofxCvContourFinder contourFinder2;
+
+#endif
+
 	    float nearThreshold;
 	    float farThreshold;
-	    float angle;
+	    float angle;  //camera winkel
 
-	    ofPoint attraktoren[8];
+	    ofPoint attraktoren[4];  //attraktorpunkte
 
-	    ofPoint leftEnd[4];
-	    ofPoint rightEnd[4];
+	    ofPoint leftEnd[2];  //linkesten Punkte der getrackten Objekte
+	    ofPoint rightEnd[2];  //rechtesten Punkte der getrackten Objekte
 
+	    //startpunkt wenn neuer Vogel erstellt wird
 	    float startX;
 	    float startY;
 
-        int blubb;
+        ofPath blubbs;  //Platzhalter zur Initialisierung von contours
+        ofPolyline line;  //Platzhalter zur Initialisierung von curve
 
-        ofPath blubbs;
-        ofPolyline line;
+	    float adjustmentX;  //Verschiebung in x-Richtung erste Silhouette
+	    float adjustmentY;  //Verschiebung in y-Richtung erste Silhouette
+	    float adjustment2X;  //Verschiebung in x-Richtung zweite Silhouette
+	    float adjustment2Y;  //Verschiebung in y-Richtung zweite Silhouette
 
-	    float adjustmentX;
-	    float adjustmentY;
-	    float adjustment2X;
-	    float adjustment2Y;
+	    float lineAdjustmentX;  //Linien von Animation verschieben in x-Richtung
+	    float lineAdjustmentY;  //Linien von Animation verschieben in y-Richtung
 
-	    float lineAdjustmentX;
-	    float lineAdjustmentY;
-
-	    float contourScaleWidth;
-	    float contourScaleHeight;
+	    float contourScaleWidth;  //Breite der Silhouetten skalieren
+	    float contourScaleHeight;  //Höhe der Silhouetten skalieren
 
 	    float grauwertKontur;
 	    float konturDicke;
-	    float spurLaenge;
+	    float spurLaenge;  //Länge der nachgezogenen Spur der Silhouetten
 
-        int current_msg_string; /*NEW*/
-		string msg_strings[NUM_MSG_STRINGS];    /*NEW*/
-		float timers[NUM_MSG_STRINGS];  /*NEW*/
+		ofImage vogelTextur;  //png mit 64 Frames der Vogeltextur als Fluganimation
+		ofImage drahtTextur;  //png mit 21 Frames zur Verwandlung von Vogel in Stacheldraht
 
-		ofImage vogelTextur;
-		ofImage drahtTextur;
+		vector<ofPath> contours;  //Konturen der Silhouetten
 
-		//vector<ofPolyline> contours;
-		vector<ofPath> contours;
+		ofPoint curveDefine1[420];  //oberste Linie der Animation vorgefertigt
+		ofPoint curveDefine2[420];  //zweite Linie der Animation vorgefertigt
+		ofPoint curveDefine3[420];  //dritte Linie der Animation vorgefertigt
+		ofPoint curveDefine4[420];  //vierte Linie der Animation vorgefertigt
+		vector<ofPolyline> curve;  //Linien der Animation, die erst zur Laufzeit gezeichnet werden
+		vector<ofVec2f> vec;  //Platzhalter zur Initialisierung von line
 
+		int lineCounter;  //Zähler, startet wenn Linien einluafen sollen
+		int endCounter;  //Zähler, startet wenn setzen aktiviert ist
+		int zitatCounter;  //Zähler, lässt Zitat langsam einblenden
 
-		//vector<vector<ofVec2f> > curveDefine;
-		ofPoint curveDefine1[420];
-		ofPoint curveDefine2[420];
-		ofPoint curveDefine3[420];
-		ofPoint curveDefine4[420];
-		vector<ofPolyline> curve;
-		vector<ofVec2f> vec;
+		ofFbo trace;  //Frame Buffer Object für Spur der Silhouetten
 
-		int lineCounter;
-		int endCounter;
-		int zitatCounter;
+		bool setzen;  //Vögel sollen sich auf Linien setzen
+		bool linien;  //Linien sollen einlaufen
+		bool transformation;  //Vögel sollen sihc zu Stacheldraht umwandeln
+		bool blend;  //Bild wird schwarz überblendet
 
-		ofFbo trace;
+		bool doOscUpdate;  //OSC soll upgedatet werden
 
-		bool setzen;
-		bool linien;
-		bool transformation;
-		bool blend;
+		int runCounter;  //Zähler, der jeden durchlauf der Update mitläuft und alle 150 Durchgänge zurückgesetzt wird
 
-		bool doOscUpdate;
-
-		int runCounter;
-
-		int blendCounter;
+		int blendCounter;  //Zähler, der mit Überblendung mitläuft
 
     private:
 
-        float timeCur;
-        float timeOld;
-        float timeDiff;
+        float timeCur;  //aktuelle Zeit
+        float timeOld;  //alte Zeit
+        float timeDiff;  //Zeitdifferenz
 
-        int nVerfolger;
-        int nChef;
-        bool createVerfolger;
-        float texturWidth;
-        float texturHeight;
-        float speed;
-        float par1;
-        float rangeWidth;
-        float grauwert;
+        int nVerfolger;  //Zahl der Verfolger
+        int nChef;  //Zahl der Chefs
+        bool createVerfolger;  //Verfolger erstellen
+        float texturWidth;  //Breite der Vogeltextur
+        float texturHeight;  //Höhe der Vogeltextur
+        float speed;  //Fluggeschwindigkeit
+        float par1;  //Parameter zur Orientierung in alte Bewegungsrichtung
+        float rangeWidth;  //x-Koordinate des Bereichs, in dem die Vögel fliegen sollen
+        float grauwert;  //Grauwert der Konturfüllung
 
         oscHelper osc;
-        ofPoint position;
+        ofPoint position;  //Neue Position, zu der die Vögel fliegen sollen
 
         //Fenstergröße
         int windowWidth;
         int windowHeight;
 
-        int platzhalter;
+        int platzhalter;  //Entspricht Zahl der Verfolger, aber maximal 40 -> Dient zur Einordnung von neuen Verfolgern in den ersten 40 Indizen, damit diese gleich zur Silhouette fliegen
 
 };
 
