@@ -560,7 +560,7 @@ void testApp::update()
             nVerfolger = theVerfolger.size();
             cout << "Verfolger: " << nVerfolger << "\n";
 
-            if(nVerfolger > 28 && nVerfolger%7==1) //Es sollen immer maximal 6 Verfolger einem Chef fliegen -> für jeden 6. neuen Verfolger wird auch ein neuer Chef erstellt
+            if(nVerfolger > 28 && nVerfolger%7==1) //Es sollen immer maximal 7 Verfolger einem Chef fliegen -> für jeden 6. neuen Verfolger wird auch ein neuer Chef erstellt
             {
                 //neuer chef wird erstellt
                 theChef.push_back( new Chef(ofPoint(startX, startY), texturWidth, texturHeight, rangeWidth));
@@ -1064,10 +1064,11 @@ void testApp::draw()
         }
 
         contours.clear();
+    }
 
 ////----------------------------VÖGEL--------------------------------------------------------
 
-    //Bindet die Textur auf die Festplatte
+    //Bindet die Textur auf die Grafikkarte
     vogelTextur.getTextureReference().bind();
 
     //Zeichnet alle Chefs
@@ -1076,7 +1077,7 @@ void testApp::draw()
         theChef[i]->draw();
     }
 
-    //löst textur wieder von der Festplatte
+    //löst textur wieder von der Grafikkarte
     vogelTextur.getTextureReference().unbind();
 
     if(setzen && endCounter > 1200)
@@ -1129,7 +1130,7 @@ void testApp::draw()
 
         ofRect(0, 0, windowWidth, windowHeight);
     }
-  }
+
 }
 
 

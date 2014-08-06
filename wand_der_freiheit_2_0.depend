@@ -4631,21 +4631,21 @@
 
 1394031361 source:c:\users\tobias\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\icon.rc
 
-1394031361 source:c:\users\tobias\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\ball.cpp
+1398861453 source:c:\users\tobias\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\ball.cpp
 	"ball.h"
 
-1395685745 c:\users\tobias\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\ball.h
+1398861453 c:\users\tobias\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\ball.h
 	"ofMain.h"
 
-1396457953 source:c:\users\tobias\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\chef.cpp
+1406494315 source:c:\users\tobias\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\chef.cpp
 	"chef.h"
 
-1396441901 c:\users\tobias\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\chef.h
+1406494315 c:\users\tobias\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\chef.h
 	"ofMain.h"
 	"ball.h"
 	"verfolger.h"
 
-1396441901 c:\users\tobias\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\verfolger.h
+1406494315 c:\users\tobias\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\verfolger.h
 	"ofMain.h"
 	"ball.h"
 
@@ -4653,7 +4653,7 @@
 	"ofMain.h"
 	"testApp.h"
 
-1396455838 c:\users\tobias\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\testapp.h
+1406494315 c:\users\tobias\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\testapp.h
 	"ofMain.h"
 	"ball.h"
 	"chef.h"
@@ -4662,9 +4662,10 @@
 	"ofxKinect.h"
 	"oscHelper.h"
 
-1396455085 c:\users\tobias\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\oschelper.h
+1406494315 c:\users\tobias\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\oschelper.h
 	"ofMain.h"
 	"ofxOsc.h"
+	"ofxXMLSettings.h"
 
 1376291564 c:\users\tobias\openframeworks\of_v0.8.0_win_cb_release\addons\ofxosc\src\ofxosc.h
 	"ofxOscArg.h"
@@ -4672,16 +4673,16 @@
 	"ofxOscSender.h"
 	"ofxOscReceiver.h"
 
-1396455085 source:c:\users\tobias\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\oschelper.cpp
+1406494315 source:c:\users\tobias\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\oschelper.cpp
 	"oscHelper.h"
 	"testApp.h"
 
-1396457559 source:c:\users\tobias\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\testapp.cpp
+1406737980 source:c:\users\tobias\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\testapp.cpp
 	"testApp.h"
 	"chef.h"
 	"verfolger.h"
 
-1396457559 source:c:\users\tobias\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\verfolger.cpp
+1406494315 source:c:\users\tobias\openframeworks\of_v0.8.0_win_cb_release\apps\myapps\wand_der_freiheit_2_0\src\verfolger.cpp
 	"verfolger.h"
 
 1394068821 source:e:\entwicklung\openframeworks\of_v0.8.0_win_cb_release\addons\ofxkinect\libs\libfreenect\platform\windows\libusb10emu\libusb-1.0\failguard.cpp
